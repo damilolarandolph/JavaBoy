@@ -8,10 +8,10 @@ public class GBRegistersTest {
 
     @Test
     public void testSetRegister() {
-    registers.setRegister(REGISTERS.A, 0xF);
-assertEquals(registers.getRegister(REGISTERS.A), 0xF);
-        registers.setRegister(REGISTERS.H, 0xA);
-        assertEquals(registers.getRegister(REGISTERS.H), 0xA);
+    registers.setRegister(REGISTER.A, 0xF);
+assertEquals(registers.getRegister(REGISTER.A), 0xF);
+        registers.setRegister(REGISTER.H, 0xA);
+        assertEquals(registers.getRegister(REGISTER.H), 0xA);
     }
 
 
@@ -29,9 +29,9 @@ System.out.println(val);
 
     @Test
     public void testSetRegisterPair(){
-        registers.setRegisterPair(REGISTERS.A, REGISTERS.H, 0xAFF);
-        assertEquals(registers.getRegister(REGISTERS.A), 0xA);
-        int val =  registers.getRegisterPair(REGISTERS.A, REGISTERS.H);
+        registers.setRegisterPair(REGISTER.A, REGISTER.H, 0xAFF);
+        assertEquals(registers.getRegister(REGISTER.A), 0xA);
+        int val =  registers.getRegisterPair(REGISTER.A, REGISTER.H);
         assertEquals(val, 0xAFF);
     }
 
