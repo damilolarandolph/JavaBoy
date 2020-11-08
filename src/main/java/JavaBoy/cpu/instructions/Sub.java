@@ -52,7 +52,7 @@ public class Sub implements Instruction {
     }
 
 
-    OptionalInt sub(REGISTER reg1, REGISTER reg2, CPU cpu){
+   private OptionalInt sub(REGISTER reg1, REGISTER reg2, CPU cpu){
         int val1 = cpu.readByteRegister(reg1);
         int val2 = cpu.readByteRegister(reg2);
 
@@ -61,7 +61,7 @@ public class Sub implements Instruction {
         return OptionalInt.of(4);
     }
 
-    OptionalInt sub(REGISTER reg, CPU cpu){
+  private   OptionalInt sub(REGISTER reg, CPU cpu){
         int val1 = cpu.readByteRegister(reg);
         int val2 = cpu.getByteFromPC();
 
@@ -70,7 +70,7 @@ public class Sub implements Instruction {
         return OptionalInt.of(8);
     }
 
-    OptionalInt sub(REGISTER reg, RegisterPair pair, CPU cpu){
+   private OptionalInt sub(REGISTER reg, RegisterPair pair, CPU cpu){
         int val1 = cpu.readByteRegister(reg);
         int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
 
@@ -81,7 +81,7 @@ public class Sub implements Instruction {
     }
 
 
-    OptionalInt sbc(REGISTER reg1, REGISTER reg2, CPU cpu){
+  private   OptionalInt sbc(REGISTER reg1, REGISTER reg2, CPU cpu){
         int val1 = cpu.readByteRegister(reg1);
         int val2 = cpu.readByteRegister(reg2) + cpu.getFlag(FLAG.Cy);
 
@@ -90,7 +90,7 @@ public class Sub implements Instruction {
         return OptionalInt.of(4);
     }
 
-    OptionalInt sbc(REGISTER reg1,  CPU cpu){
+   private OptionalInt sbc(REGISTER reg1,  CPU cpu){
         int val1 = cpu.readByteRegister(reg1);
         int val2 = cpu.getByteFromPC() + cpu.getFlag(FLAG.Cy);
 
@@ -99,7 +99,7 @@ public class Sub implements Instruction {
         return OptionalInt.of(8);
     }
 
-    OptionalInt sbc(REGISTER reg1,  RegisterPair pair, CPU cpu){
+  private   OptionalInt sbc(REGISTER reg1,  RegisterPair pair, CPU cpu){
 
         int val1 = cpu.readByteRegister(reg1);
         int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair))) + cpu.getFlag(FLAG.Cy);
@@ -110,7 +110,7 @@ public class Sub implements Instruction {
     }
 
 
-    int subBytes(int val1, int val2, CPU cpu) {
+  private   int subBytes(int val1, int val2, CPU cpu) {
 
         int result = (val1 & 0xff) - (val2 & 0xff);
 
