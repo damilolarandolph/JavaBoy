@@ -25,6 +25,17 @@ public class Inc implements Instruction {
                 return inc(REGISTER.L, cpu);
             case 0x34:
                 return inc(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+                //16 bit increment instructions
+            case 0x03:
+                return inc16(new RegisterPair(REGISTER.B, REGISTER.C), cpu);
+            case 0x13:
+                return inc16(new RegisterPair(REGISTER.D, REGISTER.E), cpu);
+            case 0x23:
+                return inc16(new RegisterPair(REGISTER.H, REGISTER.L),cpu);
+            case 0x33:
+                return inc16SP(cpu);
+
+
             default:
                 return OptionalInt.empty();
         }
@@ -47,6 +58,18 @@ public class Inc implements Instruction {
         return OptionalInt.of(12);
 
     }
+
+    private OptionalInt inc16(RegisterPair pair, CPU cpu){
+
+        cpu.writeWordRegister(pair, cpu.readWordRegister(pair) + 1);
+        return OptionalInt.of(16);
+    }
+    private OptionalInt inc16SP(CPU cpu){
+
+        cpu.writeWordRegister(REGISTER.SP, cpu.readWordRegister(REGISTER.SP) + 1);
+        return OptionalInt.of(8);
+    }
+
 
 
     private int applyInc(int val, CPU cpu) {
