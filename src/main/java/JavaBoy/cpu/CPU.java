@@ -1,6 +1,5 @@
 package JavaBoy.cpu;
 
-import JavaBoy.cartridge.Cartridge;
 import JavaBoy.memory.MemoryMap;
 
 public interface CPU {
@@ -11,8 +10,11 @@ public interface CPU {
     MemoryMap getMemoryMap();
 
     void incrementPC();
-    int getByteFromPC();
-    int getWordFromPC();
+    int readByteFromPC();
+    int readWordFromPC();
+
+    int readSignedByteFromPC();
+    int readSignedWordFromPC();
 
     void writeToAddress(Address addr, int value);
     int readFromAddress(Address addr);
@@ -21,7 +23,7 @@ public interface CPU {
     void incrementSP();
     void decrementSP();
 
-    void setByteRegister(REGISTER register, int value);
+    void writeByteRegister(REGISTER register, int value);
     int readByteRegister(REGISTER register);
 
     int readWordRegister(RegisterPair pair);
