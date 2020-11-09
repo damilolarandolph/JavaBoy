@@ -54,7 +54,7 @@ public class Cp implements Instruction {
 
     private OptionalInt cp(CPU cpu){
         int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.getByteFromPC();
+        int val2 = cpu.readByteFromPC();
 
         applyCp(val1, val2, cpu);
 

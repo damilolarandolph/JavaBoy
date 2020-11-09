@@ -40,7 +40,7 @@ public class Or implements Instruction {
         int val2 = cpu.readByteRegister(reg);
 
 
-        cpu.setByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
 
 
         return OptionalInt.of(4);
@@ -51,7 +51,7 @@ public class Or implements Instruction {
         int val1 = cpu.readByteRegister(REGISTER.A);
         int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.setByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
@@ -59,9 +59,9 @@ public class Or implements Instruction {
 
     OptionalInt or(CPU cpu){
         int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.getByteFromPC();
+        int val2 = cpu.readByteFromPC();
 
-        cpu.setByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }

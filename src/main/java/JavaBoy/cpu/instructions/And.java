@@ -39,16 +39,16 @@ public class And implements Instruction {
         int reg1 = cpu.readByteRegister(REGISTER.A);
         int reg2 = cpu.readByteRegister(reg);
 
-        cpu.setByteRegister(REGISTER.A, applyAnd(reg1, reg2, cpu));
+        cpu.writeByteRegister(REGISTER.A, applyAnd(reg1, reg2, cpu));
 
         return OptionalInt.of(4);
     }
 
     OptionalInt and(CPU cpu){
         int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.getByteFromPC();
+        int val2 = cpu.readByteFromPC();
 
-        cpu.setByteRegister(REGISTER.A, applyAnd(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, applyAnd(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
@@ -57,7 +57,7 @@ public class And implements Instruction {
         int val1 = cpu.readByteRegister(REGISTER.A);
         int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.setByteRegister(REGISTER.A, applyAnd(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, applyAnd(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }

@@ -56,16 +56,16 @@ public class Sub implements Instruction {
         int val1 = cpu.readByteRegister(reg1);
         int val2 = cpu.readByteRegister(reg2);
 
-        cpu.setByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
 
         return OptionalInt.of(4);
     }
 
   private   OptionalInt sub(REGISTER reg, CPU cpu){
         int val1 = cpu.readByteRegister(reg);
-        int val2 = cpu.getByteFromPC();
+        int val2 = cpu.readByteFromPC();
 
-        cpu.setByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
@@ -75,7 +75,7 @@ public class Sub implements Instruction {
         int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
 
 
-        cpu.setByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
@@ -85,16 +85,16 @@ public class Sub implements Instruction {
         int val1 = cpu.readByteRegister(reg1);
         int val2 = cpu.readByteRegister(reg2) + cpu.getFlag(FLAG.Cy);
 
-        cpu.setByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
 
         return OptionalInt.of(4);
     }
 
    private OptionalInt sbc(REGISTER reg1,  CPU cpu){
         int val1 = cpu.readByteRegister(reg1);
-        int val2 = cpu.getByteFromPC() + cpu.getFlag(FLAG.Cy);
+        int val2 = cpu.readByteFromPC() + cpu.getFlag(FLAG.Cy);
 
-        cpu.setByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
@@ -104,7 +104,7 @@ public class Sub implements Instruction {
         int val1 = cpu.readByteRegister(reg1);
         int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair))) + cpu.getFlag(FLAG.Cy);
 
-        cpu.setByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
+        cpu.writeByteRegister(REGISTER.A, subBytes(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }

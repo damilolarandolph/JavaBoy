@@ -33,7 +33,7 @@ public class Inc implements Instruction {
     private OptionalInt inc(REGISTER reg, CPU cpu) {
         int value = cpu.readByteRegister(reg);
 
-        cpu.setByteRegister(reg, applyInc(value, cpu));
+        cpu.writeByteRegister(reg, applyInc(value, cpu));
         return OptionalInt.of(4);
     }
 
