@@ -28,8 +28,10 @@ public interface CPU {
 
     int readWordRegister(RegisterPair pair);
     int readWordRegister(REGISTER register);
+    int readWordRegister(REGISTER reg, REGISTER reg2);
     void writeWordRegister(RegisterPair pair, int value);
     void writeWordRegister(REGISTER register, int value);
+    void readWordRegister(REGISTER reg, REGISTER reg2, int value);
 
 
     int getFlag(FLAG flag);
