@@ -24,6 +24,14 @@ public class Dec implements Instruction {
                 return dec(REGISTER.L, cpu);
             case 0x35:
                 return dec(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+            case 0x0b:
+                return dec16(new RegisterPair(REGISTER.B, REGISTER.C), cpu);
+            case 0x1b:
+                return dec16(new RegisterPair(REGISTER.D, REGISTER.E), cpu);
+            case 0x2b:
+                return dec16(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+            case 0x3b:
+                return dec16SP(cpu);
             default:
                 return  OptionalInt.empty();
         }
@@ -46,6 +54,17 @@ public class Dec implements Instruction {
         cpu.writeToAddress(address, applyDec(value, cpu));
 
         return OptionalInt.of(12);
+   }
+
+   private OptionalInt dec16(RegisterPair pair, CPU cpu){
+
+        cpu.writeWordRegister(pair, cpu.readWordRegister(pair) + 1);
+        return OptionalInt.of(8);
+   }
+
+   private OptionalInt dec16SP(CPU cpu){
+        cpu.writeWordRegister(REGISTER.SP, cpu.readWordRegister(REGISTER.SP) + 1);
+        return OptionalInt.of(8);
    }
 
    private int applyDec(int value, CPU cpu) {
