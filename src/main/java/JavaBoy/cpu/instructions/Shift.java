@@ -10,9 +10,7 @@ import java.util.OptionalInt;
 public class Shift implements Instruction {
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-        if (opcode == 0xcb) {
-            int cbOpcode = cpu.readByteFromPC();
-            switch (cbOpcode) {
+            switch (opcode) {
                 case 0x27:
                     return sla(REGISTER.A, cpu);
                 case 0x20:
@@ -62,11 +60,12 @@ public class Shift implements Instruction {
                 case 0x3e:
                     return srl(cpu);
 
+                default:
+                    return OptionalInt.empty();
+
             }
 
-        }
 
-        return OptionalInt.empty();
     }
 
 
