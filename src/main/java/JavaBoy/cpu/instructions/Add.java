@@ -11,42 +11,42 @@ public class Add implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x87:
-                return add(REGISTER.A, REGISTER.A, cpu);
-            case 0x80:
-                return add(REGISTER.A, REGISTER.B, cpu);
-            case 0x81:
-                return add(REGISTER.A, REGISTER.C, cpu);
-            case 0x82:
-                return add(REGISTER.A, REGISTER.D, cpu);
-            case 0x83:
-                return add(REGISTER.A, REGISTER.E, cpu);
-            case 0x84:
-                return add(REGISTER.A, REGISTER.H, cpu);
-            case 0x85:
-                return add(REGISTER.A, REGISTER.L, cpu);
-            case 0x86:
-                return add(REGISTER.A, new RegisterPair(REGISTER.H, REGISTER.L), cpu);
-            case 0xc6:
                 return add(REGISTER.A, cpu);
+            case 0x80:
+                return add(REGISTER.B, cpu);
+            case 0x81:
+                return add(REGISTER.C, cpu);
+            case 0x82:
+                return add(REGISTER.D, cpu);
+            case 0x83:
+                return add(REGISTER.E, cpu);
+            case 0x84:
+                return add(REGISTER.H, cpu);
+            case 0x85:
+                return add(REGISTER.L, cpu);
+            case 0x86:
+                return add(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+            case 0xc6:
+                return add(cpu);
             // Add + Carry Flag
             case 0x8f:
-                return addC(REGISTER.A, REGISTER.A, cpu);
-            case 0x88:
-                return addC(REGISTER.A, REGISTER.B, cpu);
-            case 0x89:
-                return addC(REGISTER.A, REGISTER.C, cpu);
-            case 0x8a:
-                return addC(REGISTER.A, REGISTER.D, cpu);
-            case 0x8b:
-                return addC(REGISTER.A, REGISTER.E, cpu);
-            case 0x8c:
-                return addC(REGISTER.A, REGISTER.H, cpu);
-            case 0x8d:
-                return addC(REGISTER.A, REGISTER.L, cpu);
-            case 0x8e:
-                return addC(REGISTER.A, new RegisterPair(REGISTER.H, REGISTER.L), cpu);
-            case 0xce:
                 return addC(REGISTER.A, cpu);
+            case 0x88:
+                return addC(REGISTER.B, cpu);
+            case 0x89:
+                return addC(REGISTER.C, cpu);
+            case 0x8a:
+                return addC(REGISTER.D, cpu);
+            case 0x8b:
+                return addC(REGISTER.E, cpu);
+            case 0x8c:
+                return addC(REGISTER.H, cpu);
+            case 0x8d:
+                return addC(REGISTER.L, cpu);
+            case 0x8e:
+                return addC(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+            case 0xce:
+                return addC(cpu);
 
             //16-bit Add Instructions
             case 0x09:
@@ -66,25 +66,25 @@ public class Add implements Instruction {
     }
 
 
-    private OptionalInt add(REGISTER register, REGISTER fromRegister, CPU cpu) {
-        int reg1Val = cpu.readRegister(register);
-        int reg2Val = cpu.readRegister(register);
+    private OptionalInt add(REGISTER fromRegister, CPU cpu) {
+        int reg1Val = cpu.readRegister(REGISTER.A);
+        int reg2Val = cpu.readRegister(fromRegister);
 
         cpu.writeRegister(REGISTER.A, addBytes(reg1Val, reg2Val, cpu));
         return OptionalInt.of(4);
 
     }
 
-    private OptionalInt add(REGISTER register, RegisterPair pair, CPU cpu) {
-        int val1 = cpu.readRegister(register);
+    private OptionalInt add(RegisterPair pair, CPU cpu) {
+        int val1 = cpu.readRegister(REGISTER.A);
         int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
         cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
         return OptionalInt.of(8);
     }
 
-    private OptionalInt add(REGISTER register, CPU cpu) {
-        int val1 = cpu.readRegister(register);
+    private OptionalInt add(CPU cpu) {
+        int val1 = cpu.readRegister(REGISTER.A);
         int val2 = cpu.readPC();
 
         cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
@@ -93,10 +93,10 @@ public class Add implements Instruction {
 
     }
 
-    private OptionalInt addC(REGISTER register, REGISTER second, CPU cpu) {
+    private OptionalInt addC(REGISTER second, CPU cpu) {
 
-        int val1 = cpu.readRegister(register);
-        int val2 = cpu.readRegister(register) + cpu.getFlag(FLAG.Cy);
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readRegister(second) + cpu.getFlag(FLAG.Cy);
 
         cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
 
@@ -104,8 +104,8 @@ public class Add implements Instruction {
 
     }
 
-    private OptionalInt addC(REGISTER register, CPU cpu) {
-        int val1 = cpu.readRegister(register);
+    private OptionalInt addC(CPU cpu) {
+        int val1 = cpu.readRegister(REGISTER.A);
         int val2 = cpu.readPC();
 
         cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
@@ -113,8 +113,8 @@ public class Add implements Instruction {
 
     }
 
-    private OptionalInt addC(REGISTER register, RegisterPair pair, CPU cpu) {
-        int val1 = cpu.readRegister(register);
+    private OptionalInt addC(RegisterPair pair, CPU cpu) {
+        int val1 = cpu.readRegister(REGISTER.A);
 
         int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
