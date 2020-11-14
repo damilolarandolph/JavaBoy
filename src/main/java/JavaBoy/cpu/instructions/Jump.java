@@ -14,23 +14,23 @@ public class Jump implements Instruction {
            case 0xc3:
                return jp(cpu);
            case 0xc2:
-               return jp(new ZNotSet(), cpu);
+               return jp(JumpConditions.NZ, cpu);
            case 0xca:
-               return jp(new ZSet(), cpu);
+               return jp(JumpConditions.Z, cpu);
            case 0xd2:
-               return jp(new CYNotSet(), cpu);
+               return jp(JumpConditions.NC, cpu);
            case 0xda:
-               return jp(new CYSet(), cpu);
+               return jp(JumpConditions.C, cpu);
            case 0x18:
                return jr(cpu);
            case 0x20:
-               return jr(new ZNotSet(), cpu);
+               return jr(JumpConditions.NZ, cpu);
            case 0x28:
-               return jr(new ZSet(), cpu);
+               return jr(JumpConditions.Z, cpu);
            case 0x30:
-               return jr(new CYNotSet(), cpu);
+               return jr(JumpConditions.NC, cpu);
            case 0x38:
-               return jr(new CYSet(), cpu);
+               return jr(JumpConditions.C, cpu);
            case 0xe9:
                return jpHL(cpu);
            default:
@@ -46,7 +46,7 @@ public class Jump implements Instruction {
         return OptionalInt.of(4);
     }
 
-    private OptionalInt jp(JumpCondition condition, CPU cpu) {
+    private OptionalInt jp(JumpConditions condition, CPU cpu) {
         if (condition.test(cpu)) {
             return jp(cpu);
         } else {
@@ -67,7 +67,7 @@ public class Jump implements Instruction {
         return OptionalInt.of(3);
     }
 
-    private OptionalInt jr(JumpCondition condition, CPU cpu) {
+    private OptionalInt jr(JumpConditions condition, CPU cpu) {
         if (condition.test(cpu)) {
             return jp(cpu);
         } else {

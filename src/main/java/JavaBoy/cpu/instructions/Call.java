@@ -14,13 +14,13 @@ public class Call implements Instruction {
             case 0xcd:
                 return call(cpu);
             case 0xc4:
-                return call(new ZNotSet(), cpu);
+                return call(JumpConditions.NZ, cpu);
             case 0xcc:
-                return call(new ZSet(), cpu);
+                return call(JumpConditions.Z, cpu);
             case 0xd4:
-                return call(new CYNotSet(), cpu);
+                return call(JumpConditions.NC, cpu);
             case 0xdc:
-                return call(new CYSet(), cpu);
+                return call(JumpConditions.C, cpu);
             default:
                 return OptionalInt.empty();
         }
@@ -32,7 +32,7 @@ public class Call implements Instruction {
         return OptionalInt.of(6);
     }
 
-    private OptionalInt call(JumpCondition condition, CPU cpu){
+    private OptionalInt call(JumpConditions condition, CPU cpu){
         if (condition.test(cpu)){
             return call(cpu);
         }else

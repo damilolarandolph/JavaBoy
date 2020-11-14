@@ -15,13 +15,13 @@ public class Return implements Instruction {
            case 0xd9:
                return reti(cpu);
            case 0xc0:
-               return ret(new ZNotSet(), cpu);
+               return ret(JumpConditions.NZ, cpu);
            case 0xc8:
-               return ret(new ZSet(), cpu);
+               return ret(JumpConditions.Z, cpu);
            case 0xd0:
-               return ret(new CYNotSet(), cpu);
+               return ret(JumpConditions.NC, cpu);
            case 0xd8:
-               return ret(new CYSet(),cpu);
+               return ret(JumpConditions.C,cpu);
            case 0xc7:
                return rst(0x0, cpu);
            case 0xcf:
@@ -56,7 +56,7 @@ public class Return implements Instruction {
         return OptionalInt.of(4);
     }
 
-    private OptionalInt ret(JumpCondition condition, CPU cpu){
+    private OptionalInt ret(JumpConditions condition, CPU cpu){
         if(condition.test(cpu)){
             applyRet(cpu);
             return OptionalInt.of(5);
