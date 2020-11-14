@@ -3,10 +3,9 @@ package JavaBoy.cpu.instructions.jumpconditions;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.flags.FLAGS;
 
- class ZSet implements JumpCondition {
-
+ class CFlagSet implements JumpCondition {
     @Override
     public boolean test(CPU cpu) {
-        return cpu.getFlag(FLAGS.Z) == 1;
+        return cpu.getFlag(FLAGS.C) == 1;
     }
 }

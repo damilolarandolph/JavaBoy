@@ -3,7 +3,7 @@ package JavaBoy.cpu.instructions.jumpconditions;
 import JavaBoy.cpu.CPU;
 
 public enum JumpConditions {
-   NZ(new ZNotSet()), Z(new ZSet()), NC(new CYNotSet()), C(new CYSet());
+   NZ(new ZFlagNotSet()), Z(new ZFlagSet()), NC(new CFlagNotSet()), C(new CFlagSet());
 
     private final JumpCondition condition;
 
