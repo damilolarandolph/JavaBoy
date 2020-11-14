@@ -2,7 +2,7 @@ package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
@@ -151,9 +151,9 @@ public class Bit implements Instruction {
 
     private void applyBitTest(int testBit, int value, CPU cpu) {
         int bit = (value >>> testBit) & 0x01;
-        cpu.writeFlag(FLAG.Z, ~(bit));
-        cpu.setFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+        cpu.writeFlag(FLAGS.Z, ~(bit));
+        cpu.setFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
     }
 
     private OptionalInt bit(int testBit, REGISTERS REGISTERS, CPU cpu) {

@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 
 import java.util.OptionalInt;
 
@@ -77,17 +77,17 @@ public class Inc implements Instruction {
         int result = val + 1;
 
         if (result == 0)
-            cpu.setFlag(FLAG.Z);
+            cpu.setFlag(FLAGS.Z);
         else
-            cpu.resetFlag(FLAG.Z);
+            cpu.resetFlag(FLAGS.Z);
 
         boolean halfCarry = (((val & 0xf) + (0x01)) & 0x10) == 0x10;
         if (halfCarry)
-            cpu.setFlag(FLAG.H);
+            cpu.setFlag(FLAGS.H);
         else
-            cpu.resetFlag(FLAG.H);
+            cpu.resetFlag(FLAGS.H);
 
-        cpu.resetFlag(FLAG.N);
+        cpu.resetFlag(FLAGS.N);
 
         return result;
     }

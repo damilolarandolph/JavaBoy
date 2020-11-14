@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 
 import java.util.OptionalInt;
 
@@ -68,14 +68,14 @@ public class And implements Instruction {
         int result = (val1 & 0xff) & (val2 & 0xff);
 
         if (result == 0x0){
-           cpu.setFlag(FLAG.Z);
+           cpu.setFlag(FLAGS.Z);
         }else{
-            cpu.resetFlag(FLAG.Z);
+            cpu.resetFlag(FLAGS.Z);
         }
 
-        cpu.setFlag(FLAG.H);
-        cpu.resetFlag(FLAG.Cy);
-        cpu.resetFlag(FLAG.N);
+        cpu.setFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.Cy);
+        cpu.resetFlag(FLAGS.N);
         return result;
     }
 

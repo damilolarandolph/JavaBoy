@@ -2,7 +2,7 @@ package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
@@ -75,10 +75,10 @@ public class Shift implements Instruction {
 
         int result = (value >>> 1) | msb;
 
-        cpu.writeFlag(FLAG.Cy, lsb);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
+        cpu.writeFlag(FLAGS.Cy, lsb);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
 
         return result;
     }
@@ -86,10 +86,10 @@ public class Shift implements Instruction {
     private int applySRL(int value, CPU cpu) {
         int lsb = value & 0x01;
         int result = value >>> 1;
-        cpu.writeFlag(FLAG.Cy, lsb);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
+        cpu.writeFlag(FLAGS.Cy, lsb);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
         return result;
     }
 
@@ -133,10 +133,10 @@ public class Shift implements Instruction {
         int msb = value >>> 7;
         int result = value << 1;
 
-        cpu.writeFlag(FLAG.Cy, msb);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
+        cpu.writeFlag(FLAGS.Cy, msb);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
 
         return result;
 

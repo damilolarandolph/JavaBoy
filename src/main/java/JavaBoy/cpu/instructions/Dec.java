@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 
 import java.util.OptionalInt;
 
@@ -72,16 +72,16 @@ public class Dec implements Instruction {
         int result = value - 0x01;
 
         if (result == 0x0)
-            cpu.setFlag(FLAG.Z);
+            cpu.setFlag(FLAGS.Z);
         else
-            cpu.resetFlag(FLAG.Z);
+            cpu.resetFlag(FLAGS.Z);
 
         if ((value & 0x01) < (0x01))
-            cpu.setFlag(FLAG.H);
+            cpu.setFlag(FLAGS.H);
         else
-            cpu.resetFlag(FLAG.H);
+            cpu.resetFlag(FLAGS.H);
 
-        cpu.setFlag(FLAG.N);
+        cpu.setFlag(FLAGS.N);
 
 
 

@@ -2,7 +2,7 @@ package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
@@ -54,10 +54,10 @@ public class Swap implements Instruction {
         int msb = val >>> 4;
         int result = (lsb << 4) | msb;
 
-        cpu.resetFlag(FLAG.Cy);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
+        cpu.resetFlag(FLAGS.Cy);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
 
         return result;
     }

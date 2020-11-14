@@ -1,12 +1,12 @@
 package JavaBoy.cpu.instructions.jumpconditions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 
 public class ZNotSet implements JumpCondition {
     @Override
     public boolean test(CPU cpu) {
-        return cpu.getFlag(FLAG.Z) == 0;
+        return cpu.getFlag(FLAGS.Z) == 0;
     }
 
 }

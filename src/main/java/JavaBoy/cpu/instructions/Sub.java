@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 
 import java.util.OptionalInt;
 
@@ -84,7 +84,7 @@ public class Sub implements Instruction {
 
   private   OptionalInt sbc(REGISTERS reg1, REGISTERS reg2, CPU cpu){
         int val1 = cpu.readRegister(reg1);
-        int val2 = cpu.readRegister(reg2) + cpu.getFlag(FLAG.Cy);
+        int val2 = cpu.readRegister(reg2) + cpu.getFlag(FLAGS.Cy);
 
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
 
@@ -93,7 +93,7 @@ public class Sub implements Instruction {
 
    private OptionalInt sbc(REGISTERS reg1, CPU cpu){
         int val1 = cpu.readRegister(reg1);
-        int val2 = cpu.readPC() + cpu.getFlag(FLAG.Cy);
+        int val2 = cpu.readPC() + cpu.getFlag(FLAGS.Cy);
 
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
 
@@ -103,7 +103,7 @@ public class Sub implements Instruction {
   private   OptionalInt sbc(REGISTERS reg1, RegisterPair pair, CPU cpu){
 
         int val1 = cpu.readRegister(reg1);
-        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair))) + cpu.getFlag(FLAG.Cy);
+        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair))) + cpu.getFlag(FLAGS.Cy);
 
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
 
@@ -116,20 +116,20 @@ public class Sub implements Instruction {
         int result = (val1 & 0xff) - (val2 & 0xff);
 
         if (result == 0) {
-            cpu.setFlag(FLAG.Z);
+            cpu.setFlag(FLAGS.Z);
         } else {
-            cpu.resetFlag(FLAG.Z);
+            cpu.resetFlag(FLAGS.Z);
         }
         boolean borrowCheck = (val1 & 0xf) < (val2 & 0xf) ;
         if (borrowCheck) {
-            cpu.setFlag(FLAG.H);
-            cpu.setFlag(FLAG.Cy);
+            cpu.setFlag(FLAGS.H);
+            cpu.setFlag(FLAGS.Cy);
         } else {
-            cpu.resetFlag(FLAG.H);
-            cpu.resetFlag(FLAG.Cy);
+            cpu.resetFlag(FLAGS.H);
+            cpu.resetFlag(FLAGS.Cy);
         }
 
-        cpu.setFlag(FLAG.N);
+        cpu.setFlag(FLAGS.N);
 
 
         return result;

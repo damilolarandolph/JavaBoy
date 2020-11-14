@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
@@ -22,25 +22,25 @@ public class Daa implements Instruction {
 
         int value = cpu.readRegister(REGISTERS.A);
 
-        if (cpu.isFlag(FLAG.N)) {
-            if (cpu.isFlag(FLAG.Cy) || value > 0x99) {
+        if (cpu.isFlag(FLAGS.N)) {
+            if (cpu.isFlag(FLAGS.Cy) || value > 0x99) {
                 value += 0x60;
-                cpu.setFlag(FLAG.Cy);
+                cpu.setFlag(FLAGS.Cy);
             }
 
-            if (cpu.isFlag(FLAG.H) || getLsb(value) > 0x09) {
+            if (cpu.isFlag(FLAGS.H) || getLsb(value) > 0x09) {
                 value += 0x6;
             }
 
         } else {
-            if (cpu.isFlag(FLAG.Cy))
+            if (cpu.isFlag(FLAGS.Cy))
                 value -= 0x60;
-            if (cpu.isFlag(FLAG.H))
+            if (cpu.isFlag(FLAGS.H))
                 value -= 0x6;
         }
 
-        cpu.writeFlag(FLAG.Z, value == 0 ? 1 : 0);
-        cpu.resetFlag(FLAG.H);
+        cpu.writeFlag(FLAGS.Z, value == 0 ? 1 : 0);
+        cpu.resetFlag(FLAGS.H);
         cpu.writeRegister(REGISTERS.A, value);
         return OptionalInt.of(1);
     }

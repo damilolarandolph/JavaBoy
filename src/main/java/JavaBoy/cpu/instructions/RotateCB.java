@@ -2,7 +2,7 @@ package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
@@ -84,21 +84,21 @@ public class RotateCB implements Instruction {
         bits = (bits >>> 1) & 0xff;
         bits = (lsb << 7) | bits;
 
-        cpu.writeFlag(FLAG.Cy, lsb);
+        cpu.writeFlag(FLAGS.Cy, lsb);
         return bits;
     }
     private int applyRotateR(int val, CPU cpu) {
         int bits = val;
         int lsb = bits & 0x1;
         bits = (bits >>> 1) & 0xff;
-        bits = (cpu.getFlag(FLAG.Cy) << 7) | bits;
-        cpu.writeFlag(FLAG.Cy, lsb);
+        bits = (cpu.getFlag(FLAGS.Cy) << 7) | bits;
+        cpu.writeFlag(FLAGS.Cy, lsb);
         return bits;
     }
     private int applyRotateLC(int val, CPU cpu) {
         int bits = val;
         int msb = bits >>> 7;
-        cpu.writeFlag(FLAG.Cy, msb);
+        cpu.writeFlag(FLAGS.Cy, msb);
         bits = (bits << 1) & 0xff;
         bits = bits | msb;
         return bits;
@@ -107,8 +107,8 @@ public class RotateCB implements Instruction {
         int bits = val;
         int msb = bits >>> 7;
         bits = (bits << 1) & 0xff;
-        bits = bits | cpu.getFlag(FLAG.Cy);
-        cpu.writeFlag(FLAG.Cy, msb);
+        bits = bits | cpu.getFlag(FLAGS.Cy);
+        cpu.writeFlag(FLAGS.Cy, msb);
         return bits;
     }
 
@@ -121,11 +121,11 @@ public class RotateCB implements Instruction {
         cpu.writeAddress(addr, result);
 
         if (result == 0)
-            cpu.setFlag(FLAG.Z);
+            cpu.setFlag(FLAGS.Z);
         else
-            cpu.resetFlag(FLAG.Z);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+            cpu.resetFlag(FLAGS.Z);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
         return OptionalInt.of(16);
     }
 
@@ -138,11 +138,11 @@ public class RotateCB implements Instruction {
         cpu.writeRegister(reg, result);
 
         if (result == 0)
-            cpu.setFlag(FLAG.Z);
+            cpu.setFlag(FLAGS.Z);
         else
-            cpu.resetFlag(FLAG.Z);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+            cpu.resetFlag(FLAGS.Z);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
         return OptionalInt.of(8);
     }
 
@@ -150,9 +150,9 @@ public class RotateCB implements Instruction {
         int bits = cpu.readRegister(reg);
         int result = applyRotateL(bits, cpu);
         cpu.writeRegister(reg, result);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
         return OptionalInt.of(8);
     }
 
@@ -160,9 +160,9 @@ public class RotateCB implements Instruction {
         int bits = cpu.readRegister(reg);
         int result = applyRotateRC(bits, cpu);
         cpu.writeRegister(reg, result);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
         return OptionalInt.of(8);
     }
 
@@ -172,9 +172,9 @@ public class RotateCB implements Instruction {
         int bits = cpu.readAddress(addr);
         int result = applyRotateRC(bits, cpu);
         cpu.writeAddress(addr, result);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
         return OptionalInt.of(16);
 
     }
@@ -183,9 +183,9 @@ public class RotateCB implements Instruction {
         int bits = cpu.readRegister(reg);
         int result = applyRotateR(bits, cpu);
         cpu.writeRegister(reg, result);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
         return OptionalInt.of(8);
     }
 
@@ -195,9 +195,9 @@ public class RotateCB implements Instruction {
         int bits = cpu.readAddress(addr);
         int result = applyRotateR(bits, cpu);
         cpu.writeAddress(addr, result);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
         return OptionalInt.of(16);
     }
 
@@ -207,9 +207,9 @@ public class RotateCB implements Instruction {
         int bits = cpu.readAddress(addr);
         int result = applyRotateL(bits, cpu);
         cpu.writeAddress(addr, result);
-        cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
+        cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
         return OptionalInt.of(16);
     }
 }

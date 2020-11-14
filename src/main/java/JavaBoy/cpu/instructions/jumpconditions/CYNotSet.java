@@ -1,11 +1,11 @@
 package JavaBoy.cpu.instructions.jumpconditions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 
 public class CYNotSet implements JumpCondition {
     @Override
     public boolean test(CPU cpu) {
-        return cpu.getFlag(FLAG.Cy) == 0;
+        return cpu.getFlag(FLAGS.Cy) == 0;
     }
 }

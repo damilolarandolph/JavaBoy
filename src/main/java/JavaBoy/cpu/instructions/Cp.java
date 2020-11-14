@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 
 import java.util.OptionalInt;
 
@@ -67,22 +67,22 @@ public class Cp implements Instruction {
         boolean isEqual = (val1 & 0xff) == (val1 & 0xff);
 
         if (isEqual)
-            cpu.setFlag(FLAG.Z);
+            cpu.setFlag(FLAGS.Z);
         else
-            cpu.resetFlag(FLAG.Z);
+            cpu.resetFlag(FLAGS.Z);
 
         if((val1 & 0xf) < (val1 & 0xf))
-            cpu.setFlag(FLAG.H);
+            cpu.setFlag(FLAGS.H);
         else
-            cpu.resetFlag(FLAG.H);
+            cpu.resetFlag(FLAGS.H);
 
         if (val1 < val2)
-            cpu.setFlag(FLAG.Cy);
+            cpu.setFlag(FLAGS.Cy);
         else
-            cpu.resetFlag(FLAG.Cy);
+            cpu.resetFlag(FLAGS.Cy);
 
 
-        cpu.resetFlag(FLAG.N);
+        cpu.resetFlag(FLAGS.N);
 
     }
 }

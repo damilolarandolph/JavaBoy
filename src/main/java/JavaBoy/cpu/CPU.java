@@ -1,6 +1,6 @@
 package JavaBoy.cpu;
 
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.memory.MemoryMap;
 
 public interface CPU {
@@ -18,7 +18,7 @@ public interface CPU {
 
     int readWordPC();
 
-    boolean isFlag(FLAG flag);
+    boolean isFlag(FLAGS FLAGS);
 
     void writeAddress(Address addr, int value);
 
@@ -52,18 +52,18 @@ public interface CPU {
 
     void readWordRegister(REGISTERS reg, REGISTERS reg2, int value);
 
-    int getFlag(FLAG flag);
+    int getFlag(FLAGS FLAGS);
 
     @Deprecated
-    void writeFlag(FLAG flag, int value);
+    void writeFlag(FLAGS FLAGS, int value);
 
     @Deprecated
-    void setFlag(FLAG flag);
+    void setFlag(FLAGS FLAGS);
 
-    void setFlag(FLAG flag, boolean value);
+    void setFlag(FLAGS FLAGS, boolean value);
 
     @Deprecated
-    void resetFlag(FLAG flag);
+    void resetFlag(FLAGS FLAGS);
 
     void enableInterrupts();
 

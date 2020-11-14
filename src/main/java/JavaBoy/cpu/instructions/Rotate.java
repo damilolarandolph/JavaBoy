@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
@@ -34,16 +34,16 @@ public class Rotate implements Instruction {
         int bits = cpu.readRegister(REGISTERS.A);
         cpu.writeRegister(REGISTERS.A, applyRotateLC(bits, cpu));
 
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
-        cpu.resetFlag(FLAG.Z);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
+        cpu.resetFlag(FLAGS.Z);
         return OptionalInt.of(4);
     }
 
     private int applyRotateLC(int val, CPU cpu) {
         int bits = val;
         int msb = bits >>> 7;
-        cpu.writeFlag(FLAG.Cy, msb);
+        cpu.writeFlag(FLAGS.Cy, msb);
         bits = (bits << 1) & 0xff;
         bits = bits | msb;
         return bits;
@@ -53,8 +53,8 @@ public class Rotate implements Instruction {
         int bits = val;
         int msb = bits >>> 7;
         bits = (bits << 1) & 0xff;
-        bits = bits | cpu.getFlag(FLAG.Cy);
-        cpu.writeFlag(FLAG.Cy, msb);
+        bits = bits | cpu.getFlag(FLAGS.Cy);
+        cpu.writeFlag(FLAGS.Cy, msb);
         return bits;
     }
 
@@ -62,9 +62,9 @@ public class Rotate implements Instruction {
     private OptionalInt rla(CPU cpu) {
         int bits = cpu.readRegister(REGISTERS.A);
         cpu.writeRegister(REGISTERS.A, applyRotateL(bits, cpu));
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
-        cpu.resetFlag(FLAG.Z);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
+        cpu.resetFlag(FLAGS.Z);
 
         return OptionalInt.of(4);
     }
@@ -75,7 +75,7 @@ public class Rotate implements Instruction {
         bits = (bits >>> 1) & 0xff;
         bits = (lsb << 7) | bits;
 
-        cpu.writeFlag(FLAG.Cy, lsb);
+        cpu.writeFlag(FLAGS.Cy, lsb);
         return bits;
     }
 
@@ -83,9 +83,9 @@ public class Rotate implements Instruction {
         int bits = cpu.readRegister(REGISTERS.A);
 
         cpu.writeRegister(REGISTERS.A, applyRotateRC(bits, cpu));
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
-        cpu.resetFlag(FLAG.Z);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
+        cpu.resetFlag(FLAGS.Z);
 
         return OptionalInt.of(4);
     }
@@ -94,17 +94,17 @@ public class Rotate implements Instruction {
         int bits = val;
         int lsb = bits & 0x1;
         bits = (bits >>> 1) & 0xff;
-        bits = (cpu.getFlag(FLAG.Cy) << 7) | bits;
-        cpu.writeFlag(FLAG.Cy, lsb);
+        bits = (cpu.getFlag(FLAGS.Cy) << 7) | bits;
+        cpu.writeFlag(FLAGS.Cy, lsb);
         return bits;
     }
 
     private OptionalInt rra(CPU cpu) {
         int bits = cpu.readRegister(REGISTERS.A);
         cpu.writeRegister(REGISTERS.A, applyRotateR(bits, cpu));
-        cpu.resetFlag(FLAG.H);
-        cpu.resetFlag(FLAG.N);
-        cpu.resetFlag(FLAG.Z);
+        cpu.resetFlag(FLAGS.H);
+        cpu.resetFlag(FLAGS.N);
+        cpu.resetFlag(FLAGS.Z);
 
         return OptionalInt.of(4);
     }
