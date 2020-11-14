@@ -23,9 +23,9 @@ public class Daa implements Instruction {
         int value = cpu.readRegister(REGISTERS.A);
 
         if (cpu.isFlag(FLAGS.N)) {
-            if (cpu.isFlag(FLAGS.Cy) || value > 0x99) {
+            if (cpu.isFlag(FLAGS.C) || value > 0x99) {
                 value += 0x60;
-                cpu.setFlag(FLAGS.Cy);
+                cpu.setFlag(FLAGS.C);
             }
 
             if (cpu.isFlag(FLAGS.H) || getLsb(value) > 0x09) {
@@ -33,7 +33,7 @@ public class Daa implements Instruction {
             }
 
         } else {
-            if (cpu.isFlag(FLAGS.Cy))
+            if (cpu.isFlag(FLAGS.C))
                 value -= 0x60;
             if (cpu.isFlag(FLAGS.H))
                 value -= 0x6;

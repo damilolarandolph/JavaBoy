@@ -54,7 +54,7 @@ public class Swap implements Instruction {
         int msb = val >>> 4;
         int result = (lsb << 4) | msb;
 
-        cpu.resetFlag(FLAGS.Cy);
+        cpu.resetFlag(FLAGS.C);
         cpu.resetFlag(FLAGS.H);
         cpu.resetFlag(FLAGS.N);
         cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);

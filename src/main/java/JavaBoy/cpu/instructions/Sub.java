@@ -84,7 +84,7 @@ public class Sub implements Instruction {
 
   private   OptionalInt sbc(REGISTERS reg1, REGISTERS reg2, CPU cpu){
         int val1 = cpu.readRegister(reg1);
-        int val2 = cpu.readRegister(reg2) + cpu.getFlag(FLAGS.Cy);
+        int val2 = cpu.readRegister(reg2) + cpu.getFlag(FLAGS.C);
 
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
 
@@ -93,7 +93,7 @@ public class Sub implements Instruction {
 
    private OptionalInt sbc(REGISTERS reg1, CPU cpu){
         int val1 = cpu.readRegister(reg1);
-        int val2 = cpu.readPC() + cpu.getFlag(FLAGS.Cy);
+        int val2 = cpu.readPC() + cpu.getFlag(FLAGS.C);
 
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
 
@@ -103,7 +103,7 @@ public class Sub implements Instruction {
   private   OptionalInt sbc(REGISTERS reg1, RegisterPair pair, CPU cpu){
 
         int val1 = cpu.readRegister(reg1);
-        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair))) + cpu.getFlag(FLAGS.Cy);
+        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair))) + cpu.getFlag(FLAGS.C);
 
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
 
@@ -123,10 +123,10 @@ public class Sub implements Instruction {
         boolean borrowCheck = (val1 & 0xf) < (val2 & 0xf) ;
         if (borrowCheck) {
             cpu.setFlag(FLAGS.H);
-            cpu.setFlag(FLAGS.Cy);
+            cpu.setFlag(FLAGS.C);
         } else {
             cpu.resetFlag(FLAGS.H);
-            cpu.resetFlag(FLAGS.Cy);
+            cpu.resetFlag(FLAGS.C);
         }
 
         cpu.setFlag(FLAGS.N);

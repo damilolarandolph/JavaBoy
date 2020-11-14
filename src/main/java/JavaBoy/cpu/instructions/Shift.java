@@ -75,7 +75,7 @@ public class Shift implements Instruction {
 
         int result = (value >>> 1) | msb;
 
-        cpu.writeFlag(FLAGS.Cy, lsb);
+        cpu.writeFlag(FLAGS.C, lsb);
         cpu.resetFlag(FLAGS.H);
         cpu.resetFlag(FLAGS.N);
         cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
@@ -86,7 +86,7 @@ public class Shift implements Instruction {
     private int applySRL(int value, CPU cpu) {
         int lsb = value & 0x01;
         int result = value >>> 1;
-        cpu.writeFlag(FLAGS.Cy, lsb);
+        cpu.writeFlag(FLAGS.C, lsb);
         cpu.resetFlag(FLAGS.H);
         cpu.resetFlag(FLAGS.N);
         cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);
@@ -133,7 +133,7 @@ public class Shift implements Instruction {
         int msb = value >>> 7;
         int result = value << 1;
 
-        cpu.writeFlag(FLAGS.Cy, msb);
+        cpu.writeFlag(FLAGS.C, msb);
         cpu.resetFlag(FLAGS.H);
         cpu.resetFlag(FLAGS.N);
         cpu.writeFlag(FLAGS.Z, result == 0 ? 1 : 0);

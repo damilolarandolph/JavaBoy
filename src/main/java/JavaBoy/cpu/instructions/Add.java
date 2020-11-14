@@ -97,7 +97,7 @@ public class Add implements Instruction {
     private OptionalInt addC(REGISTERS second, CPU cpu) {
 
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readRegister(second) + cpu.getFlag(FLAGS.Cy);
+        int val2 = cpu.readRegister(second) + cpu.getFlag(FLAGS.C);
 
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
 
@@ -145,10 +145,10 @@ public class Add implements Instruction {
 
         if ((value + value2) > 0xff) {
 
-            cpu.setFlag(FLAGS.Cy);
+            cpu.setFlag(FLAGS.C);
 
         } else {
-            cpu.resetFlag(FLAGS.Cy);
+            cpu.resetFlag(FLAGS.C);
         }
 
 
@@ -196,9 +196,9 @@ public class Add implements Instruction {
             cpu.resetFlag(FLAGS.H);
 
         if(result > 0xffff)
-            cpu.setFlag(FLAGS.Cy);
+            cpu.setFlag(FLAGS.C);
         else
-            cpu.resetFlag(FLAGS.Cy);
+            cpu.resetFlag(FLAGS.C);
 
 
       cpu.resetFlag(FLAGS.N);

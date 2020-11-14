@@ -69,7 +69,7 @@ public class Xor implements Instruction {
             cpu.resetFlag(FLAGS.Z);
         }
 
-        cpu.resetFlag(FLAGS.Cy);
+        cpu.resetFlag(FLAGS.C);
         cpu.resetFlag(FLAGS.H);
         cpu.resetFlag(FLAGS.N);
 

@@ -74,7 +74,7 @@ public class And implements Instruction {
         }
 
         cpu.setFlag(FLAGS.H);
-        cpu.resetFlag(FLAGS.Cy);
+        cpu.resetFlag(FLAGS.C);
         cpu.resetFlag(FLAGS.N);
         return result;
     }

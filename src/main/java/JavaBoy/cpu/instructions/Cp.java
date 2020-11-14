@@ -77,9 +77,9 @@ public class Cp implements Instruction {
             cpu.resetFlag(FLAGS.H);
 
         if (val1 < val2)
-            cpu.setFlag(FLAGS.Cy);
+            cpu.setFlag(FLAGS.C);
         else
-            cpu.resetFlag(FLAGS.Cy);
+            cpu.resetFlag(FLAGS.C);
 
 
         cpu.resetFlag(FLAGS.N);

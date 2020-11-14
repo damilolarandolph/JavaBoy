@@ -43,7 +43,7 @@ public class Rotate implements Instruction {
     private int applyRotateLC(int val, CPU cpu) {
         int bits = val;
         int msb = bits >>> 7;
-        cpu.writeFlag(FLAGS.Cy, msb);
+        cpu.writeFlag(FLAGS.C, msb);
         bits = (bits << 1) & 0xff;
         bits = bits | msb;
         return bits;
@@ -53,8 +53,8 @@ public class Rotate implements Instruction {
         int bits = val;
         int msb = bits >>> 7;
         bits = (bits << 1) & 0xff;
-        bits = bits | cpu.getFlag(FLAGS.Cy);
-        cpu.writeFlag(FLAGS.Cy, msb);
+        bits = bits | cpu.getFlag(FLAGS.C);
+        cpu.writeFlag(FLAGS.C, msb);
         return bits;
     }
 
@@ -75,7 +75,7 @@ public class Rotate implements Instruction {
         bits = (bits >>> 1) & 0xff;
         bits = (lsb << 7) | bits;
 
-        cpu.writeFlag(FLAGS.Cy, lsb);
+        cpu.writeFlag(FLAGS.C, lsb);
         return bits;
     }
 
@@ -94,8 +94,8 @@ public class Rotate implements Instruction {
         int bits = val;
         int lsb = bits & 0x1;
         bits = (bits >>> 1) & 0xff;
-        bits = (cpu.getFlag(FLAGS.Cy) << 7) | bits;
-        cpu.writeFlag(FLAGS.Cy, lsb);
+        bits = (cpu.getFlag(FLAGS.C) << 7) | bits;
+        cpu.writeFlag(FLAGS.C, lsb);
         return bits;
     }
 
