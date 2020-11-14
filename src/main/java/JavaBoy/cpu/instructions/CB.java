@@ -15,7 +15,7 @@ public class CB implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         if (opcode == 0xcb) {
             OptionalInt result;
-            int cbOpcode = cpu.readByteFromPC();
+            int cbOpcode = cpu.readPC();
             for (Instruction instruction : instructions) {
                 result = instruction.execute(cbOpcode, cpu);
                 if (result.isPresent())

@@ -144,14 +144,14 @@ public class Reset implements Instruction {
     }
 
     private OptionalInt res(int resetBit, REGISTER reg, CPU cpu){
-        int bits = cpu.readByteRegister(reg);
-        cpu.writeByteRegister(reg, applyRes(resetBit, bits));
+        int bits = cpu.readRegister(reg);
+        cpu.writeRegister(reg, applyRes(resetBit, bits));
         return OptionalInt.of(8);
     }
     private OptionalInt res(int resetBit, CPU cpu){
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
-        int bits = cpu.readFromAddress(addr);
-        cpu.writeToAddress(addr, applyRes(resetBit, bits));
+        int bits = cpu.readAddress(addr);
+        cpu.writeAddress(addr, applyRes(resetBit, bits));
         return OptionalInt.of(16);
     }
 

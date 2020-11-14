@@ -36,28 +36,28 @@ public class And implements Instruction {
 
     OptionalInt and(REGISTER reg, CPU cpu){
 
-        int reg1 = cpu.readByteRegister(REGISTER.A);
-        int reg2 = cpu.readByteRegister(reg);
+        int reg1 = cpu.readRegister(REGISTER.A);
+        int reg2 = cpu.readRegister(reg);
 
-        cpu.writeByteRegister(REGISTER.A, applyAnd(reg1, reg2, cpu));
+        cpu.writeRegister(REGISTER.A, applyAnd(reg1, reg2, cpu));
 
         return OptionalInt.of(4);
     }
 
     OptionalInt and(CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readByteFromPC();
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readPC();
 
-        cpu.writeByteRegister(REGISTER.A, applyAnd(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, applyAnd(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
 
     OptionalInt and(RegisterPair pair, CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.writeByteRegister(REGISTER.A, applyAnd(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, applyAnd(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }

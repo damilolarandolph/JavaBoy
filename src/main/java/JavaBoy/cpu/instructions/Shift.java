@@ -94,36 +94,36 @@ public class Shift implements Instruction {
     }
 
     private OptionalInt srl(REGISTER reg, CPU cpu) {
-        int bits = cpu.readByteRegister(reg);
+        int bits = cpu.readRegister(reg);
 
         int result = applySRL(bits, cpu);
 
-        cpu.writeByteRegister(reg, result);
+        cpu.writeRegister(reg, result);
 
         return OptionalInt.of(8);
     }
 
     private OptionalInt srl(CPU cpu){
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
         int result = applySRL(bits, cpu);
-        cpu.writeToAddress(addr, result);
+        cpu.writeAddress(addr, result);
         return OptionalInt.of(16);
     }
 
     private OptionalInt sra(REGISTER reg, CPU cpu) {
-        int bits = cpu.readByteRegister(reg);
+        int bits = cpu.readRegister(reg);
         int result = applySRA(bits, cpu);
-        cpu.writeByteRegister(reg, result);
+        cpu.writeRegister(reg, result);
 
         return OptionalInt.of(8);
     }
 
     private OptionalInt sra(CPU cpu) {
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
         int result = applySRA(bits, cpu);
-        cpu.writeToAddress(addr, result);
+        cpu.writeAddress(addr, result);
 
         return OptionalInt.of(16);
 
@@ -143,20 +143,20 @@ public class Shift implements Instruction {
     }
 
     private OptionalInt sla(REGISTER reg, CPU cpu) {
-        int bits = cpu.readByteRegister(reg);
+        int bits = cpu.readRegister(reg);
 
         int result = applySLA(bits, cpu);
 
-        cpu.writeByteRegister(reg, result);
+        cpu.writeRegister(reg, result);
 
         return OptionalInt.of(8);
     }
 
     private OptionalInt sla(CPU cpu) {
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
         int result = applySLA(bits, cpu);
-        cpu.writeToAddress(addr, result);
+        cpu.writeAddress(addr, result);
 
         return OptionalInt.of(16);
     }

@@ -152,15 +152,15 @@ public class Set implements Instruction {
     }
 
     private OptionalInt set(int setBit, REGISTER reg, CPU cpu) {
-        int bits = cpu.readByteRegister(reg);
-        cpu.writeByteRegister(reg, applySet(setBit, bits));
+        int bits = cpu.readRegister(reg);
+        cpu.writeRegister(reg, applySet(setBit, bits));
         return OptionalInt.of(8);
     }
 
     private OptionalInt set(int setBit, CPU cpu) {
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
-        int bits = cpu.readFromAddress(addr);
-        cpu.writeToAddress(addr, applySet(setBit, bits));
+        int bits = cpu.readAddress(addr);
+        cpu.writeAddress(addr, applySet(setBit, bits));
         return OptionalInt.of(16);
     }
 }

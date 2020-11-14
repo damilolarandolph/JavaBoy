@@ -40,18 +40,18 @@ public class Dec implements Instruction {
 
 
   private OptionalInt dec(REGISTER reg, CPU cpu){
-        int value = cpu.readByteRegister(reg);
+        int value = cpu.readRegister(reg);
 
-        cpu.writeByteRegister(reg, applyDec(value, cpu));
+        cpu.writeRegister(reg, applyDec(value, cpu));
 
         return OptionalInt.of(4);
    }
 
    private OptionalInt dec(RegisterPair pair, CPU cpu){
         Address address = new Address(cpu.readWordRegister(pair));
-        int value = cpu.readFromAddress(address);
+        int value = cpu.readAddress(address);
 
-        cpu.writeToAddress(address, applyDec(value, cpu));
+        cpu.writeAddress(address, applyDec(value, cpu));
 
         return OptionalInt.of(12);
    }

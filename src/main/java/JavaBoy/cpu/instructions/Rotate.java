@@ -1,6 +1,5 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.FLAG;
 import JavaBoy.cpu.REGISTER;
@@ -21,7 +20,7 @@ public class Rotate implements Instruction {
                 return rra(cpu);
             //handling CB prefixed rotate instructions
             case 0xcb:
-                int cbOpcode = cpu.readByteFromPC();
+                int cbOpcode = cpu.readPC();
 
 
             default:
@@ -32,8 +31,8 @@ public class Rotate implements Instruction {
 
     private OptionalInt rlca(CPU cpu) {
 
-        int bits = cpu.readByteRegister(REGISTER.A);
-        cpu.writeByteRegister(REGISTER.A, applyRotateLC(bits, cpu));
+        int bits = cpu.readRegister(REGISTER.A);
+        cpu.writeRegister(REGISTER.A, applyRotateLC(bits, cpu));
 
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
@@ -61,8 +60,8 @@ public class Rotate implements Instruction {
 
 
     private OptionalInt rla(CPU cpu) {
-        int bits = cpu.readByteRegister(REGISTER.A);
-        cpu.writeByteRegister(REGISTER.A, applyRotateL(bits, cpu));
+        int bits = cpu.readRegister(REGISTER.A);
+        cpu.writeRegister(REGISTER.A, applyRotateL(bits, cpu));
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
         cpu.resetFlag(FLAG.Z);
@@ -81,9 +80,9 @@ public class Rotate implements Instruction {
     }
 
     private OptionalInt rrca(CPU cpu) {
-        int bits = cpu.readByteRegister(REGISTER.A);
+        int bits = cpu.readRegister(REGISTER.A);
 
-        cpu.writeByteRegister(REGISTER.A, applyRotateRC(bits, cpu));
+        cpu.writeRegister(REGISTER.A, applyRotateRC(bits, cpu));
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
         cpu.resetFlag(FLAG.Z);
@@ -101,8 +100,8 @@ public class Rotate implements Instruction {
     }
 
     private OptionalInt rra(CPU cpu) {
-        int bits = cpu.readByteRegister(REGISTER.A);
-        cpu.writeByteRegister(REGISTER.A, applyRotateR(bits, cpu));
+        int bits = cpu.readRegister(REGISTER.A);
+        cpu.writeRegister(REGISTER.A, applyRotateR(bits, cpu));
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
         cpu.resetFlag(FLAG.Z);

@@ -35,17 +35,17 @@ public class Swap implements Instruction {
 
 
     private OptionalInt swap(REGISTER reg, CPU cpu) {
-        int bits = cpu.readByteRegister(reg);
+        int bits = cpu.readRegister(reg);
         int result = applySwap(bits, cpu);
-        cpu.writeByteRegister(reg, result);
+        cpu.writeRegister(reg, result);
         return OptionalInt.of(4);
     }
 
     private OptionalInt swap(CPU cpu){
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
         int result = applySwap(bits, cpu);
-        cpu.writeToAddress(addr, result);
+        cpu.writeAddress(addr, result);
         return OptionalInt.of(16);
     }
 

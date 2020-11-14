@@ -67,27 +67,27 @@ public class Add implements Instruction {
 
 
     private OptionalInt add(REGISTER register, REGISTER fromRegister, CPU cpu) {
-        int reg1Val = cpu.readByteRegister(register);
-        int reg2Val = cpu.readByteRegister(register);
+        int reg1Val = cpu.readRegister(register);
+        int reg2Val = cpu.readRegister(register);
 
-        cpu.writeByteRegister(REGISTER.A, addBytes(reg1Val, reg2Val, cpu));
+        cpu.writeRegister(REGISTER.A, addBytes(reg1Val, reg2Val, cpu));
         return OptionalInt.of(4);
 
     }
 
     private OptionalInt add(REGISTER register, RegisterPair pair, CPU cpu) {
-        int val1 = cpu.readByteRegister(register);
-        int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
+        int val1 = cpu.readRegister(register);
+        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.writeByteRegister(REGISTER.A, addBytes(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
         return OptionalInt.of(8);
     }
 
     private OptionalInt add(REGISTER register, CPU cpu) {
-        int val1 = cpu.readByteRegister(register);
-        int val2 = cpu.readByteFromPC();
+        int val1 = cpu.readRegister(register);
+        int val2 = cpu.readPC();
 
-        cpu.writeByteRegister(REGISTER.A, addBytes(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
 
         return OptionalInt.of(8);
 
@@ -95,30 +95,30 @@ public class Add implements Instruction {
 
     private OptionalInt addC(REGISTER register, REGISTER second, CPU cpu) {
 
-        int val1 = cpu.readByteRegister(register);
-        int val2 = cpu.readByteRegister(register) + cpu.getFlag(FLAG.Cy);
+        int val1 = cpu.readRegister(register);
+        int val2 = cpu.readRegister(register) + cpu.getFlag(FLAG.Cy);
 
-        cpu.writeByteRegister(REGISTER.A, addBytes(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
 
         return OptionalInt.of(4);
 
     }
 
     private OptionalInt addC(REGISTER register, CPU cpu) {
-        int val1 = cpu.readByteRegister(register);
-        int val2 = cpu.readByteFromPC();
+        int val1 = cpu.readRegister(register);
+        int val2 = cpu.readPC();
 
-        cpu.writeByteRegister(REGISTER.A, addBytes(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
         return OptionalInt.of(8);
 
     }
 
     private OptionalInt addC(REGISTER register, RegisterPair pair, CPU cpu) {
-        int val1 = cpu.readByteRegister(register);
+        int val1 = cpu.readRegister(register);
 
-        int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
+        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.writeByteRegister(REGISTER.A, addBytes(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, addBytes(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
@@ -176,7 +176,7 @@ public class Add implements Instruction {
 
     private OptionalInt addSP(CPU cpu){
         int val1 = cpu.readWordRegister(REGISTER.SP);
-        int val2 = cpu.readByteFromPC();
+        int val2 = cpu.readPC();
 
         cpu.writeWordRegister(REGISTER.SP, applyAdd16(val1, val2, cpu));
         cpu.resetFlag(FLAG.Z);

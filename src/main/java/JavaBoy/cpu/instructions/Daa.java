@@ -20,7 +20,7 @@ public class Daa implements Instruction {
     private OptionalInt applyDAA(CPU cpu) {
 
 
-        int value = cpu.readByteRegister(REGISTER.A);
+        int value = cpu.readRegister(REGISTER.A);
 
         if (cpu.isFlag(FLAG.N)) {
             if (cpu.isFlag(FLAG.Cy) || value > 0x99) {
@@ -41,7 +41,7 @@ public class Daa implements Instruction {
 
         cpu.writeFlag(FLAG.Z, value == 0 ? 1 : 0);
         cpu.resetFlag(FLAG.H);
-        cpu.writeByteRegister(REGISTER.A, value);
+        cpu.writeRegister(REGISTER.A, value);
         return OptionalInt.of(1);
     }
 

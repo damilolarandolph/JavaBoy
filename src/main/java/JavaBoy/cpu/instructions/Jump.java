@@ -40,8 +40,8 @@ public class Jump implements Instruction {
     }
 
     private OptionalInt jp(CPU cpu) {
-        int byte1 = cpu.readByteFromPC();
-        int byte2 = cpu.readByteFromPC();
+        int byte1 = cpu.readPC();
+        int byte2 = cpu.readPC();
         applyJP(byte1, byte2, cpu);
         return OptionalInt.of(4);
     }
@@ -62,7 +62,7 @@ public class Jump implements Instruction {
     }
 
     private OptionalInt jr(CPU cpu) {
-        int value = cpu.readWordFromPC();
+        int value = cpu.readWordPC();
         applyJR(value, cpu);
         return OptionalInt.of(3);
     }

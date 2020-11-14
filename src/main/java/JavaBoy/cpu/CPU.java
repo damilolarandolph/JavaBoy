@@ -10,29 +10,34 @@ public interface CPU {
     @Deprecated
     MemoryMap getMemoryMap();
 
+    @Deprecated
     void incrementPC();
 
-    int readByteFromPC();
+    int readPC();
 
-    int readWordFromPC();
+    int readWordPC();
 
-    int readSignedByteFromPC();
+    boolean isFlag(FLAG flag);
 
-    int readSignedWordFromPC();
+    void writeAddress(Address addr, int value);
 
-    void writeToAddress(Address addr, int value);
-
-    int readFromAddress(Address addr);
+    int readAddress(Address addr);
 
     int getSP();
 
+    void pushSP(int value);
+
+    int popSP();
+
+    @Deprecated
     void incrementSP();
 
+    @Deprecated
     void decrementSP();
 
-    void writeByteRegister(REGISTER register, int value);
+    void writeRegister(REGISTER register, int value);
 
-    int readByteRegister(REGISTER register);
+    int readRegister(REGISTER register);
 
     int readWordRegister(RegisterPair pair);
 
@@ -46,15 +51,24 @@ public interface CPU {
 
     void readWordRegister(REGISTER reg, REGISTER reg2, int value);
 
-
     int getFlag(FLAG flag);
 
+    @Deprecated
     void writeFlag(FLAG flag, int value);
 
+    @Deprecated
     void setFlag(FLAG flag);
 
+    void setFlag(FLAG flag, boolean value);
+
+    @Deprecated
     void resetFlag(FLAG flag);
 
+    void enableInterrupts();
+
+    void disableInterrupts();
 
     int getPC();
+
+    void setPC(int word);
 }

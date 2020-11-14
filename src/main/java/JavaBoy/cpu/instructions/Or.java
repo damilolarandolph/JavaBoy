@@ -36,11 +36,11 @@ public class Or implements Instruction {
 
 
     OptionalInt or(REGISTER reg, CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readByteRegister(reg);
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readRegister(reg);
 
 
-        cpu.writeByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, applyOr(val1, val2, cpu));
 
 
         return OptionalInt.of(4);
@@ -48,20 +48,20 @@ public class Or implements Instruction {
 
 
     OptionalInt or(RegisterPair pair, CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.writeByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, applyOr(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
 
 
     OptionalInt or(CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readByteFromPC();
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readPC();
 
-        cpu.writeByteRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, applyOr(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }

@@ -34,8 +34,8 @@ public class Cp implements Instruction {
 
 
     private OptionalInt cp(REGISTER reg, CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readByteRegister(reg);
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readRegister(reg);
 
         applyCp(val1, val2 ,cpu);
 
@@ -44,8 +44,8 @@ public class Cp implements Instruction {
 
 
     private OptionalInt cp(RegisterPair pair, CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
         applyCp(val1, val2, cpu);
 
@@ -53,8 +53,8 @@ public class Cp implements Instruction {
     }
 
     private OptionalInt cp(CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readByteFromPC();
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readPC();
 
         applyCp(val1, val2, cpu);
 

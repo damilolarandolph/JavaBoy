@@ -47,9 +47,9 @@ public class Call implements Instruction {
         Address addr = new Address(cpu.getSP());
         cpu.decrementSP();
         Address addrlow = new Address(cpu.getSP());
-        cpu.writeToAddress(addr, cpu.getPC() >>> 8);
-        cpu.writeToAddress(addrlow, cpu.getPC() & 0xff);
-        int word = cpu.readWordFromPC();
+        cpu.writeAddress(addr, cpu.getPC() >>> 8);
+        cpu.writeAddress(addrlow, cpu.getPC() & 0xff);
+        int word = cpu.readWordPC();
         cpu.setPC(word);
 
     }

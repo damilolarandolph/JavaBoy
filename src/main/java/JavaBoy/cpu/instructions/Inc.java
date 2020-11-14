@@ -42,18 +42,18 @@ public class Inc implements Instruction {
     }
 
     private OptionalInt inc(REGISTER reg, CPU cpu) {
-        int value = cpu.readByteRegister(reg);
+        int value = cpu.readRegister(reg);
 
-        cpu.writeByteRegister(reg, applyInc(value, cpu));
+        cpu.writeRegister(reg, applyInc(value, cpu));
         return OptionalInt.of(4);
     }
 
     private OptionalInt inc(RegisterPair pair, CPU cpu) {
         Address address = new Address(cpu.readWordRegister(pair));
 
-        int value = cpu.readFromAddress(address);
+        int value = cpu.readAddress(address);
 
-        cpu.writeToAddress(address, applyInc(value, cpu));
+        cpu.writeAddress(address, applyInc(value, cpu));
 
         return OptionalInt.of(12);
 

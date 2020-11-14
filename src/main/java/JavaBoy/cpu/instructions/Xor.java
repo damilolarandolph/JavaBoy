@@ -33,27 +33,27 @@ public class Xor implements Instruction {
     }
 
     private OptionalInt xor(REGISTER reg, CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readByteRegister(reg);
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readRegister(reg);
 
-        cpu.writeByteRegister(REGISTER.A, applyXOR(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, applyXOR(val1, val2, cpu));
         return  OptionalInt.of(4);
     }
 
     private OptionalInt xor(RegisterPair pair, CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readFromAddress(new Address(cpu.readWordRegister(pair)));
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.writeByteRegister(REGISTER.A, applyXOR(val1, val2, cpu));
+        cpu.writeRegister(REGISTER.A, applyXOR(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
 
 
     private OptionalInt xor(CPU cpu){
-        int val1 = cpu.readByteRegister(REGISTER.A);
-        int val2 = cpu.readByteFromPC();
-        cpu.writeByteRegister(REGISTER.A, applyXOR(val1, val2, cpu));
+        int val1 = cpu.readRegister(REGISTER.A);
+        int val2 = cpu.readPC();
+        cpu.writeRegister(REGISTER.A, applyXOR(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }

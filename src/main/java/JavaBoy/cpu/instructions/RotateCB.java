@@ -115,10 +115,10 @@ public class RotateCB implements Instruction {
 
     private OptionalInt rlc(CPU cpu) {
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
 
         int result = applyRotateLC(bits, cpu);
-        cpu.writeToAddress(addr, result);
+        cpu.writeAddress(addr, result);
 
         if (result == 0)
             cpu.setFlag(FLAG.Z);
@@ -131,11 +131,11 @@ public class RotateCB implements Instruction {
 
 
     private OptionalInt rlc(REGISTER reg, CPU cpu) {
-        int bits = cpu.readByteRegister(reg);
+        int bits = cpu.readRegister(reg);
 
         int result = applyRotateLC(bits, cpu);
 
-        cpu.writeByteRegister(reg, result);
+        cpu.writeRegister(reg, result);
 
         if (result == 0)
             cpu.setFlag(FLAG.Z);
@@ -147,9 +147,9 @@ public class RotateCB implements Instruction {
     }
 
     private OptionalInt rl(REGISTER reg, CPU cpu) {
-        int bits = cpu.readByteRegister(reg);
+        int bits = cpu.readRegister(reg);
         int result = applyRotateL(bits, cpu);
-        cpu.writeByteRegister(reg, result);
+        cpu.writeRegister(reg, result);
         cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
@@ -157,9 +157,9 @@ public class RotateCB implements Instruction {
     }
 
     private OptionalInt rrc(REGISTER reg, CPU cpu) {
-        int bits = cpu.readByteRegister(reg);
+        int bits = cpu.readRegister(reg);
         int result = applyRotateRC(bits, cpu);
-        cpu.writeByteRegister(reg, result);
+        cpu.writeRegister(reg, result);
         cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
@@ -169,9 +169,9 @@ public class RotateCB implements Instruction {
     private OptionalInt rrc(CPU cpu) {
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
 
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
         int result = applyRotateRC(bits, cpu);
-        cpu.writeToAddress(addr, result);
+        cpu.writeAddress(addr, result);
         cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
@@ -180,9 +180,9 @@ public class RotateCB implements Instruction {
     }
 
     private OptionalInt rr(REGISTER reg, CPU cpu){
-        int bits = cpu.readByteRegister(reg);
+        int bits = cpu.readRegister(reg);
         int result = applyRotateR(bits, cpu);
-        cpu.writeByteRegister(reg, result);
+        cpu.writeRegister(reg, result);
         cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
@@ -192,9 +192,9 @@ public class RotateCB implements Instruction {
     private OptionalInt rr(CPU cpu) {
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
 
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
         int result = applyRotateR(bits, cpu);
-        cpu.writeToAddress(addr, result);
+        cpu.writeAddress(addr, result);
         cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
@@ -204,9 +204,9 @@ public class RotateCB implements Instruction {
     private OptionalInt rl(CPU cpu) {
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
 
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
         int result = applyRotateL(bits, cpu);
-        cpu.writeToAddress(addr, result);
+        cpu.writeAddress(addr, result);
         cpu.writeFlag(FLAG.Z, result == 0 ? 1 : 0);
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);

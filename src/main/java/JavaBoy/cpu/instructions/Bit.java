@@ -157,14 +157,14 @@ public class Bit implements Instruction {
     }
 
     private OptionalInt bit(int testBit, REGISTER register, CPU cpu) {
-        int bits = cpu.readByteRegister(register);
+        int bits = cpu.readRegister(register);
         applyBitTest(testBit, bits, cpu);
         return OptionalInt.of(8);
     }
 
     private OptionalInt bit(int testBit, CPU cpu) {
         Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
-        int bits = cpu.readFromAddress(addr);
+        int bits = cpu.readAddress(addr);
         applyBitTest(testBit, bits, cpu);
         return OptionalInt.of(12);
     }

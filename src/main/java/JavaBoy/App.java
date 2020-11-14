@@ -3,12 +3,16 @@
  */
 package JavaBoy;
 
+import JavaBoy.cartridge.Cartridge;
+
+import java.io.File;
+
 public class App {
     public String getGreeting() {
         return "Hello world.";
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        Cartridge cart = new Cartridge(new File("/home/damilola/Downloads/DMG_ROM.bin"));
     }
 }
