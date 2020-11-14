@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions.jumpconditions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.FLAG;
+import JavaBoy.cpu.flags.FLAG;
 
 public class ZSet implements JumpCondition {
 

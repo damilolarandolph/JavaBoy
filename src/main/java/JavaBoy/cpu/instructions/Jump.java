@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.REGISTER;
+import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.instructions.jumpconditions.*;
 
 import java.util.OptionalInt;
@@ -56,7 +56,7 @@ public class Jump implements Instruction {
     }
 
     private OptionalInt jpHL(CPU cpu) {
-        int value = cpu.readWordRegister(REGISTER.H, REGISTER.L);
+        int value = cpu.readWordRegister(REGISTERS.H, REGISTERS.L);
         cpu.setPC(value);
         return OptionalInt.of(1);
     }

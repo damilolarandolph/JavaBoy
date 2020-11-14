@@ -1,6 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
+import JavaBoy.cpu.flags.FLAG;
 
 import java.util.OptionalInt;
 
@@ -10,21 +11,21 @@ public class Cp implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         switch (opcode){
             case 0xbf:
-                return cp(REGISTER.A, cpu);
+                return cp(REGISTERS.A, cpu);
             case 0xb8:
-                return cp(REGISTER.B, cpu);
+                return cp(REGISTERS.B, cpu);
             case 0xb9:
-                return cp(REGISTER.C, cpu);
+                return cp(REGISTERS.C, cpu);
             case 0xba:
-                return cp(REGISTER.D, cpu);
+                return cp(REGISTERS.D, cpu);
             case 0xbb:
-                return cp(REGISTER.E, cpu);
+                return cp(REGISTERS.E, cpu);
             case 0xbc:
-                return cp(REGISTER.H, cpu);
+                return cp(REGISTERS.H, cpu);
             case 0xbd:
-                return cp(REGISTER.L, cpu);
+                return cp(REGISTERS.L, cpu);
             case 0xbe:
-                return cp(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+                return cp(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
             case 0xfe:
                 return cp(cpu);
             default:
@@ -33,8 +34,8 @@ public class Cp implements Instruction {
     }
 
 
-    private OptionalInt cp(REGISTER reg, CPU cpu){
-        int val1 = cpu.readRegister(REGISTER.A);
+    private OptionalInt cp(REGISTERS reg, CPU cpu){
+        int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg);
 
         applyCp(val1, val2 ,cpu);
@@ -44,7 +45,7 @@ public class Cp implements Instruction {
 
 
     private OptionalInt cp(RegisterPair pair, CPU cpu){
-        int val1 = cpu.readRegister(REGISTER.A);
+        int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
         applyCp(val1, val2, cpu);
@@ -53,7 +54,7 @@ public class Cp implements Instruction {
     }
 
     private OptionalInt cp(CPU cpu){
-        int val1 = cpu.readRegister(REGISTER.A);
+        int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
 
         applyCp(val1, val2, cpu);

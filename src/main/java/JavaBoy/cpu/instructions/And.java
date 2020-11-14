@@ -1,6 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
+import JavaBoy.cpu.flags.FLAG;
 
 import java.util.OptionalInt;
 
@@ -11,21 +12,21 @@ public class And implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         switch (opcode){
             case 0xa7:
-                return and(REGISTER.A, cpu);
+                return and(REGISTERS.A, cpu);
             case 0xa0:
-                return and(REGISTER.B, cpu);
+                return and(REGISTERS.B, cpu);
             case 0xa1:
-                return and(REGISTER.C, cpu);
+                return and(REGISTERS.C, cpu);
             case 0xa2:
-                return and(REGISTER.D, cpu);
+                return and(REGISTERS.D, cpu);
             case 0xa3:
-                return and(REGISTER.E, cpu);
+                return and(REGISTERS.E, cpu);
             case 0xa4:
-                return and(REGISTER.H, cpu);
+                return and(REGISTERS.H, cpu);
             case 0xa5:
-                return and(REGISTER.L, cpu);
+                return and(REGISTERS.L, cpu);
             case 0xa6:
-                return and(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+                return and(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
             case 0xe6:
                 return and(cpu);
             default:
@@ -34,30 +35,30 @@ public class And implements Instruction {
     }
 
 
-    OptionalInt and(REGISTER reg, CPU cpu){
+    OptionalInt and(REGISTERS reg, CPU cpu){
 
-        int reg1 = cpu.readRegister(REGISTER.A);
+        int reg1 = cpu.readRegister(REGISTERS.A);
         int reg2 = cpu.readRegister(reg);
 
-        cpu.writeRegister(REGISTER.A, applyAnd(reg1, reg2, cpu));
+        cpu.writeRegister(REGISTERS.A, applyAnd(reg1, reg2, cpu));
 
         return OptionalInt.of(4);
     }
 
     OptionalInt and(CPU cpu){
-        int val1 = cpu.readRegister(REGISTER.A);
+        int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
 
-        cpu.writeRegister(REGISTER.A, applyAnd(val1, val2, cpu));
+        cpu.writeRegister(REGISTERS.A, applyAnd(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
 
     OptionalInt and(RegisterPair pair, CPU cpu){
-        int val1 = cpu.readRegister(REGISTER.A);
+        int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.writeRegister(REGISTER.A, applyAnd(val1, val2, cpu));
+        cpu.writeRegister(REGISTERS.A, applyAnd(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }

@@ -1,6 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
+import JavaBoy.cpu.flags.FLAG;
 
 import java.util.OptionalInt;
 
@@ -10,28 +11,28 @@ public class Inc implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         switch (opcode){
             case 0x3c:
-                return inc(REGISTER.A, cpu);
+                return inc(REGISTERS.A, cpu);
             case 0x04:
-                return inc(REGISTER.B, cpu);
+                return inc(REGISTERS.B, cpu);
             case 0x0c:
-                return inc(REGISTER.C, cpu);
+                return inc(REGISTERS.C, cpu);
             case 0x14:
-                return inc(REGISTER.D, cpu);
+                return inc(REGISTERS.D, cpu);
             case 0x1c:
-                return inc(REGISTER.E, cpu);
+                return inc(REGISTERS.E, cpu);
             case 0x24:
-                return inc(REGISTER.H, cpu);
+                return inc(REGISTERS.H, cpu);
             case 0x2c:
-                return inc(REGISTER.L, cpu);
+                return inc(REGISTERS.L, cpu);
             case 0x34:
-                return inc(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+                return inc(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
                 //16 bit increment instructions
             case 0x03:
-                return inc16(new RegisterPair(REGISTER.B, REGISTER.C), cpu);
+                return inc16(new RegisterPair(REGISTERS.B, REGISTERS.C), cpu);
             case 0x13:
-                return inc16(new RegisterPair(REGISTER.D, REGISTER.E), cpu);
+                return inc16(new RegisterPair(REGISTERS.D, REGISTERS.E), cpu);
             case 0x23:
-                return inc16(new RegisterPair(REGISTER.H, REGISTER.L),cpu);
+                return inc16(new RegisterPair(REGISTERS.H, REGISTERS.L),cpu);
             case 0x33:
                 return inc16SP(cpu);
 
@@ -41,7 +42,7 @@ public class Inc implements Instruction {
         }
     }
 
-    private OptionalInt inc(REGISTER reg, CPU cpu) {
+    private OptionalInt inc(REGISTERS reg, CPU cpu) {
         int value = cpu.readRegister(reg);
 
         cpu.writeRegister(reg, applyInc(value, cpu));
@@ -66,7 +67,7 @@ public class Inc implements Instruction {
     }
     private OptionalInt inc16SP(CPU cpu){
 
-        cpu.writeWordRegister(REGISTER.SP, cpu.readWordRegister(REGISTER.SP) + 1);
+        cpu.writeWordRegister(REGISTERS.SP, cpu.readWordRegister(REGISTERS.SP) + 1);
         return OptionalInt.of(8);
     }
 

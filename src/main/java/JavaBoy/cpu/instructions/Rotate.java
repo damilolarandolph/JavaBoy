@@ -1,8 +1,8 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.FLAG;
-import JavaBoy.cpu.REGISTER;
+import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
 
@@ -31,8 +31,8 @@ public class Rotate implements Instruction {
 
     private OptionalInt rlca(CPU cpu) {
 
-        int bits = cpu.readRegister(REGISTER.A);
-        cpu.writeRegister(REGISTER.A, applyRotateLC(bits, cpu));
+        int bits = cpu.readRegister(REGISTERS.A);
+        cpu.writeRegister(REGISTERS.A, applyRotateLC(bits, cpu));
 
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
@@ -60,8 +60,8 @@ public class Rotate implements Instruction {
 
 
     private OptionalInt rla(CPU cpu) {
-        int bits = cpu.readRegister(REGISTER.A);
-        cpu.writeRegister(REGISTER.A, applyRotateL(bits, cpu));
+        int bits = cpu.readRegister(REGISTERS.A);
+        cpu.writeRegister(REGISTERS.A, applyRotateL(bits, cpu));
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
         cpu.resetFlag(FLAG.Z);
@@ -80,9 +80,9 @@ public class Rotate implements Instruction {
     }
 
     private OptionalInt rrca(CPU cpu) {
-        int bits = cpu.readRegister(REGISTER.A);
+        int bits = cpu.readRegister(REGISTERS.A);
 
-        cpu.writeRegister(REGISTER.A, applyRotateRC(bits, cpu));
+        cpu.writeRegister(REGISTERS.A, applyRotateRC(bits, cpu));
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
         cpu.resetFlag(FLAG.Z);
@@ -100,8 +100,8 @@ public class Rotate implements Instruction {
     }
 
     private OptionalInt rra(CPU cpu) {
-        int bits = cpu.readRegister(REGISTER.A);
-        cpu.writeRegister(REGISTER.A, applyRotateR(bits, cpu));
+        int bits = cpu.readRegister(REGISTERS.A);
+        cpu.writeRegister(REGISTERS.A, applyRotateR(bits, cpu));
         cpu.resetFlag(FLAG.H);
         cpu.resetFlag(FLAG.N);
         cpu.resetFlag(FLAG.Z);

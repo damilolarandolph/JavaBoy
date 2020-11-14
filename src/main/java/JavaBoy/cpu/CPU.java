@@ -1,5 +1,6 @@
 package JavaBoy.cpu;
 
+import JavaBoy.cpu.flags.FLAG;
 import JavaBoy.memory.MemoryMap;
 
 public interface CPU {
@@ -35,21 +36,21 @@ public interface CPU {
     @Deprecated
     void decrementSP();
 
-    void writeRegister(REGISTER register, int value);
+    void writeRegister(REGISTERS REGISTERS, int value);
 
-    int readRegister(REGISTER register);
+    int readRegister(REGISTERS REGISTERS);
 
     int readWordRegister(RegisterPair pair);
 
-    int readWordRegister(REGISTER register);
+    int readWordRegister(REGISTERS REGISTERS);
 
-    int readWordRegister(REGISTER reg, REGISTER reg2);
+    int readWordRegister(REGISTERS reg, REGISTERS reg2);
 
     void writeWordRegister(RegisterPair pair, int value);
 
-    void writeWordRegister(REGISTER register, int value);
+    void writeWordRegister(REGISTERS REGISTERS, int value);
 
-    void readWordRegister(REGISTER reg, REGISTER reg2, int value);
+    void readWordRegister(REGISTERS reg, REGISTERS reg2, int value);
 
     int getFlag(FLAG flag);
 

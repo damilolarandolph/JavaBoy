@@ -1,19 +1,19 @@
 package JavaBoy.cpu;
 
 public class RegisterPair {
-   private final REGISTER highRegister;
-    private final REGISTER lowRegister;
+   private final REGISTERS highREGISTERS;
+    private final REGISTERS lowREGISTERS;
 
-    public RegisterPair(REGISTER highRegister, REGISTER lowRegister){
-        this.highRegister = highRegister;
-        this.lowRegister = lowRegister;
+    public RegisterPair(REGISTERS highREGISTERS, REGISTERS lowREGISTERS){
+        this.highREGISTERS = highREGISTERS;
+        this.lowREGISTERS = lowREGISTERS;
     }
 
-    public REGISTER getHighRegister(){
-        return this.highRegister;
+    public REGISTERS getHighRegister(){
+        return this.highREGISTERS;
     }
-    public REGISTER getLowRegister(){
-        return this.lowRegister;
+    public REGISTERS getLowRegister(){
+        return this.lowREGISTERS;
     }
 
 }

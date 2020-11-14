@@ -1,7 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.FLAG;
+import JavaBoy.cpu.flags.FLAG;
 
 import java.util.OptionalInt;
 

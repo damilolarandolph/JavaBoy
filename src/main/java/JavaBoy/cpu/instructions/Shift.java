@@ -2,8 +2,8 @@ package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.FLAG;
-import JavaBoy.cpu.REGISTER;
+import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
 
@@ -12,51 +12,51 @@ public class Shift implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
             switch (opcode) {
                 case 0x27:
-                    return sla(REGISTER.A, cpu);
+                    return sla(REGISTERS.A, cpu);
                 case 0x20:
-                    return sla(REGISTER.B, cpu);
+                    return sla(REGISTERS.B, cpu);
                 case 0x21:
-                    return sla(REGISTER.C, cpu);
+                    return sla(REGISTERS.C, cpu);
                 case 0x22:
-                    return sla(REGISTER.D, cpu);
+                    return sla(REGISTERS.D, cpu);
                 case 0x23:
-                    return sla(REGISTER.E, cpu);
+                    return sla(REGISTERS.E, cpu);
                 case 0x24:
-                    return sla(REGISTER.H, cpu);
+                    return sla(REGISTERS.H, cpu);
                 case 0x25:
-                    return sla(REGISTER.L, cpu);
+                    return sla(REGISTERS.L, cpu);
                 case 0x26:
                     return sla(cpu);
                 case 0x2f:
-                    return sra(REGISTER.A, cpu);
+                    return sra(REGISTERS.A, cpu);
                 case 0x28:
-                    return sra(REGISTER.B, cpu);
+                    return sra(REGISTERS.B, cpu);
                 case 0x29:
-                    return sra(REGISTER.C, cpu);
+                    return sra(REGISTERS.C, cpu);
                 case 0x2a:
-                    return sra(REGISTER.D, cpu);
+                    return sra(REGISTERS.D, cpu);
                 case 0x2b:
-                    return sra(REGISTER.E, cpu);
+                    return sra(REGISTERS.E, cpu);
                 case 0x2c:
-                    return sra(REGISTER.H, cpu);
+                    return sra(REGISTERS.H, cpu);
                 case 0x2d:
-                    return sra(REGISTER.L, cpu);
+                    return sra(REGISTERS.L, cpu);
                 case 0x2e:
                     return sra(cpu);
                 case 0x3f:
-                    return srl(REGISTER.A, cpu);
+                    return srl(REGISTERS.A, cpu);
                 case 0x38:
-                    return srl(REGISTER.B, cpu);
+                    return srl(REGISTERS.B, cpu);
                 case 0x39:
-                    return srl(REGISTER.C, cpu);
+                    return srl(REGISTERS.C, cpu);
                 case 0x3a:
-                    return srl(REGISTER.D, cpu);
+                    return srl(REGISTERS.D, cpu);
                 case 0x3b:
-                    return srl(REGISTER.E, cpu);
+                    return srl(REGISTERS.E, cpu);
                 case 0x3c:
-                    return srl(REGISTER.H, cpu);
+                    return srl(REGISTERS.H, cpu);
                 case 0x3d:
-                    return srl(REGISTER.L, cpu);
+                    return srl(REGISTERS.L, cpu);
                 case 0x3e:
                     return srl(cpu);
 
@@ -93,7 +93,7 @@ public class Shift implements Instruction {
         return result;
     }
 
-    private OptionalInt srl(REGISTER reg, CPU cpu) {
+    private OptionalInt srl(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
 
         int result = applySRL(bits, cpu);
@@ -104,14 +104,14 @@ public class Shift implements Instruction {
     }
 
     private OptionalInt srl(CPU cpu){
-        Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
+        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
         int bits = cpu.readAddress(addr);
         int result = applySRL(bits, cpu);
         cpu.writeAddress(addr, result);
         return OptionalInt.of(16);
     }
 
-    private OptionalInt sra(REGISTER reg, CPU cpu) {
+    private OptionalInt sra(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applySRA(bits, cpu);
         cpu.writeRegister(reg, result);
@@ -120,7 +120,7 @@ public class Shift implements Instruction {
     }
 
     private OptionalInt sra(CPU cpu) {
-        Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
+        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
         int bits = cpu.readAddress(addr);
         int result = applySRA(bits, cpu);
         cpu.writeAddress(addr, result);
@@ -142,7 +142,7 @@ public class Shift implements Instruction {
 
     }
 
-    private OptionalInt sla(REGISTER reg, CPU cpu) {
+    private OptionalInt sla(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
 
         int result = applySLA(bits, cpu);
@@ -153,7 +153,7 @@ public class Shift implements Instruction {
     }
 
     private OptionalInt sla(CPU cpu) {
-        Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
+        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
         int bits = cpu.readAddress(addr);
         int result = applySLA(bits, cpu);
         cpu.writeAddress(addr, result);

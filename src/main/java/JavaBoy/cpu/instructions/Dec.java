@@ -1,6 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
+import JavaBoy.cpu.flags.FLAG;
 
 import java.util.OptionalInt;
 
@@ -9,27 +10,27 @@ public class Dec implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         switch (opcode){
             case  0x3d:
-                return dec(REGISTER.A, cpu);
+                return dec(REGISTERS.A, cpu);
             case 0x05:
-                return dec(REGISTER.B, cpu);
+                return dec(REGISTERS.B, cpu);
             case 0x0d:
-                return dec(REGISTER.C, cpu);
+                return dec(REGISTERS.C, cpu);
             case 0x15:
-                return dec(REGISTER.D, cpu);
+                return dec(REGISTERS.D, cpu);
             case 0x1d:
-                return dec(REGISTER.E, cpu);
+                return dec(REGISTERS.E, cpu);
             case 0x25:
-                return dec(REGISTER.H, cpu);
+                return dec(REGISTERS.H, cpu);
             case 0x2d:
-                return dec(REGISTER.L, cpu);
+                return dec(REGISTERS.L, cpu);
             case 0x35:
-                return dec(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+                return dec(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
             case 0x0b:
-                return dec16(new RegisterPair(REGISTER.B, REGISTER.C), cpu);
+                return dec16(new RegisterPair(REGISTERS.B, REGISTERS.C), cpu);
             case 0x1b:
-                return dec16(new RegisterPair(REGISTER.D, REGISTER.E), cpu);
+                return dec16(new RegisterPair(REGISTERS.D, REGISTERS.E), cpu);
             case 0x2b:
-                return dec16(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+                return dec16(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
             case 0x3b:
                 return dec16SP(cpu);
             default:
@@ -39,7 +40,7 @@ public class Dec implements Instruction {
 
 
 
-  private OptionalInt dec(REGISTER reg, CPU cpu){
+  private OptionalInt dec(REGISTERS reg, CPU cpu){
         int value = cpu.readRegister(reg);
 
         cpu.writeRegister(reg, applyDec(value, cpu));
@@ -63,7 +64,7 @@ public class Dec implements Instruction {
    }
 
    private OptionalInt dec16SP(CPU cpu){
-        cpu.writeWordRegister(REGISTER.SP, cpu.readWordRegister(REGISTER.SP) + 1);
+        cpu.writeWordRegister(REGISTERS.SP, cpu.readWordRegister(REGISTERS.SP) + 1);
         return OptionalInt.of(8);
    }
 

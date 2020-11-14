@@ -2,8 +2,8 @@ package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.FLAG;
-import JavaBoy.cpu.REGISTER;
+import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
 
@@ -13,63 +13,63 @@ public class RotateCB implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x07:
-                return rlc(REGISTER.A, cpu);
+                return rlc(REGISTERS.A, cpu);
             case 0x00:
-                return rlc(REGISTER.B, cpu);
+                return rlc(REGISTERS.B, cpu);
             case 0x01:
-                return rlc(REGISTER.C, cpu);
+                return rlc(REGISTERS.C, cpu);
             case 0x02:
-                return rlc(REGISTER.D, cpu);
+                return rlc(REGISTERS.D, cpu);
             case 0x03:
-                return rlc(REGISTER.E, cpu);
+                return rlc(REGISTERS.E, cpu);
             case 0x04:
-                return rlc(REGISTER.H, cpu);
+                return rlc(REGISTERS.H, cpu);
             case 0x05:
                 return rlc(cpu);
             case 0x17:
-                return rl(REGISTER.A, cpu);
+                return rl(REGISTERS.A, cpu);
             case 0x10:
-                return rl(REGISTER.B, cpu);
+                return rl(REGISTERS.B, cpu);
             case 0x11:
-                return rl(REGISTER.C, cpu);
+                return rl(REGISTERS.C, cpu);
             case 0x12:
-                return rl(REGISTER.D, cpu);
+                return rl(REGISTERS.D, cpu);
             case 0x13:
-                return rl(REGISTER.E, cpu);
+                return rl(REGISTERS.E, cpu);
             case 0x14:
-                return rl(REGISTER.H, cpu);
+                return rl(REGISTERS.H, cpu);
             case 0x16:
                 return rl(cpu);
             case 0x0f:
-                return rrc(REGISTER.A, cpu);
+                return rrc(REGISTERS.A, cpu);
             case 0x08:
-                return rrc(REGISTER.B, cpu);
+                return rrc(REGISTERS.B, cpu);
             case 0x09:
-                return rrc(REGISTER.C, cpu);
+                return rrc(REGISTERS.C, cpu);
             case 0x0a:
-                return rrc(REGISTER.D, cpu);
+                return rrc(REGISTERS.D, cpu);
             case 0x0b:
-                return rrc(REGISTER.E, cpu);
+                return rrc(REGISTERS.E, cpu);
             case 0x0c:
-                return rrc(REGISTER.H, cpu);
+                return rrc(REGISTERS.H, cpu);
             case 0x0d:
-                return rrc(REGISTER.L, cpu);
+                return rrc(REGISTERS.L, cpu);
             case 0x0e:
                 return rrc(cpu);
             case 0x1f:
-                return rr(REGISTER.A, cpu);
+                return rr(REGISTERS.A, cpu);
             case 0x18:
-                return rr(REGISTER.B, cpu);
+                return rr(REGISTERS.B, cpu);
             case 0x19:
-                return rr(REGISTER.C, cpu);
+                return rr(REGISTERS.C, cpu);
             case 0x1a:
-                return rr(REGISTER.D, cpu);
+                return rr(REGISTERS.D, cpu);
             case 0x1b:
-                return rr(REGISTER.E, cpu);
+                return rr(REGISTERS.E, cpu);
             case 0x1c:
-                return rr(REGISTER.H, cpu);
+                return rr(REGISTERS.H, cpu);
             case 0x1d:
-                return rr(REGISTER.L, cpu);
+                return rr(REGISTERS.L, cpu);
             case 0x1e:
                 return rr(cpu);
             default:
@@ -114,7 +114,7 @@ public class RotateCB implements Instruction {
 
 
     private OptionalInt rlc(CPU cpu) {
-        Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
+        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
         int bits = cpu.readAddress(addr);
 
         int result = applyRotateLC(bits, cpu);
@@ -130,7 +130,7 @@ public class RotateCB implements Instruction {
     }
 
 
-    private OptionalInt rlc(REGISTER reg, CPU cpu) {
+    private OptionalInt rlc(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
 
         int result = applyRotateLC(bits, cpu);
@@ -146,7 +146,7 @@ public class RotateCB implements Instruction {
         return OptionalInt.of(8);
     }
 
-    private OptionalInt rl(REGISTER reg, CPU cpu) {
+    private OptionalInt rl(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applyRotateL(bits, cpu);
         cpu.writeRegister(reg, result);
@@ -156,7 +156,7 @@ public class RotateCB implements Instruction {
         return OptionalInt.of(8);
     }
 
-    private OptionalInt rrc(REGISTER reg, CPU cpu) {
+    private OptionalInt rrc(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applyRotateRC(bits, cpu);
         cpu.writeRegister(reg, result);
@@ -167,7 +167,7 @@ public class RotateCB implements Instruction {
     }
 
     private OptionalInt rrc(CPU cpu) {
-        Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
+        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
 
         int bits = cpu.readAddress(addr);
         int result = applyRotateRC(bits, cpu);
@@ -179,7 +179,7 @@ public class RotateCB implements Instruction {
 
     }
 
-    private OptionalInt rr(REGISTER reg, CPU cpu){
+    private OptionalInt rr(REGISTERS reg, CPU cpu){
         int bits = cpu.readRegister(reg);
         int result = applyRotateR(bits, cpu);
         cpu.writeRegister(reg, result);
@@ -190,7 +190,7 @@ public class RotateCB implements Instruction {
     }
 
     private OptionalInt rr(CPU cpu) {
-        Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
+        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
 
         int bits = cpu.readAddress(addr);
         int result = applyRotateR(bits, cpu);
@@ -202,7 +202,7 @@ public class RotateCB implements Instruction {
     }
 
     private OptionalInt rl(CPU cpu) {
-        Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
+        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
 
         int bits = cpu.readAddress(addr);
         int result = applyRotateL(bits, cpu);

@@ -2,8 +2,8 @@ package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.FLAG;
-import JavaBoy.cpu.REGISTER;
+import JavaBoy.cpu.flags.FLAG;
+import JavaBoy.cpu.REGISTERS;
 
 import java.util.OptionalInt;
 
@@ -13,19 +13,19 @@ public class Swap implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         switch (opcode){
             case 0x37:
-                return swap(REGISTER.A, cpu);
+                return swap(REGISTERS.A, cpu);
             case 0x30:
-                return swap(REGISTER.B, cpu);
+                return swap(REGISTERS.B, cpu);
             case 0x31:
-                return swap(REGISTER.C, cpu);
+                return swap(REGISTERS.C, cpu);
             case 0x32:
-                return swap(REGISTER.D, cpu);
+                return swap(REGISTERS.D, cpu);
             case 0x33:
-                return swap(REGISTER.E, cpu);
+                return swap(REGISTERS.E, cpu);
             case 0x34:
-                return swap(REGISTER.H, cpu);
+                return swap(REGISTERS.H, cpu);
             case 0x35:
-                return swap(REGISTER.L, cpu);
+                return swap(REGISTERS.L, cpu);
             case 0x36:
                 return swap(cpu);
             default:
@@ -34,7 +34,7 @@ public class Swap implements Instruction {
     }
 
 
-    private OptionalInt swap(REGISTER reg, CPU cpu) {
+    private OptionalInt swap(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applySwap(bits, cpu);
         cpu.writeRegister(reg, result);
@@ -42,7 +42,7 @@ public class Swap implements Instruction {
     }
 
     private OptionalInt swap(CPU cpu){
-        Address addr = new Address(cpu.readWordRegister(REGISTER.H, REGISTER.L));
+        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
         int bits = cpu.readAddress(addr);
         int result = applySwap(bits, cpu);
         cpu.writeAddress(addr, result);

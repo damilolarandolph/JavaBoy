@@ -1,6 +1,7 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.*;
+import JavaBoy.cpu.flags.FLAG;
 
 import java.util.OptionalInt;
 
@@ -10,21 +11,21 @@ public class Or implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         switch (opcode){
             case 0xb7:
-                return or(REGISTER.A, cpu);
+                return or(REGISTERS.A, cpu);
             case 0xb0:
-                return or(REGISTER.B, cpu);
+                return or(REGISTERS.B, cpu);
             case 0xb1:
-                return  or(REGISTER.C, cpu);
+                return  or(REGISTERS.C, cpu);
             case 0xb2:
-                return or(REGISTER.D, cpu);
+                return or(REGISTERS.D, cpu);
             case 0xb3:
-                return or(REGISTER.E, cpu);
+                return or(REGISTERS.E, cpu);
             case 0xb4:
-                return or(REGISTER.H, cpu);
+                return or(REGISTERS.H, cpu);
             case 0xb5:
-                return or(REGISTER.L, cpu);
+                return or(REGISTERS.L, cpu);
             case 0xb6:
-                return or(new RegisterPair(REGISTER.H, REGISTER.L), cpu);
+                return or(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
             case 0xf6:
                 return or(cpu);
 
@@ -35,12 +36,12 @@ public class Or implements Instruction {
 
 
 
-    OptionalInt or(REGISTER reg, CPU cpu){
-        int val1 = cpu.readRegister(REGISTER.A);
+    OptionalInt or(REGISTERS reg, CPU cpu){
+        int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg);
 
 
-        cpu.writeRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
 
 
         return OptionalInt.of(4);
@@ -48,20 +49,20 @@ public class Or implements Instruction {
 
 
     OptionalInt or(RegisterPair pair, CPU cpu){
-        int val1 = cpu.readRegister(REGISTER.A);
+        int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
 
-        cpu.writeRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
 
 
     OptionalInt or(CPU cpu){
-        int val1 = cpu.readRegister(REGISTER.A);
+        int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
 
-        cpu.writeRegister(REGISTER.A, applyOr(val1, val2, cpu));
+        cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
 
         return OptionalInt.of(8);
     }
