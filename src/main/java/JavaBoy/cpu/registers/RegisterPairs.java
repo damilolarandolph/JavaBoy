@@ -1,13 +1,15 @@
-package JavaBoy.cpu;
+package JavaBoy.cpu.registers;
 
-public enum REGISTER_PAIRS {
+import JavaBoy.cpu.REGISTERS;
+
+public enum RegisterPairs {
 
     BC(REGISTERS.B, REGISTERS.C), DE(REGISTERS.D, REGISTERS.E), HL(REGISTERS.H, REGISTERS.L);
 
     private final REGISTERS high;
     private final REGISTERS low;
 
-    REGISTER_PAIRS(REGISTERS high, REGISTERS low) {
+    RegisterPairs(REGISTERS high, REGISTERS low) {
         this.high = high;
         this.low = low;
     }
