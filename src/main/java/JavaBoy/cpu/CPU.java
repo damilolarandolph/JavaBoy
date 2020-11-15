@@ -1,6 +1,7 @@
 package JavaBoy.cpu;
 
 import JavaBoy.cpu.flags.FLAGS;
+import JavaBoy.cpu.registers.RegisterPairs;
 import JavaBoy.memory.MemoryMap;
 
 public interface CPU {
@@ -44,9 +45,16 @@ public interface CPU {
 
     int readWordRegister(REGISTERS REGISTERS);
 
+    @Deprecated
     int readWordRegister(REGISTERS reg, REGISTERS reg2);
 
+    int readWordRegister(RegisterPairs pair);
+
+    @Deprecated
     void writeWordRegister(RegisterPair pair, int value);
+
+
+    int readWordRegister(RegisterPairs pair, int value);
 
     void writeWordRegister(REGISTERS REGISTERS, int value);
 
