@@ -37,6 +37,8 @@ public interface CPU {
 
     int popSP();
 
+    void setSP(int val);
+
     @Deprecated
     void incrementSP();
 
@@ -60,7 +62,7 @@ public interface CPU {
     void writeWordRegister(RegisterPair pair, int value);
 
 
-    int readWordRegister(RegisterPairs pair, int value);
+    void writeWordRegister(RegisterPairs pair, int value);
 
     void writeWordRegister(REGISTERS REGISTERS, int value);
 
