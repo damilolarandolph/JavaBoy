@@ -1,14 +1,13 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
-import JavaBoy.cpu.RegisterPair;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
-import JavaBoy.utils.ArithmeticUtils;
 
 import java.util.OptionalInt;
+
+import static JavaBoy.utils.ArithmeticUtils.*;
 
 public class Add implements Instruction {
 
@@ -31,7 +30,7 @@ public class Add implements Instruction {
             case 0x85:
                 return add(REGISTERS.L, cpu);
             case 0x86:
-                return add(RegisterPairs.HL, cpu);
+                return addHL(cpu);
             case 0xc6:
                 return add(cpu);
             // Add + Carry Flag
@@ -50,17 +49,17 @@ public class Add implements Instruction {
             case 0x8d:
                 return addC(REGISTERS.L, cpu);
             case 0x8e:
-                return addC(RegisterPairs.HL, cpu);
+                return addCHL(cpu);
             case 0xce:
                 return addC(cpu);
 
             //16-bit Add Instructions
             case 0x09:
-                return add16(new RegisterPair(REGISTERS.B, REGISTERS.C), cpu);
+                return add16(RegisterPairs.BC, cpu);
             case 0x19:
-                return add16(new RegisterPair(REGISTERS.D, REGISTERS.E), cpu);
+                return add16(RegisterPairs.DE, cpu);
             case 0x29:
-                return add16(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
+                return add16(RegisterPairs.HL, cpu);
             case 0x39:
                 return add16SP(cpu);
             case 0xe8:
@@ -75,16 +74,14 @@ public class Add implements Instruction {
     private OptionalInt add(REGISTERS fromREGISTERS, CPU cpu) {
         int reg1Val = cpu.readRegister(REGISTERS.A);
         int reg2Val = cpu.readRegister(fromREGISTERS);
-
         cpu.writeRegister(REGISTERS.A, addBytes(reg1Val, reg2Val, cpu));
         return OptionalInt.of(4);
 
     }
 
-    private OptionalInt add(RegisterPairs pair, CPU cpu) {
+    private OptionalInt addHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(cpu.readWordRegister(pair));
-
+        int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
         return OptionalInt.of(8);
     }
@@ -92,20 +89,15 @@ public class Add implements Instruction {
     private OptionalInt add(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
-
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
-
         return OptionalInt.of(8);
 
     }
 
     private OptionalInt addC(REGISTERS second, CPU cpu) {
-
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(second) + cpu.getFlag(FLAGS.C);
-
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
-
         return OptionalInt.of(4);
 
     }
@@ -113,17 +105,14 @@ public class Add implements Instruction {
     private OptionalInt addC(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
-
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
         return OptionalInt.of(8);
-
     }
 
-    private OptionalInt addC(RegisterPairs pair, CPU cpu) {
+    private OptionalInt addCHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(cpu.readWordRegister(pair));
+        int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
-
         return OptionalInt.of(8);
     }
 
@@ -131,50 +120,28 @@ public class Add implements Instruction {
     private int addBytes(int value, int value2, CPU cpu) {
 
         int result = (value + value2) & 0xff;
-
-        if (result == 0x0) {
-            cpu.setFlag(FLAGS.Z);
-        } else {
-            cpu.resetFlag(FLAGS.Z);
-        }
-
-        if ((((value & 0xf) + (value2 & 0xf)) & 0x10) == 0x10) {
-            cpu.setFlag(FLAGS.H);
-        } else {
-            cpu.resetFlag(FLAGS.H);
-        }
-
-        cpu.resetFlag(FLAGS.N);
-
-        if ((value + value2) > 0xff) {
-
-            cpu.setFlag(FLAGS.C);
-
-        } else {
-            cpu.resetFlag(FLAGS.C);
-        }
-
-
+        cpu.setFlag(FLAGS.Z, result == 0);
+        cpu.setFlag(FLAGS.H, isHalfCarry8(value, value2));
+        cpu.setFlag(FLAGS.N, false);
+        cpu.setFlag(FLAGS.C, isCarry8(value, value2));
         return result;
 
     }
 
 
-    private OptionalInt add16(RegisterPair pair, CPU cpu) {
-        RegisterPair hlPair = new RegisterPair(REGISTERS.H, REGISTERS.L);
-        int val1 = cpu.readWordRegister(hlPair);
+    private OptionalInt add16(RegisterPairs pair, CPU cpu) {
+        int val1 = cpu.readWordRegister(RegisterPairs.HL);
         int val2 = cpu.readWordRegister(pair);
 
-        cpu.writeWordRegister(hlPair, applyAdd16(val1, val2, cpu));
+        cpu.writeWordRegister(RegisterPairs.HL, applyAdd16(val1, val2, cpu));
         return OptionalInt.of(8);
     }
 
     private OptionalInt add16SP(CPU cpu) {
-        RegisterPair hlPair = new RegisterPair(REGISTERS.H, REGISTERS.L);
-        int val1 = cpu.readWordRegister(hlPair);
-        int val2 = cpu.readWordRegister(REGISTERS.SP);
+        int val1 = cpu.readWordRegister(RegisterPairs.HL);
+        int val2 = cpu.getSP();
 
-        cpu.writeWordRegister(hlPair, applyAdd16(val1, val2, cpu));
+        cpu.writeWordRegister(RegisterPairs.HL, applyAdd16(val1, val2, cpu));
         return OptionalInt.of(8);
     }
 
@@ -191,8 +158,8 @@ public class Add implements Instruction {
 
     private int applyAdd16(int val1, int val2, CPU cpu) {
         int result = val1 + val2;
-        cpu.setFlag(FLAGS.H, ArithmeticUtils.isHalfCarry16(val1, val2));
-        cpu.setFlag(FLAGS.C, ArithmeticUtils.isCarry16(val1, val2));
+        cpu.setFlag(FLAGS.H, isHalfCarry16(val1, val2));
+        cpu.setFlag(FLAGS.C, isCarry16(val1, val2));
         cpu.setFlag(FLAGS.N, false);
         return result;
 
