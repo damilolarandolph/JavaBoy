@@ -43,7 +43,7 @@ public class Jump implements Instruction {
         int byte1 = cpu.readPC();
         int byte2 = cpu.readPC();
         applyJP(byte1, byte2, cpu);
-        return OptionalInt.of(4);
+        return OptionalInt.of(16);
     }
 
     private OptionalInt jp(JumpConditions condition, CPU cpu) {
@@ -51,20 +51,20 @@ public class Jump implements Instruction {
             return jp(cpu);
         } else {
             cpu.setPC(cpu.getPC() + 2);
-            return OptionalInt.of(3);
+            return OptionalInt.of(12);
         }
     }
 
     private OptionalInt jpHL(CPU cpu) {
         int value = cpu.readWordRegister(REGISTERS.H, REGISTERS.L);
         cpu.setPC(value);
-        return OptionalInt.of(1);
+        return OptionalInt.of(4);
     }
 
     private OptionalInt jr(CPU cpu) {
         int value = cpu.readWordPC();
         applyJR(value, cpu);
-        return OptionalInt.of(3);
+        return OptionalInt.of(12);
     }
 
     private OptionalInt jr(JumpConditions condition, CPU cpu) {
@@ -72,7 +72,7 @@ public class Jump implements Instruction {
             return jp(cpu);
         } else {
             cpu.setPC(cpu.getPC() + 1);
-            return OptionalInt.of(2);
+            return OptionalInt.of(8);
         }
     }
 

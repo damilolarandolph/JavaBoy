@@ -28,6 +28,6 @@ public class Push implements Instruction {
         int val = cpu.readWordRegister(pair);
         cpu.pushSP(getMsb(val));
         cpu.pushSP(getLsb(val));
-        return OptionalInt.of(4);
+        return OptionalInt.of(16);
     }
 }

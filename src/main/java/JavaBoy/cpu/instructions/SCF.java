@@ -11,7 +11,7 @@ public class SCF implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
        if (opcode == 0x37){
            cpu.setFlag(FLAGS.C);
-           return OptionalInt.of(1);
+           return OptionalInt.of(4);
        }else{
            return OptionalInt.empty();
        }

@@ -11,7 +11,7 @@ public class CCF implements Instruction {
     public OptionalInt execute(int opcode, CPU cpu) {
         if (opcode == 0x3f) {
             cpu.writeFlag(FLAGS.C, ~(cpu.getFlag(FLAGS.C)));
-            return OptionalInt.of(1);
+            return OptionalInt.of(4);
         }else {
             return OptionalInt.empty();
         }

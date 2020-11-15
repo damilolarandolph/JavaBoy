@@ -11,7 +11,7 @@ public class CPL implements Instruction {
         if (opcode == 0x2f){
             int value = cpu.readRegister(REGISTERS.A);
             cpu.writeRegister(REGISTERS.A, ~(value));
-            return OptionalInt.of(1);
+            return OptionalInt.of(4);
 
         }else {
             return OptionalInt.empty();

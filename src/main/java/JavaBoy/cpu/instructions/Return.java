@@ -53,23 +53,23 @@ public class Return implements Instruction {
 
     private OptionalInt ret(CPU cpu){
         applyRet(cpu);
-        return OptionalInt.of(4);
+        return OptionalInt.of(16);
     }
 
     private OptionalInt ret(JumpConditions condition, CPU cpu){
         if(condition.test(cpu)){
             applyRet(cpu);
-            return OptionalInt.of(5);
+            return OptionalInt.of(20);
         }else{
             cpu.setPC(cpu.getPC() + 1);
-            return OptionalInt.of(2);
+            return OptionalInt.of(8);
         }
     }
 
     private OptionalInt reti(CPU cpu){
         applyRet(cpu);
         cpu.enableInterrupts();
-        return  OptionalInt.of(4);
+        return  OptionalInt.of(16);
     }
 
 
@@ -80,7 +80,7 @@ public class Return implements Instruction {
         cpu.setPC(lowP);
 
 
-        return OptionalInt.of(4);
+        return OptionalInt.of(16);
     }
 
 }

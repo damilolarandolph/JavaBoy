@@ -33,6 +33,6 @@ public class Pop implements Instruction {
     private OptionalInt pop(RegisterPairs pair, CPU cpu) {
         int value = cpu.popSP() | (cpu.popSP() << 8) ;
         cpu.writeWordRegister(pair, value);
-        return OptionalInt.of(3);
+        return OptionalInt.of(12);
     }
 }

@@ -29,7 +29,7 @@ public class Call implements Instruction {
 
     private OptionalInt  call(CPU cpu){
         applyCall(cpu);
-        return OptionalInt.of(6);
+        return OptionalInt.of(24);
     }
 
     private OptionalInt call(JumpConditions condition, CPU cpu){
@@ -38,7 +38,7 @@ public class Call implements Instruction {
         }else
         {
             cpu.setPC(cpu.getPC() + 2);
-            return OptionalInt.of(3);
+            return OptionalInt.of(12);
         }
     }
 

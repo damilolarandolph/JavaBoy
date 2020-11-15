@@ -1,7 +1,12 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.*;
+import JavaBoy.cpu.Address;
+import JavaBoy.cpu.CPU;
+import JavaBoy.cpu.REGISTERS;
+import JavaBoy.cpu.RegisterPair;
 import JavaBoy.cpu.flags.FLAGS;
+import JavaBoy.cpu.registers.RegisterPairs;
+import JavaBoy.utils.ArithmeticUtils;
 
 import java.util.OptionalInt;
 
@@ -26,7 +31,7 @@ public class Add implements Instruction {
             case 0x85:
                 return add(REGISTERS.L, cpu);
             case 0x86:
-                return add(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
+                return add(RegisterPairs.HL, cpu);
             case 0xc6:
                 return add(cpu);
             // Add + Carry Flag
@@ -45,7 +50,7 @@ public class Add implements Instruction {
             case 0x8d:
                 return addC(REGISTERS.L, cpu);
             case 0x8e:
-                return addC(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
+                return addC(RegisterPairs.HL, cpu);
             case 0xce:
                 return addC(cpu);
 
@@ -76,9 +81,9 @@ public class Add implements Instruction {
 
     }
 
-    private OptionalInt add(RegisterPair pair, CPU cpu) {
+    private OptionalInt add(RegisterPairs pair, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
+        int val2 = cpu.readAddress(cpu.readWordRegister(pair));
 
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
         return OptionalInt.of(8);
@@ -114,11 +119,9 @@ public class Add implements Instruction {
 
     }
 
-    private OptionalInt addC(RegisterPair pair, CPU cpu) {
+    private OptionalInt addC(RegisterPairs pair, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-
-        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
-
+        int val2 = cpu.readAddress(cpu.readWordRegister(pair));
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
 
         return OptionalInt.of(8);
@@ -157,7 +160,7 @@ public class Add implements Instruction {
     }
 
 
-    private OptionalInt add16(RegisterPair pair, CPU cpu){
+    private OptionalInt add16(RegisterPair pair, CPU cpu) {
         RegisterPair hlPair = new RegisterPair(REGISTERS.H, REGISTERS.L);
         int val1 = cpu.readWordRegister(hlPair);
         int val2 = cpu.readWordRegister(pair);
@@ -166,7 +169,7 @@ public class Add implements Instruction {
         return OptionalInt.of(8);
     }
 
-    private OptionalInt add16SP(CPU cpu){
+    private OptionalInt add16SP(CPU cpu) {
         RegisterPair hlPair = new RegisterPair(REGISTERS.H, REGISTERS.L);
         int val1 = cpu.readWordRegister(hlPair);
         int val2 = cpu.readWordRegister(REGISTERS.SP);
@@ -175,35 +178,23 @@ public class Add implements Instruction {
         return OptionalInt.of(8);
     }
 
-    private OptionalInt addSP(CPU cpu){
+    private OptionalInt addSP(CPU cpu) {
         int val1 = cpu.readWordRegister(REGISTERS.SP);
         int val2 = cpu.readPC();
 
         cpu.writeWordRegister(REGISTERS.SP, applyAdd16(val1, val2, cpu));
-        cpu.resetFlag(FLAGS.Z);
+        cpu.setFlag(FLAGS.Z, false);
 
         return OptionalInt.of(16);
     }
 
 
-    private int applyAdd16(int val1, int val2, CPU cpu){
+    private int applyAdd16(int val1, int val2, CPU cpu) {
         int result = val1 + val2;
-        boolean carry  = ((0xfff & val2) + (0xfff & val2) & 0x1000) == 0x1000;
-
-        if(carry)
-            cpu.setFlag(FLAGS.H);
-        else
-            cpu.resetFlag(FLAGS.H);
-
-        if(result > 0xffff)
-            cpu.setFlag(FLAGS.C);
-        else
-            cpu.resetFlag(FLAGS.C);
-
-
-      cpu.resetFlag(FLAGS.N);
-
-      return result;
+        cpu.setFlag(FLAGS.H, ArithmeticUtils.isHalfCarry16(val1, val2));
+        cpu.setFlag(FLAGS.C, ArithmeticUtils.isCarry16(val1, val2));
+        cpu.setFlag(FLAGS.N, false);
+        return result;
 
     }
 }

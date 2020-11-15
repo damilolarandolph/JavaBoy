@@ -42,7 +42,7 @@ public class Daa implements Instruction {
         cpu.writeFlag(FLAGS.Z, value == 0 ? 1 : 0);
         cpu.resetFlag(FLAGS.H);
         cpu.writeRegister(REGISTERS.A, value);
-        return OptionalInt.of(1);
+        return OptionalInt.of(4);
     }
 
 }
