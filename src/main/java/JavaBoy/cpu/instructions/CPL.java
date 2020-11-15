@@ -8,12 +8,12 @@ import java.util.OptionalInt;
 public class CPL implements Instruction {
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-        if (opcode == 0x2f){
+        if (opcode == 0x2f) {
             int value = cpu.readRegister(REGISTERS.A);
             cpu.writeRegister(REGISTERS.A, ~(value));
             return OptionalInt.of(4);
 
-        }else {
+        } else {
             return OptionalInt.empty();
         }
     }

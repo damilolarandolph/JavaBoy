@@ -1,7 +1,9 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.*;
+import JavaBoy.cpu.CPU;
+import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
+import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
 
@@ -9,7 +11,7 @@ public class Xor implements Instruction {
 
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-        switch (opcode){
+        switch (opcode) {
             case 0xaf:
                 return xor(REGISTERS.A, cpu);
             case 0xa8:
@@ -19,13 +21,13 @@ public class Xor implements Instruction {
             case 0xaa:
                 return xor(REGISTERS.D, cpu);
             case 0xab:
-                return  xor(REGISTERS.E, cpu);
+                return xor(REGISTERS.E, cpu);
             case 0xac:
                 return xor(REGISTERS.H, cpu);
             case 0xad:
                 return xor(REGISTERS.L, cpu);
             case 0xae:
-                return xor(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
+                return xorHL(cpu);
             case 0xee:
                 return xor(cpu);
             default:
@@ -33,17 +35,17 @@ public class Xor implements Instruction {
         }
     }
 
-    private OptionalInt xor(REGISTERS reg, CPU cpu){
+    private OptionalInt xor(REGISTERS reg, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg);
 
         cpu.writeRegister(REGISTERS.A, applyXOR(val1, val2, cpu));
-        return  OptionalInt.of(4);
+        return OptionalInt.of(4);
     }
 
-    private OptionalInt xor(RegisterPair pair, CPU cpu){
+    private OptionalInt xorHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
+        int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
 
         cpu.writeRegister(REGISTERS.A, applyXOR(val1, val2, cpu));
 
@@ -51,7 +53,7 @@ public class Xor implements Instruction {
     }
 
 
-    private OptionalInt xor(CPU cpu){
+    private OptionalInt xor(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
         cpu.writeRegister(REGISTERS.A, applyXOR(val1, val2, cpu));
@@ -61,17 +63,11 @@ public class Xor implements Instruction {
 
     private int applyXOR(int val1, int val2, CPU cpu) {
         int result = (val1 & 0xff) ^ (val2 & 0xff);
+        cpu.setFlag(FLAGS.Z, result == 0);
 
-        if (result == 0x0) {
-            cpu.setFlag(FLAGS.Z);
-
-        } else {
-            cpu.resetFlag(FLAGS.Z);
-        }
-
-        cpu.resetFlag(FLAGS.C);
-        cpu.resetFlag(FLAGS.H);
-        cpu.resetFlag(FLAGS.N);
+        cpu.setFlag(FLAGS.C, false);
+        cpu.setFlag(FLAGS.H, false);
+        cpu.setFlag(FLAGS.N, false);
 
 
         return result;

@@ -1,7 +1,9 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.*;
+import JavaBoy.cpu.CPU;
+import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
+import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
 
@@ -9,13 +11,13 @@ public class Or implements Instruction {
 
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-        switch (opcode){
+        switch (opcode) {
             case 0xb7:
                 return or(REGISTERS.A, cpu);
             case 0xb0:
                 return or(REGISTERS.B, cpu);
             case 0xb1:
-                return  or(REGISTERS.C, cpu);
+                return or(REGISTERS.C, cpu);
             case 0xb2:
                 return or(REGISTERS.D, cpu);
             case 0xb3:
@@ -25,7 +27,7 @@ public class Or implements Instruction {
             case 0xb5:
                 return or(REGISTERS.L, cpu);
             case 0xb6:
-                return or(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
+                return orHL(cpu);
             case 0xf6:
                 return or(cpu);
 
@@ -35,51 +37,36 @@ public class Or implements Instruction {
     }
 
 
-
-    OptionalInt or(REGISTERS reg, CPU cpu){
+    OptionalInt or(REGISTERS reg, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg);
-
-
         cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
-
-
         return OptionalInt.of(4);
     }
 
 
-    OptionalInt or(RegisterPair pair, CPU cpu){
+    OptionalInt orHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
-
+        int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
         cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
-
         return OptionalInt.of(8);
     }
 
 
-    OptionalInt or(CPU cpu){
+    OptionalInt or(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
-
         cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
-
         return OptionalInt.of(8);
     }
 
 
-    int applyOr(int val1, int val2, CPU cpu){
+    int applyOr(int val1, int val2, CPU cpu) {
         int result = (val1 & 0xff) | (val2 & 0xff);
-
-        if (result <= 0x0){
-          cpu.setFlag(FLAGS.Z);
-        }else{
-            cpu.resetFlag(FLAGS.Z);
-        }
-
-        cpu.resetFlag(FLAGS.C);
-        cpu.resetFlag(FLAGS.H);
-        cpu.resetFlag(FLAGS.N);
+        cpu.setFlag(FLAGS.Z, result == 0);
+        cpu.setFlag(FLAGS.C, false);
+        cpu.setFlag(FLAGS.H, false);
+        cpu.setFlag(FLAGS.N, false);
         return result;
     }
 }

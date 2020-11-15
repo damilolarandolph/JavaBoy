@@ -1,16 +1,18 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.instructions.jumpconditions.*;
+import JavaBoy.cpu.instructions.jumpconditions.JumpConditions;
 
 import java.util.OptionalInt;
+
+import static JavaBoy.utils.BitUtils.getLsb;
+import static JavaBoy.utils.BitUtils.getMsb;
 
 public class Call implements Instruction {
 
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-        switch (opcode){
+        switch (opcode) {
             case 0xcd:
                 return call(cpu);
             case 0xc4:
@@ -27,29 +29,25 @@ public class Call implements Instruction {
     }
 
 
-    private OptionalInt  call(CPU cpu){
+    private OptionalInt call(CPU cpu) {
         applyCall(cpu);
         return OptionalInt.of(24);
     }
 
-    private OptionalInt call(JumpConditions condition, CPU cpu){
-        if (condition.test(cpu)){
+    private OptionalInt call(JumpConditions condition, CPU cpu) {
+        if (condition.test(cpu)) {
             return call(cpu);
-        }else
-        {
+        } else {
             cpu.setPC(cpu.getPC() + 2);
             return OptionalInt.of(12);
         }
     }
 
     private void applyCall(CPU cpu) {
-        cpu.decrementSP();
-        Address addr = new Address(cpu.getSP());
-        cpu.decrementSP();
-        Address addrlow = new Address(cpu.getSP());
-        cpu.writeAddress(addr, cpu.getPC() >>> 8);
-        cpu.writeAddress(addrlow, cpu.getPC() & 0xff);
+
         int word = cpu.readWordPC();
+        cpu.pushSP(getMsb(cpu.getPC()));
+        cpu.pushSP(getLsb(cpu.getPC()));
         cpu.setPC(word);
 
     }

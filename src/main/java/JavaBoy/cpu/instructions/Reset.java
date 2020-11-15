@@ -1,15 +1,15 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
+import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
 
 public class Reset implements Instruction {
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-        switch (opcode){
+        switch (opcode) {
             case 0x87:
                 return res(0, REGISTERS.A, cpu);
             case 0x80:
@@ -143,19 +143,20 @@ public class Reset implements Instruction {
         }
     }
 
-    private OptionalInt res(int resetBit, REGISTERS reg, CPU cpu){
+    private OptionalInt res(int resetBit, REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         cpu.writeRegister(reg, applyRes(resetBit, bits));
         return OptionalInt.of(8);
     }
-    private OptionalInt res(int resetBit, CPU cpu){
-        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
+
+    private OptionalInt res(int resetBit, CPU cpu) {
+        int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         cpu.writeAddress(addr, applyRes(resetBit, bits));
         return OptionalInt.of(16);
     }
 
-    private int applyRes(int resetBit, int value){
+    private int applyRes(int resetBit, int value) {
         int restBitMask = 0xfe << resetBit;
         return value & restBitMask;
     }

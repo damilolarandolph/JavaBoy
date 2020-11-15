@@ -1,7 +1,9 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.*;
+import JavaBoy.cpu.CPU;
+import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
+import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
 
@@ -9,7 +11,7 @@ public class Cp implements Instruction {
 
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-        switch (opcode){
+        switch (opcode) {
             case 0xbf:
                 return cp(REGISTERS.A, cpu);
             case 0xb8:
@@ -25,7 +27,7 @@ public class Cp implements Instruction {
             case 0xbd:
                 return cp(REGISTERS.L, cpu);
             case 0xbe:
-                return cp(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
+                return cpHL(cpu);
             case 0xfe:
                 return cp(cpu);
             default:
@@ -34,26 +36,26 @@ public class Cp implements Instruction {
     }
 
 
-    private OptionalInt cp(REGISTERS reg, CPU cpu){
+    private OptionalInt cp(REGISTERS reg, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg);
 
-        applyCp(val1, val2 ,cpu);
+        applyCp(val1, val2, cpu);
 
         return OptionalInt.of(4);
     }
 
 
-    private OptionalInt cp(RegisterPair pair, CPU cpu){
+    private OptionalInt cpHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
+        int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
 
         applyCp(val1, val2, cpu);
 
         return OptionalInt.of(8);
     }
 
-    private OptionalInt cp(CPU cpu){
+    private OptionalInt cp(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
 
@@ -63,26 +65,13 @@ public class Cp implements Instruction {
     }
 
 
-    private void applyCp(int val1, int val2, CPU cpu){
+    private void applyCp(int val1, int val2, CPU cpu) {
         boolean isEqual = (val1 & 0xff) == (val1 & 0xff);
 
-        if (isEqual)
-            cpu.setFlag(FLAGS.Z);
-        else
-            cpu.resetFlag(FLAGS.Z);
-
-        if((val1 & 0xf) < (val1 & 0xf))
-            cpu.setFlag(FLAGS.H);
-        else
-            cpu.resetFlag(FLAGS.H);
-
-        if (val1 < val2)
-            cpu.setFlag(FLAGS.C);
-        else
-            cpu.resetFlag(FLAGS.C);
-
-
-        cpu.resetFlag(FLAGS.N);
+        cpu.setFlag(FLAGS.Z, isEqual);
+        cpu.setFlag(FLAGS.H, (val1 & 0xf) < (val1 & 0xf));
+        cpu.setFlag(FLAGS.C, val1 < val2);
+        cpu.setFlag(FLAGS.N, false);
 
     }
 }

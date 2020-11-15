@@ -1,11 +1,13 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.REGISTERS;
+import JavaBoy.cpu.flags.FLAGS;
+import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
+
+import static JavaBoy.utils.BitUtils.getNthBit;
 
 public class Bit implements Instruction {
     @Override
@@ -139,10 +141,6 @@ public class Bit implements Instruction {
                 return bit(6, cpu);
             case 0x7e:
                 return bit(7, cpu);
-
-
-
-
             default:
                 return OptionalInt.empty();
         }
@@ -150,10 +148,11 @@ public class Bit implements Instruction {
 
 
     private void applyBitTest(int testBit, int value, CPU cpu) {
-        int bit = (value >>> testBit) & 0x01;
-        cpu.writeFlag(FLAGS.Z, ~(bit));
-        cpu.setFlag(FLAGS.H);
-        cpu.resetFlag(FLAGS.N);
+        int bit = getNthBit(testBit, value);
+
+        cpu.setFlag(FLAGS.Z, ~(bit) == 1);
+        cpu.setFlag(FLAGS.H, true);
+        cpu.setFlag(FLAGS.N, false);
     }
 
     private OptionalInt bit(int testBit, REGISTERS REGISTERS, CPU cpu) {
@@ -163,8 +162,7 @@ public class Bit implements Instruction {
     }
 
     private OptionalInt bit(int testBit, CPU cpu) {
-        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
-        int bits = cpu.readAddress(addr);
+        int bits = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
         applyBitTest(testBit, bits, cpu);
         return OptionalInt.of(12);
     }

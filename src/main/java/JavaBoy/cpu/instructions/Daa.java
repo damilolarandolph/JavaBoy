@@ -1,8 +1,8 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.REGISTERS;
+import JavaBoy.cpu.flags.FLAGS;
 
 import java.util.OptionalInt;
 
@@ -25,7 +25,7 @@ public class Daa implements Instruction {
         if (cpu.isFlag(FLAGS.N)) {
             if (cpu.isFlag(FLAGS.C) || value > 0x99) {
                 value += 0x60;
-                cpu.setFlag(FLAGS.C);
+                cpu.setFlag(FLAGS.C, true);
             }
 
             if (cpu.isFlag(FLAGS.H) || getLsb(value) > 0x09) {
@@ -39,8 +39,8 @@ public class Daa implements Instruction {
                 value -= 0x6;
         }
 
-        cpu.writeFlag(FLAGS.Z, value == 0 ? 1 : 0);
-        cpu.resetFlag(FLAGS.H);
+        cpu.setFlag(FLAGS.Z, value == 0);
+        cpu.setFlag(FLAGS.H, false);
         cpu.writeRegister(REGISTERS.A, value);
         return OptionalInt.of(4);
     }

@@ -196,9 +196,9 @@ public class Load implements Instruction {
                 return loadAHLI(cpu);
             case 0x3a:
                 return loadAHLD(cpu);
-                //16 bit loads
+            //16 bit loads
             case 0x01:
-                return load16(RegisterPairs.BC,cpu);
+                return load16(RegisterPairs.BC, cpu);
             case 0x11:
                 return load16(RegisterPairs.DE, cpu);
             case 0x21:
@@ -352,7 +352,7 @@ public class Load implements Instruction {
         return OptionalInt.of(12);
     }
 
-    private OptionalInt load16SP(CPU cpu){
+    private OptionalInt load16SP(CPU cpu) {
         int word = cpu.readWordPC();
         cpu.setSP(word);
         return OptionalInt.of(12);

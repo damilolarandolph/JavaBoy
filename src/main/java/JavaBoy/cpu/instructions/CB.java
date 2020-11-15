@@ -19,7 +19,7 @@ public class CB implements Instruction {
             for (Instruction instruction : instructions) {
                 result = instruction.execute(cbOpcode, cpu);
                 if (result.isPresent())
-                    return  OptionalInt.of(4 + result.hashCode());
+                    return OptionalInt.of(4 + result.hashCode());
             }
         }
         return OptionalInt.empty();

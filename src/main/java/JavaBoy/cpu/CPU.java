@@ -68,6 +68,7 @@ public interface CPU {
 
     void readWordRegister(REGISTERS reg, REGISTERS reg2, int value);
 
+
     int getFlag(FLAGS FLAGS);
 
     @Deprecated

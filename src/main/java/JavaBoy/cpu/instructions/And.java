@@ -1,7 +1,9 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.*;
+import JavaBoy.cpu.CPU;
+import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
+import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
 
@@ -10,7 +12,7 @@ public class And implements Instruction {
 
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-        switch (opcode){
+        switch (opcode) {
             case 0xa7:
                 return and(REGISTERS.A, cpu);
             case 0xa0:
@@ -26,7 +28,7 @@ public class And implements Instruction {
             case 0xa5:
                 return and(REGISTERS.L, cpu);
             case 0xa6:
-                return and(new RegisterPair(REGISTERS.H, REGISTERS.L), cpu);
+                return andHL(cpu);
             case 0xe6:
                 return and(cpu);
             default:
@@ -35,7 +37,7 @@ public class And implements Instruction {
     }
 
 
-    OptionalInt and(REGISTERS reg, CPU cpu){
+    OptionalInt and(REGISTERS reg, CPU cpu) {
 
         int reg1 = cpu.readRegister(REGISTERS.A);
         int reg2 = cpu.readRegister(reg);
@@ -45,7 +47,7 @@ public class And implements Instruction {
         return OptionalInt.of(4);
     }
 
-    OptionalInt and(CPU cpu){
+    OptionalInt and(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
 
@@ -54,9 +56,9 @@ public class And implements Instruction {
         return OptionalInt.of(8);
     }
 
-    OptionalInt and(RegisterPair pair, CPU cpu){
+    OptionalInt andHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(new Address(cpu.readWordRegister(pair)));
+        int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
 
         cpu.writeRegister(REGISTERS.A, applyAnd(val1, val2, cpu));
 
@@ -64,18 +66,13 @@ public class And implements Instruction {
     }
 
 
-    int applyAnd(int val1, int val2, CPU cpu){
+    int applyAnd(int val1, int val2, CPU cpu) {
         int result = (val1 & 0xff) & (val2 & 0xff);
+        cpu.setFlag(FLAGS.Z, result == 0);
 
-        if (result == 0x0){
-           cpu.setFlag(FLAGS.Z);
-        }else{
-            cpu.resetFlag(FLAGS.Z);
-        }
-
-        cpu.setFlag(FLAGS.H);
-        cpu.resetFlag(FLAGS.C);
-        cpu.resetFlag(FLAGS.N);
+        cpu.setFlag(FLAGS.H, true);
+        cpu.setFlag(FLAGS.C, false);
+        cpu.setFlag(FLAGS.N, false);
         return result;
     }
 

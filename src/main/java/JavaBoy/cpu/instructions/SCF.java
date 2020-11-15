@@ -9,11 +9,11 @@ public class SCF implements Instruction {
 
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-       if (opcode == 0x37){
-           cpu.setFlag(FLAGS.C);
-           return OptionalInt.of(4);
-       }else{
-           return OptionalInt.empty();
-       }
+        if (opcode == 0x37) {
+            cpu.setFlag(FLAGS.C, true);
+            return OptionalInt.of(4);
+        } else {
+            return OptionalInt.empty();
+        }
     }
 }

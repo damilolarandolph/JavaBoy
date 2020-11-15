@@ -1,9 +1,6 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.REGISTERS;
-import JavaBoy.cpu.RegisterPair;
 import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
@@ -31,7 +28,7 @@ public class Pop implements Instruction {
 
 
     private OptionalInt pop(RegisterPairs pair, CPU cpu) {
-        int value = cpu.popSP() | (cpu.popSP() << 8) ;
+        int value = cpu.popSP() | (cpu.popSP() << 8);
         cpu.writeWordRegister(pair, value);
         return OptionalInt.of(12);
     }

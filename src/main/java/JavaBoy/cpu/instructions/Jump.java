@@ -1,8 +1,8 @@
 package JavaBoy.cpu.instructions;
 
 import JavaBoy.cpu.CPU;
-import JavaBoy.cpu.REGISTERS;
-import JavaBoy.cpu.instructions.jumpconditions.*;
+import JavaBoy.cpu.instructions.jumpconditions.JumpConditions;
+import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
 
@@ -10,39 +10,38 @@ public class Jump implements Instruction {
 
     @Override
     public OptionalInt execute(int opcode, CPU cpu) {
-       switch (opcode){
-           case 0xc3:
-               return jp(cpu);
-           case 0xc2:
-               return jp(JumpConditions.NZ, cpu);
-           case 0xca:
-               return jp(JumpConditions.Z, cpu);
-           case 0xd2:
-               return jp(JumpConditions.NC, cpu);
-           case 0xda:
-               return jp(JumpConditions.C, cpu);
-           case 0x18:
-               return jr(cpu);
-           case 0x20:
-               return jr(JumpConditions.NZ, cpu);
-           case 0x28:
-               return jr(JumpConditions.Z, cpu);
-           case 0x30:
-               return jr(JumpConditions.NC, cpu);
-           case 0x38:
-               return jr(JumpConditions.C, cpu);
-           case 0xe9:
-               return jpHL(cpu);
-           default:
-              return OptionalInt.empty();
+        switch (opcode) {
+            case 0xc3:
+                return jp(cpu);
+            case 0xc2:
+                return jp(JumpConditions.NZ, cpu);
+            case 0xca:
+                return jp(JumpConditions.Z, cpu);
+            case 0xd2:
+                return jp(JumpConditions.NC, cpu);
+            case 0xda:
+                return jp(JumpConditions.C, cpu);
+            case 0x18:
+                return jr(cpu);
+            case 0x20:
+                return jr(JumpConditions.NZ, cpu);
+            case 0x28:
+                return jr(JumpConditions.Z, cpu);
+            case 0x30:
+                return jr(JumpConditions.NC, cpu);
+            case 0x38:
+                return jr(JumpConditions.C, cpu);
+            case 0xe9:
+                return jpHL(cpu);
+            default:
+                return OptionalInt.empty();
 
-       }
+        }
     }
 
     private OptionalInt jp(CPU cpu) {
-        int byte1 = cpu.readPC();
-        int byte2 = cpu.readPC();
-        applyJP(byte1, byte2, cpu);
+        int word = cpu.readWordPC();
+        cpu.setPC(word);
         return OptionalInt.of(16);
     }
 
@@ -56,7 +55,7 @@ public class Jump implements Instruction {
     }
 
     private OptionalInt jpHL(CPU cpu) {
-        int value = cpu.readWordRegister(REGISTERS.H, REGISTERS.L);
+        int value = cpu.readWordRegister(RegisterPairs.HL);
         cpu.setPC(value);
         return OptionalInt.of(4);
     }
@@ -76,14 +75,9 @@ public class Jump implements Instruction {
         }
     }
 
-    private void applyJP(int byte1, int byte2, CPU cpu) {
-        int word = ((byte2 << 8) | byte1) ;
-        cpu.setPC(word);
-    }
-
     private void applyJR(int value, CPU cpu) {
         byte signedByte = (byte) value;
-        cpu.setPC(cpu.getPC() + signedByte );
+        cpu.setPC(cpu.getPC() + signedByte);
 
     }
 }

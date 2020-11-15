@@ -1,8 +1,8 @@
 package JavaBoy.cpu.instructions;
 
-import JavaBoy.cpu.Address;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
+import JavaBoy.cpu.registers.RegisterPairs;
 
 import java.util.OptionalInt;
 
@@ -158,7 +158,7 @@ public class Set implements Instruction {
     }
 
     private OptionalInt set(int setBit, CPU cpu) {
-        Address addr = new Address(cpu.readWordRegister(REGISTERS.H, REGISTERS.L));
+        int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         cpu.writeAddress(addr, applySet(setBit, bits));
         return OptionalInt.of(16);
