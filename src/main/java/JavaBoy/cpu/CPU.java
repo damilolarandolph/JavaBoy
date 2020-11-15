@@ -21,9 +21,15 @@ public interface CPU {
 
     boolean isFlag(FLAGS FLAGS);
 
+    @Deprecated
     void writeAddress(Address addr, int value);
 
+    void writeAddress(int address, int value);
+
+    @Deprecated
     int readAddress(Address addr);
+
+    int readAddress(int address);
 
     int getSP();
 
