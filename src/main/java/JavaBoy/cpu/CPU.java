@@ -1,49 +1,49 @@
 package JavaBoy.cpu;
 
 import JavaBoy.cpu.flags.FLAGS;
+import JavaBoy.cpu.registers.RegisterBank;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-public interface CPU {
+public abstract class CPU {
 
-    int readPC();
 
-    int readWordPC();
+    abstract public int readPC();
 
-    boolean isFlag(FLAGS FLAGS);
+    abstract public int readWordPC();
 
-    void writeAddress(int address, int value);
+    abstract public boolean isFlag(FLAGS FLAGS);
 
-    int readAddress(int address);
+    abstract public void writeAddress(int address, int value);
 
-    int getSP();
+    abstract public int readAddress(int address);
 
-    void setSP(int val);
+    abstract public int getSP();
 
-    void pushSP(int value);
+    abstract public void setSP(int val);
 
-    int popSP();
+    abstract public void pushSP(int value);
 
-    void writeRegister(REGISTERS REGISTERS, int value);
+    abstract public int popSP();
 
-    int readRegister(REGISTERS REGISTERS);
+    abstract public void writeRegister(REGISTERS REGISTERS, int value);
 
-    int readWordRegister(RegisterPair pair);
+    abstract public int readRegister(REGISTERS REGISTERS);
 
-    int readWordRegister(RegisterPairs pair);
+    abstract public int readWordRegister(RegisterPairs pair);
 
-    void writeWordRegister(RegisterPairs pair, int value);
+    abstract public void writeWordRegister(RegisterPairs pair, int value);
 
-    void readWordRegister(REGISTERS reg, REGISTERS reg2, int value);
+    abstract public void readWordRegister(REGISTERS reg, REGISTERS reg2, int value);
 
-    int getFlag(FLAGS FLAGS);
+    abstract public int getFlag(FLAGS FLAGS);
 
-    void setFlag(FLAGS FLAGS, boolean value);
+    abstract public void setFlag(FLAGS FLAGS, boolean value);
 
-    void enableInterrupts();
+    abstract public void enableInterrupts();
 
-    void disableInterrupts();
+    abstract public void disableInterrupts();
 
-    int getPC();
+    abstract public int getPC();
 
-    void setPC(int word);
+    abstract public void setPC(int word);
 }
