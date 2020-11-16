@@ -3,23 +3,23 @@ package JavaBoy.memory;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public abstract class MemoryMap {
+public class MemoryMap {
 
-    protected ArrayList<MemorySlot> slots = new ArrayList<>();
+    private final MemorySlot[] slots;
 
 
-    public void addSlot(MemorySlot slot){
-        this.slots.add(slot);
+    MemoryMap(MemorySlot[] slots){
+        this.slots = slots;
     }
 
-    public int readByte(int address)  {
+    public int readByte(int address) {
 
         Optional<MemorySlot> slot = getSlot(address);
 
-        if (slot.isPresent()){
+        if (slot.isPresent()) {
             return slot.get().getByte(address);
-        }else{
-            System.err.println("Address: " + Integer.toHexString(address)  + " is not mapped to any slot");
+        } else {
+            System.err.println("Address: " + Integer.toHexString(address) + " is not mapped to any slot");
             System.exit(1);
             return -99;
 
@@ -27,26 +27,25 @@ public abstract class MemoryMap {
 
     }
 
-
-    public void setByte(int address, int value)  {
+    public void setByte(int address, int value) {
 
         Optional<MemorySlot> slot = getSlot(address);
 
-        if (slot.isPresent()){
-             slot.get().setByte(address, value );
-        }else{
-            System.err.println("Address: " + Integer.toHexString(address)  + " is not mapped to any slot");
+        if (slot.isPresent()) {
+            slot.get().setByte(address, value);
+        } else {
+            System.err.println("Address: " + Integer.toHexString(address) + " is not mapped to any slot");
             System.exit(1);
         }
 
     }
 
-    private Optional<MemorySlot> getSlot(int address){
-       for(MemorySlot slot: this.slots){
-           if (slot.hasAddressInSlot(address))
-               return Optional.of(slot);
-       }
-       return Optional.empty();
+    private Optional<MemorySlot> getSlot(int address) {
+        for (MemorySlot slot : this.slots) {
+            if (slot.hasAddressInSlot(address))
+                return Optional.of(slot);
+        }
+        return Optional.empty();
     }
 
 
