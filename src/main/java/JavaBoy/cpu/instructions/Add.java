@@ -146,10 +146,10 @@ public class Add implements Instruction {
     }
 
     private OptionalInt addSP(CPU cpu) {
-        int val1 = cpu.readWordRegister(REGISTERS.SP);
+        int val1 = cpu.getSP();
         int val2 = cpu.readPC();
 
-        cpu.writeWordRegister(REGISTERS.SP, applyAdd16(val1, val2, cpu));
+        cpu.setSP(applyAdd16(val1, val2, cpu));
         cpu.setFlag(FLAGS.Z, false);
 
         return OptionalInt.of(16);
