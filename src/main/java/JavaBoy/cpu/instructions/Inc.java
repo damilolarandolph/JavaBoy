@@ -75,7 +75,7 @@ public class Inc implements Instruction {
 
 
     private int applyInc(int val, CPU cpu) {
-        int result = val + 1;
+        int result = (val + 1) & 0xff;
         cpu.setFlag(FLAGS.Z, result == 0);
         cpu.setFlag(FLAGS.H, isHalfCarry8(val, 1));
         cpu.setFlag(FLAGS.N, false);
