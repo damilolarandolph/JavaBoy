@@ -28,8 +28,9 @@ public class Pop implements Instruction {
 
 
     private OptionalInt pop(RegisterPairs pair, CPU cpu) {
-        int value = cpu.popSP() | (cpu.popSP() << 8);
-        cpu.writeWordRegister(pair, value);
+        int lowByte = cpu.popSP();
+        int highByte = cpu.popSP();
+        cpu.writeWordRegister(pair,(highByte << 8) | lowByte);
         return OptionalInt.of(12);
     }
 }
