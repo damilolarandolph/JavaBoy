@@ -61,14 +61,14 @@ public class Jump implements Instruction {
     }
 
     private OptionalInt jr(CPU cpu) {
-        int value = cpu.readWordPC();
+        int value = cpu.readPC();
         applyJR(value, cpu);
         return OptionalInt.of(12);
     }
 
     private OptionalInt jr(JumpConditions condition, CPU cpu) {
         if (condition.test(cpu)) {
-            return jp(cpu);
+            return jr(cpu);
         } else {
             cpu.setPC(cpu.getPC() + 1);
             return OptionalInt.of(8);
