@@ -43,8 +43,8 @@ public class Return implements Instruction {
     }
 
     private void applyRet(CPU cpu) {
-        int lowByte = cpu.readAddress(cpu.popSP());
-        int highByte = cpu.readAddress(cpu.popSP());
+        int lowByte = cpu.popSP();
+        int highByte = cpu.popSP();
 
         cpu.setPC((highByte << 8) | lowByte);
 
