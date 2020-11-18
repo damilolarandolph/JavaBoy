@@ -10,6 +10,6 @@ public enum FLAGS {
     }
 
     public int getBitIndex() {
-        return this.getBitIndex();
+        return this.bitIndex;
     }
 }
