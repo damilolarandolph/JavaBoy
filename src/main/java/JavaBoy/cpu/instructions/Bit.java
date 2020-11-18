@@ -5,13 +5,11 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 import static JavaBoy.utils.BitUtils.getNthBit;
 
 public class Bit implements Instruction {
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x47:
                 return bit(0, REGISTERS.A, cpu);
@@ -142,7 +140,7 @@ public class Bit implements Instruction {
             case 0x7e:
                 return bit(7, cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
@@ -155,16 +153,18 @@ public class Bit implements Instruction {
         cpu.setFlag(FLAGS.N, false);
     }
 
-    private OptionalInt bit(int testBit, REGISTERS REGISTERS, CPU cpu) {
+    private boolean bit(int testBit, REGISTERS REGISTERS, CPU cpu) {
         int bits = cpu.readRegister(REGISTERS);
         applyBitTest(testBit, bits, cpu);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt bit(int testBit, CPU cpu) {
+    private boolean bit(int testBit, CPU cpu) {
         int bits = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
         applyBitTest(testBit, bits, cpu);
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
 

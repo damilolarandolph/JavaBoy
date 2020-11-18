@@ -3,15 +3,13 @@ package JavaBoy.cpu.instructions;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 import static JavaBoy.utils.BitUtils.getLsb;
 import static JavaBoy.utils.BitUtils.getMsb;
 
 public class Push implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xf5:
                 return push(RegisterPairs.AF, cpu);
@@ -22,14 +20,15 @@ public class Push implements Instruction {
             case 0xe5:
                 return push(RegisterPairs.HL, cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
-    private OptionalInt push(RegisterPairs pair, CPU cpu) {
+    private boolean push(RegisterPairs pair, CPU cpu) {
         int val = cpu.readWordRegister(pair);
         cpu.pushSP(getMsb(val));
         cpu.pushSP(getLsb(val));
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 }

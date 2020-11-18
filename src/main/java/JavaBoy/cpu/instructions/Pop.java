@@ -3,12 +3,10 @@ package JavaBoy.cpu.instructions;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Pop implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xf1:
                 return pop(RegisterPairs.AF, cpu);
@@ -21,16 +19,17 @@ public class Pop implements Instruction {
 
 
             default:
-                return OptionalInt.empty();
+                return false;
 
         }
     }
 
 
-    private OptionalInt pop(RegisterPairs pair, CPU cpu) {
+    private boolean pop(RegisterPairs pair, CPU cpu) {
         int lowByte = cpu.popSP();
         int highByte = cpu.popSP();
-        cpu.writeWordRegister(pair,(highByte << 8) | lowByte);
-        return OptionalInt.of(12);
+        cpu.writeWordRegister(pair, (highByte << 8) | lowByte);
+        cpu.addCycles(3);
+        return true;
     }
 }

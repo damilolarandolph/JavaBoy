@@ -5,14 +5,12 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 import static JavaBoy.utils.ArithmeticUtils.isHalfCarry8;
 
 public class Inc implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x3c:
                 return inc(REGISTERS.A, cpu);
@@ -42,35 +40,38 @@ public class Inc implements Instruction {
 
 
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
-    private OptionalInt inc(REGISTERS reg, CPU cpu) {
+    private boolean inc(REGISTERS reg, CPU cpu) {
         int value = cpu.readRegister(reg);
 
         cpu.writeRegister(reg, applyInc(value, cpu));
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt incHL(RegisterPairs pair, CPU cpu) {
+    private boolean incHL(RegisterPairs pair, CPU cpu) {
         int address = cpu.readWordRegister(pair);
         int value = cpu.readAddress(address);
         cpu.writeAddress(address, applyInc(value, cpu));
-
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
 
     }
 
-    private OptionalInt inc16(RegisterPairs pair, CPU cpu) {
+    private boolean inc16(RegisterPairs pair, CPU cpu) {
 
         cpu.writeWordRegister(pair, cpu.readWordRegister(pair) + 1);
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
-    private OptionalInt inc16SP(CPU cpu) {
+    private boolean inc16SP(CPU cpu) {
         cpu.setSP(cpu.getSP() + 1);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 

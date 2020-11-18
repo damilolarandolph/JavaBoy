@@ -5,12 +5,10 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Or implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xb7:
                 return or(REGISTERS.A, cpu);
@@ -32,32 +30,35 @@ public class Or implements Instruction {
                 return or(cpu);
 
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
 
-    OptionalInt or(REGISTERS reg, CPU cpu) {
+    boolean or(REGISTERS reg, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg);
         cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
 
-    OptionalInt orHL(CPU cpu) {
+    boolean orHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
         cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 
-    OptionalInt or(CPU cpu) {
+    boolean or(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
         cpu.writeRegister(REGISTERS.A, applyOr(val1, val2, cpu));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 

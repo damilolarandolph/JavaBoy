@@ -5,11 +5,9 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Dec implements Instruction {
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x3d:
                 return dec(REGISTERS.A, cpu);
@@ -36,37 +34,39 @@ public class Dec implements Instruction {
             case 0x3b:
                 return dec16SP(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
 
-    private OptionalInt dec(REGISTERS reg, CPU cpu) {
+    private boolean dec(REGISTERS reg, CPU cpu) {
         int value = cpu.readRegister(reg);
 
         cpu.writeRegister(reg, applyDec(value, cpu));
-
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt decHL(CPU cpu) {
+    private boolean decHL(CPU cpu) {
         int address = cpu.readWordRegister(RegisterPairs.HL);
         int value = cpu.readAddress(address);
 
         cpu.writeAddress(address, applyDec(value, cpu));
-
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt dec16(RegisterPairs pair, CPU cpu) {
+    private boolean dec16(RegisterPairs pair, CPU cpu) {
 
         cpu.writeWordRegister(pair, cpu.readWordRegister(pair) - 1);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt dec16SP(CPU cpu) {
+    private boolean dec16SP(CPU cpu) {
         cpu.setSP(cpu.getSP() - 1);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
     private int applyDec(int value, CPU cpu) {

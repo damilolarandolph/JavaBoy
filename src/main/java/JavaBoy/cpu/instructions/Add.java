@@ -5,15 +5,13 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 import static JavaBoy.utils.ArithmeticUtils.*;
 
 public class Add implements Instruction {
 
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x87:
                 return add(REGISTERS.A, cpu);
@@ -65,55 +63,59 @@ public class Add implements Instruction {
             case 0xe8:
                 return addSP(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
 
     }
 
 
-    private OptionalInt add(REGISTERS fromREGISTERS, CPU cpu) {
+    private boolean add(REGISTERS fromREGISTERS, CPU cpu) {
         int reg1Val = cpu.readRegister(REGISTERS.A);
         int reg2Val = cpu.readRegister(fromREGISTERS);
         cpu.writeRegister(REGISTERS.A, addBytes(reg1Val, reg2Val, cpu));
-        return OptionalInt.of(4);
-
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt addHL(CPU cpu) {
+    private boolean addHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt add(CPU cpu) {
+    private boolean add(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
-        return OptionalInt.of(8);
-
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt addC(REGISTERS second, CPU cpu) {
+    private boolean addC(REGISTERS second, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(second) + cpu.getFlag(FLAGS.C);
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
 
     }
 
-    private OptionalInt addC(CPU cpu) {
+    private boolean addC(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt addCHL(CPU cpu) {
+    private boolean addCHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 
@@ -129,30 +131,32 @@ public class Add implements Instruction {
     }
 
 
-    private OptionalInt add16(RegisterPairs pair, CPU cpu) {
+    private boolean add16(RegisterPairs pair, CPU cpu) {
         int val1 = cpu.readWordRegister(RegisterPairs.HL);
         int val2 = cpu.readWordRegister(pair);
 
         cpu.writeWordRegister(RegisterPairs.HL, applyAdd16(val1, val2, cpu));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt add16SP(CPU cpu) {
+    private boolean add16SP(CPU cpu) {
         int val1 = cpu.readWordRegister(RegisterPairs.HL);
         int val2 = cpu.getSP();
 
         cpu.writeWordRegister(RegisterPairs.HL, applyAdd16(val1, val2, cpu));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt addSP(CPU cpu) {
+    private boolean addSP(CPU cpu) {
         int val1 = cpu.getSP();
         int val2 = cpu.readPC();
 
         cpu.setSP(applyAdd16(val1, val2, cpu));
         cpu.setFlag(FLAGS.Z, false);
-
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
 

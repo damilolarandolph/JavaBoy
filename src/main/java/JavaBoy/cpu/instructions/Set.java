@@ -4,12 +4,10 @@ import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Set implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xc7:
                 return set(0, REGISTERS.A, cpu);
@@ -141,7 +139,7 @@ public class Set implements Instruction {
                 return set(7, cpu);
 
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
@@ -151,16 +149,18 @@ public class Set implements Instruction {
         return setBitFlip | value;
     }
 
-    private OptionalInt set(int setBit, REGISTERS reg, CPU cpu) {
+    private boolean set(int setBit, REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         cpu.writeRegister(reg, applySet(setBit, bits));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt set(int setBit, CPU cpu) {
+    private boolean set(int setBit, CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         cpu.writeAddress(addr, applySet(setBit, bits));
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 }

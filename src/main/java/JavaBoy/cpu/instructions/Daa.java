@@ -4,20 +4,18 @@ import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 
-import java.util.OptionalInt;
-
 import static JavaBoy.utils.BitUtils.getLsb;
 
 public class Daa implements Instruction {
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         if (opcode == 0x27)
             return applyDAA(cpu);
         else
-            return OptionalInt.empty();
+            return false;
     }
 
-    private OptionalInt applyDAA(CPU cpu) {
+    private boolean applyDAA(CPU cpu) {
 
 
         int value = cpu.readRegister(REGISTERS.A);
@@ -42,7 +40,8 @@ public class Daa implements Instruction {
         cpu.setFlag(FLAGS.Z, value == 0);
         cpu.setFlag(FLAGS.H, false);
         cpu.writeRegister(REGISTERS.A, value);
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return false;
     }
 
 }

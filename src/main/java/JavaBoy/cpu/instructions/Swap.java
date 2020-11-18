@@ -5,15 +5,13 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 import static JavaBoy.utils.BitUtils.getLsn;
 import static JavaBoy.utils.BitUtils.getMsn;
 
 public class Swap implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x37:
                 return swap(REGISTERS.A, cpu);
@@ -32,24 +30,26 @@ public class Swap implements Instruction {
             case 0x36:
                 return swap(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
 
-    private OptionalInt swap(REGISTERS reg, CPU cpu) {
+    private boolean swap(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applySwap(bits, cpu);
         cpu.writeRegister(reg, result);
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt swap(CPU cpu) {
+    private boolean swap(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         int result = applySwap(bits, cpu);
         cpu.writeAddress(addr, result);
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
     private int applySwap(int val, CPU cpu) {

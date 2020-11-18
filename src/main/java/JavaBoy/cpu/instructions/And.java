@@ -5,13 +5,11 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class And implements Instruction {
 
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xa7:
                 return and(REGISTERS.A, cpu);
@@ -32,37 +30,37 @@ public class And implements Instruction {
             case 0xe6:
                 return and(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
 
-    OptionalInt and(REGISTERS reg, CPU cpu) {
+    private boolean and(REGISTERS reg, CPU cpu) {
 
         int reg1 = cpu.readRegister(REGISTERS.A);
         int reg2 = cpu.readRegister(reg);
 
         cpu.writeRegister(REGISTERS.A, applyAnd(reg1, reg2, cpu));
-
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    OptionalInt and(CPU cpu) {
+    private boolean and(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
 
         cpu.writeRegister(REGISTERS.A, applyAnd(val1, val2, cpu));
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    OptionalInt andHL(CPU cpu) {
+    boolean andHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
 
         cpu.writeRegister(REGISTERS.A, applyAnd(val1, val2, cpu));
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 

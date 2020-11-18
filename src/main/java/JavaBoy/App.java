@@ -17,7 +17,7 @@ import java.io.File;
 
 public class App {
     public static void main(String[] args) {
-        File file = new File(    App.class.getResource("/gb-test-roms/cpu_instrs/individual/07_jr_p_call_ret_rst.gb").getFile());
+        File file = new File(    App.class.getResource("/gb-test-roms/cpu_instrs/individual/06_ld_r_r.gb").getFile());
         Cartridge cart = new Cartridge(file);
 
         Instruction[] instructions = new Instruction[]{

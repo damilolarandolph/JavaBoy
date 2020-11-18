@@ -3,11 +3,9 @@ package JavaBoy.cpu.instructions;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.instructions.jumpconditions.JumpConditions;
 
-import java.util.OptionalInt;
-
 public class Return implements Instruction {
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xc9:
                 return ret(cpu);
@@ -38,7 +36,7 @@ public class Return implements Instruction {
             case 0xff:
                 return rst(0x38, cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
@@ -50,36 +48,37 @@ public class Return implements Instruction {
 
     }
 
-    private OptionalInt ret(CPU cpu) {
+    private boolean ret(CPU cpu) {
         applyRet(cpu);
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
-    private OptionalInt ret(JumpConditions condition, CPU cpu) {
+    private boolean ret(JumpConditions condition, CPU cpu) {
         if (condition.test(cpu)) {
             applyRet(cpu);
-            return OptionalInt.of(20);
+            cpu.addCycles(5);
         } else {
             cpu.setPC(cpu.getPC() + 1);
-            return OptionalInt.of(8);
+            cpu.addCycles(2);
         }
+        return true;
     }
 
-    private OptionalInt reti(CPU cpu) {
+    private boolean reti(CPU cpu) {
         applyRet(cpu);
         cpu.enableInterrupts();
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
 
-    private OptionalInt rst(int lowP, CPU cpu) {
+    private boolean rst(int lowP, CPU cpu) {
         cpu.pushSP(cpu.getPC() >>> 8);
         cpu.pushSP(cpu.getPC() & 0xff);
-
         cpu.setPC(lowP);
-
-
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
 }

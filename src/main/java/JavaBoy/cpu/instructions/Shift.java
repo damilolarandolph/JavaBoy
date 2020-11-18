@@ -5,11 +5,9 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Shift implements Instruction {
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x27:
                 return sla(REGISTERS.A, cpu);
@@ -61,7 +59,7 @@ public class Shift implements Instruction {
                 return srl(cpu);
 
             default:
-                return OptionalInt.empty();
+                return false;
 
         }
 
@@ -93,71 +91,65 @@ public class Shift implements Instruction {
         return result;
     }
 
-    private OptionalInt srl(REGISTERS reg, CPU cpu) {
+    private boolean srl(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
-
         int result = applySRL(bits, cpu);
-
         cpu.writeRegister(reg, result);
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt srl(CPU cpu) {
+    private boolean srl(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         int result = applySRL(bits, cpu);
         cpu.writeAddress(addr, result);
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
-    private OptionalInt sra(REGISTERS reg, CPU cpu) {
+    private boolean sra(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applySRA(bits, cpu);
         cpu.writeRegister(reg, result);
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt sra(CPU cpu) {
+    private boolean sra(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         int result = applySRA(bits, cpu);
         cpu.writeAddress(addr, result);
-
-        return OptionalInt.of(16);
-
+        cpu.addCycles(4);
+        return true;
     }
 
     private int applySLA(int value, CPU cpu) {
         int msb = value >>> 7;
         int result = value << 1;
-
         cpu.setFlag(FLAGS.C, msb == 1);
         cpu.setFlag(FLAGS.H, false);
         cpu.setFlag(FLAGS.N, false);
         cpu.setFlag(FLAGS.Z, result == 0);
-
         return result;
 
     }
 
-    private OptionalInt sla(REGISTERS reg, CPU cpu) {
+    private boolean sla(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
-
         int result = applySLA(bits, cpu);
-
         cpu.writeRegister(reg, result);
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt sla(CPU cpu) {
+    private boolean sla(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         int result = applySLA(bits, cpu);
         cpu.writeAddress(addr, result);
-
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 }

@@ -5,12 +5,10 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Cp implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xbf:
                 return cp(REGISTERS.A, cpu);
@@ -31,37 +29,37 @@ public class Cp implements Instruction {
             case 0xfe:
                 return cp(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
 
-    private OptionalInt cp(REGISTERS reg, CPU cpu) {
+    private boolean cp(REGISTERS reg, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg);
 
         applyCp(val1, val2, cpu);
-
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
 
-    private OptionalInt cpHL(CPU cpu) {
+    private boolean cpHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
 
         applyCp(val1, val2, cpu);
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt cp(CPU cpu) {
+    private boolean cp(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
 
         applyCp(val1, val2, cpu);
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 

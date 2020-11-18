@@ -5,8 +5,6 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 import static JavaBoy.utils.ArithmeticUtils.isCarry16;
 import static JavaBoy.utils.ArithmeticUtils.isHalfCarry16;
 import static JavaBoy.utils.BitUtils.getLsb;
@@ -15,7 +13,7 @@ import static JavaBoy.utils.BitUtils.getMsb;
 public class Load implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             //Register To Register Loads
             case 0x7f:
@@ -212,7 +210,7 @@ public class Load implements Instruction {
             case 0xf8:
                 return ldhl(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
 
         }
 
@@ -220,146 +218,166 @@ public class Load implements Instruction {
     }
 
 
-    private OptionalInt load(REGISTERS reg1, REGISTERS reg2, CPU cpu) {
+    private boolean load(REGISTERS reg1, REGISTERS reg2, CPU cpu) {
         int value = cpu.readRegister(reg2);
         cpu.writeRegister(reg1, value);
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt load(REGISTERS reg, CPU cpu) {
+    private boolean load(REGISTERS reg, CPU cpu) {
         int value = cpu.readPC();
         cpu.writeRegister(reg, value);
-        return OptionalInt.of(8);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt loadRegHL(REGISTERS reg, CPU cpu) {
+    private boolean loadRegHL(REGISTERS reg, CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int value = cpu.readAddress(addr);
 
         cpu.writeRegister(reg, value);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 
-    private OptionalInt loadHL(REGISTERS reg, CPU cpu) {
+    private boolean loadHL(REGISTERS reg, CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int value = cpu.readRegister(reg);
 
         cpu.writeAddress(addr, value);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt loadHL(CPU cpu) {
+    private boolean loadHL(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int value = cpu.readPC();
 
         cpu.writeAddress(addr, value);
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt loadA(RegisterPairs pair, CPU cpu) {
+    private boolean loadA(RegisterPairs pair, CPU cpu) {
         int addr = cpu.readWordRegister(pair);
         int value = cpu.readAddress(addr);
         cpu.writeRegister(REGISTERS.A, value);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt loadOffsetC(CPU cpu) {
+    private boolean loadOffsetC(CPU cpu) {
 
         int address = 0xff00 + cpu.readRegister(REGISTERS.C);
         cpu.writeRegister(REGISTERS.A, cpu.readAddress(address));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt loadOffsetA(CPU cpu) {
+    private boolean loadOffsetA(CPU cpu) {
         int address = 0xff00 + cpu.readRegister(REGISTERS.C);
         cpu.writeAddress(address, cpu.readRegister(REGISTERS.A));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt loadAImm(CPU cpu) {
+    private boolean loadAImm(CPU cpu) {
         int offset = cpu.readPC();
         int address = (0xff00 + offset) & 0xffff;
         int val = cpu.readAddress(address);
 
         cpu.writeRegister(REGISTERS.A, val);
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt loadImmA(CPU cpu) {
+    private boolean loadImmA(CPU cpu) {
         int offset = cpu.readPC();
         int address = (0xff00 + offset) & 0xffff;
         cpu.writeAddress(address, cpu.readRegister(REGISTERS.A));
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt loadAImmWord(CPU cpu) {
+    private boolean loadAImmWord(CPU cpu) {
         int address = cpu.readWordPC();
 
         cpu.writeRegister(REGISTERS.A, cpu.readAddress(address));
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
-    private OptionalInt loadImmWordA(CPU cpu) {
+    private boolean loadImmWordA(CPU cpu) {
         int address = cpu.readWordPC();
         cpu.writeAddress(address, cpu.readRegister(REGISTERS.A));
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
-    private OptionalInt loadAHLI(CPU cpu) {
+    private boolean loadAHLI(CPU cpu) {
         int address = cpu.readWordRegister(RegisterPairs.HL);
         int value = cpu.readAddress(address);
         cpu.writeRegister(REGISTERS.A, value);
         cpu.writeWordRegister(RegisterPairs.HL, address + 1);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt loadAHLD(CPU cpu) {
+    private boolean loadAHLD(CPU cpu) {
         int address = cpu.readWordRegister(RegisterPairs.HL);
         int value = cpu.readAddress(address);
         cpu.writeRegister(REGISTERS.A, value);
         cpu.writeWordRegister(RegisterPairs.HL, address - 1);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt loadPair(RegisterPairs pair, CPU cpu) {
+    private boolean loadPair(RegisterPairs pair, CPU cpu) {
         int address = cpu.readWordRegister(pair);
         cpu.writeAddress(address, cpu.readRegister(REGISTERS.A));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt loadHLD(CPU cpu) {
+    private boolean loadHLD(CPU cpu) {
         int address = cpu.readWordRegister(RegisterPairs.HL);
         cpu.writeAddress(address, cpu.readRegister(REGISTERS.A));
         cpu.writeWordRegister(RegisterPairs.HL, address - 1);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt loadHLI(CPU cpu) {
+    private boolean loadHLI(CPU cpu) {
         int address = cpu.readWordRegister(RegisterPairs.HL);
         cpu.writeAddress(address, cpu.readRegister(REGISTERS.A));
         cpu.writeWordRegister(RegisterPairs.HL, address + 1);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt load16(RegisterPairs pair, CPU cpu) {
+    private boolean load16(RegisterPairs pair, CPU cpu) {
         int word = cpu.readWordPC();
         cpu.writeWordRegister(pair, word);
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt load16SP(CPU cpu) {
+    private boolean load16SP(CPU cpu) {
         int word = cpu.readWordPC();
         cpu.setSP(word);
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt load16SPHL(CPU cpu) {
+    private boolean load16SPHL(CPU cpu) {
         cpu.setSP(cpu.readWordRegister(RegisterPairs.HL));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt ldhl(CPU cpu) {
+    private boolean ldhl(CPU cpu) {
         int value = (byte) cpu.readPC();
         int currentSP = cpu.getSP();
         cpu.setSP(currentSP + value);
@@ -368,15 +386,17 @@ public class Load implements Instruction {
         cpu.setFlag(FLAGS.H, isHalfCarry16(currentSP, value));
         cpu.setFlag(FLAGS.N, false);
         cpu.setFlag(FLAGS.Z, false);
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt load16SPAddr(CPU cpu) {
+    private boolean load16SPAddr(CPU cpu) {
         int addr = cpu.readWordPC();
 
         cpu.writeAddress(addr, getLsb(cpu.getSP()));
         cpu.writeAddress(addr + 1, getMsb(cpu.getSP()));
-        return OptionalInt.of(20);
+        cpu.addCycles(5);
+        return true;
     }
 
 }

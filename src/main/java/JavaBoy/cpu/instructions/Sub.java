@@ -5,12 +5,10 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Sub implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x97:
                 return sub(REGISTERS.A, cpu);
@@ -50,82 +48,69 @@ public class Sub implements Instruction {
                 return sbc(cpu);
 
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
 
-    private OptionalInt sub(REGISTERS reg2, CPU cpu) {
+    private boolean sub(REGISTERS reg2, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg2);
-
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
-
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt sub(CPU cpu) {
+    private boolean sub(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
-
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt subHL(CPU cpu) {
+    private boolean subHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
-
-
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 
-    private OptionalInt sbc(REGISTERS reg2, CPU cpu) {
+    private boolean sbc(REGISTERS reg2, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg2) + cpu.getFlag(FLAGS.C);
-
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
-
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt sbc(CPU cpu) {
+    private boolean sbc(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC() + cpu.getFlag(FLAGS.C);
-
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt sbcHL(CPU cpu) {
-
+    private boolean sbcHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL) + cpu.getFlag(FLAGS.C));
-
+        int val2 = cpu.readAddress(
+                cpu.readWordRegister(RegisterPairs.HL) + cpu.getFlag(FLAGS.C));
         cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 
     private int subBytes(int val1, int val2, CPU cpu) {
-
         int result = (val1 & 0xff) - (val2 & 0xff);
-
         cpu.setFlag(FLAGS.Z, result == 0);
         boolean borrowCheck = (val1 & 0xf) < (val2 & 0xf);
         cpu.setFlag(FLAGS.H, borrowCheck);
         cpu.setFlag(FLAGS.C, val1 < val2);
         cpu.setFlag(FLAGS.N, true);
-
-
         return result;
-
-
     }
 }

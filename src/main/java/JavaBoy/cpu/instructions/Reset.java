@@ -4,11 +4,9 @@ import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Reset implements Instruction {
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x87:
                 return res(0, REGISTERS.A, cpu);
@@ -139,21 +137,23 @@ public class Reset implements Instruction {
             case 0xbe:
                 return res(7, cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
-    private OptionalInt res(int resetBit, REGISTERS reg, CPU cpu) {
+    private boolean res(int resetBit, REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         cpu.writeRegister(reg, applyRes(resetBit, bits));
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt res(int resetBit, CPU cpu) {
+    private boolean res(int resetBit, CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         cpu.writeAddress(addr, applyRes(resetBit, bits));
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
     private int applyRes(int resetBit, int value) {

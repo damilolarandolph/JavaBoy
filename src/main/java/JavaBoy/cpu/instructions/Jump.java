@@ -4,12 +4,10 @@ import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.instructions.jumpconditions.JumpConditions;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Jump implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xc3:
                 return jp(cpu);
@@ -34,44 +32,49 @@ public class Jump implements Instruction {
             case 0xe9:
                 return jpHL(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
 
         }
     }
 
-    private OptionalInt jp(CPU cpu) {
+    private boolean jp(CPU cpu) {
         int word = cpu.readWordPC();
         cpu.setPC(word);
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
-    private OptionalInt jp(JumpConditions condition, CPU cpu) {
+    private boolean jp(JumpConditions condition, CPU cpu) {
         if (condition.test(cpu)) {
             return jp(cpu);
         } else {
             cpu.setPC(cpu.getPC() + 2);
-            return OptionalInt.of(12);
+            cpu.addCycles(3);
+            return true;
         }
     }
 
-    private OptionalInt jpHL(CPU cpu) {
+    private boolean jpHL(CPU cpu) {
         int value = cpu.readWordRegister(RegisterPairs.HL);
         cpu.setPC(value);
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt jr(CPU cpu) {
+    private boolean jr(CPU cpu) {
         int value = cpu.readPC();
         applyJR(value, cpu);
-        return OptionalInt.of(12);
+        cpu.addCycles(3);
+        return true;
     }
 
-    private OptionalInt jr(JumpConditions condition, CPU cpu) {
+    private boolean jr(JumpConditions condition, CPU cpu) {
         if (condition.test(cpu)) {
             return jr(cpu);
         } else {
             cpu.setPC(cpu.getPC() + 1);
-            return OptionalInt.of(8);
+            cpu.addCycles(2);
+            return true;
         }
     }
 

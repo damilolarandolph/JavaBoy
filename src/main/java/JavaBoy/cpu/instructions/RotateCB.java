@@ -5,12 +5,10 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class RotateCB implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x07:
                 return rlc(REGISTERS.A, cpu);
@@ -73,7 +71,7 @@ public class RotateCB implements Instruction {
             case 0x1e:
                 return rr(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
 
         }
     }
@@ -129,69 +127,75 @@ public class RotateCB implements Instruction {
         cpu.setFlag(FLAGS.N, false);
     }
 
-    private OptionalInt rlc(CPU cpu) {
+    private boolean rlc(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         int result = applyRotateLC(bits, cpu);
         cpu.writeAddress(addr, result);
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
 
-    private OptionalInt rlc(REGISTERS reg, CPU cpu) {
+    private boolean rlc(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applyRotateLC(bits, cpu);
         cpu.writeRegister(reg, result);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt rl(REGISTERS reg, CPU cpu) {
+    private boolean rl(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applyRotateL(bits, cpu);
         cpu.writeRegister(reg, result);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt rrc(REGISTERS reg, CPU cpu) {
+    private boolean rrc(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applyRotateRC(bits, cpu);
         cpu.writeRegister(reg, result);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt rrc(CPU cpu) {
+    private boolean rrc(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         int result = applyRotateRC(bits, cpu);
         cpu.writeAddress(addr, result);
-        return OptionalInt.of(16);
-
+        cpu.addCycles(4);
+        return true;
     }
 
-    private OptionalInt rr(REGISTERS reg, CPU cpu) {
+    private boolean rr(REGISTERS reg, CPU cpu) {
         int bits = cpu.readRegister(reg);
         int result = applyRotateR(bits, cpu);
         cpu.writeRegister(reg, result);
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
-    private OptionalInt rr(CPU cpu) {
+    private boolean rr(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
         int bits = cpu.readAddress(addr);
         int result = applyRotateR(bits, cpu);
         cpu.writeAddress(addr, result);
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 
-    private OptionalInt rl(CPU cpu) {
+    private boolean rl(CPU cpu) {
         int addr = cpu.readWordRegister(RegisterPairs.HL);
-
         int bits = cpu.readAddress(addr);
         int result = applyRotateL(bits, cpu);
         cpu.writeAddress(addr, result);
         cpu.setFlag(FLAGS.Z, result == 0);
         cpu.setFlag(FLAGS.H, false);
         cpu.setFlag(FLAGS.N, false);
-        return OptionalInt.of(16);
+        cpu.addCycles(4);
+        return true;
     }
 }

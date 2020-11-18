@@ -4,11 +4,9 @@ import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 
-import java.util.OptionalInt;
-
 public class Rotate implements Instruction {
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0x07:
                 return rlca(cpu);
@@ -20,12 +18,12 @@ public class Rotate implements Instruction {
                 return rra(cpu);
 
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
 
-    private OptionalInt rlca(CPU cpu) {
+    private boolean rlca(CPU cpu) {
 
         int bits = cpu.readRegister(REGISTERS.A);
         cpu.writeRegister(REGISTERS.A, applyRotateLC(bits, cpu));
@@ -33,7 +31,8 @@ public class Rotate implements Instruction {
         cpu.setFlag(FLAGS.H, false);
         cpu.setFlag(FLAGS.N, false);
         cpu.setFlag(FLAGS.Z, false);
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
     private int applyRotateLC(int val, CPU cpu) {
@@ -55,14 +54,14 @@ public class Rotate implements Instruction {
     }
 
 
-    private OptionalInt rla(CPU cpu) {
+    private boolean rla(CPU cpu) {
         int bits = cpu.readRegister(REGISTERS.A);
         cpu.writeRegister(REGISTERS.A, applyRotateL(bits, cpu));
         cpu.setFlag(FLAGS.H, false);
         cpu.setFlag(FLAGS.N, false);
         cpu.setFlag(FLAGS.Z, false);
-
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
     private int applyRotateRC(int val, CPU cpu) {
@@ -75,15 +74,15 @@ public class Rotate implements Instruction {
         return bits;
     }
 
-    private OptionalInt rrca(CPU cpu) {
+    private boolean rrca(CPU cpu) {
         int bits = cpu.readRegister(REGISTERS.A);
 
         cpu.writeRegister(REGISTERS.A, applyRotateRC(bits, cpu));
         cpu.setFlag(FLAGS.H, false);
         cpu.setFlag(FLAGS.N, false);
         cpu.setFlag(FLAGS.Z, false);
-
-        return OptionalInt.of(4);
+        cpu.addCycles(2);
+        return true;
     }
 
     private int applyRotateR(int val, CPU cpu) {
@@ -95,14 +94,14 @@ public class Rotate implements Instruction {
         return bits;
     }
 
-    private OptionalInt rra(CPU cpu) {
+    private boolean rra(CPU cpu) {
         int bits = cpu.readRegister(REGISTERS.A);
         cpu.writeRegister(REGISTERS.A, applyRotateR(bits, cpu));
         cpu.setFlag(FLAGS.H, false);
         cpu.setFlag(FLAGS.N, false);
         cpu.setFlag(FLAGS.Z, false);
-
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
 

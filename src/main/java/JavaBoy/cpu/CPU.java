@@ -8,28 +8,21 @@ import JavaBoy.memory.MemoryMap;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.OptionalInt;
 import java.util.Scanner;
 
 public class CPU {
     private final MemoryMap mmu;
-
-    File file = new File("/home/damilola/gameboy.txt");
-
-    FileWriter writer;
-
     private final Instruction[] instructions;
-
     private final RegisterBank registers;
-
+    File file = new File("/home/damilola/gameboy.txt");
+    FileWriter writer;
     private int cycles = 0;
 
-    public CPU(MemoryMap mmu, Instruction[] instructions, RegisterBank registers) {
-        try{
+    public CPU(MemoryMap mmu, Instruction[] instructions,
+               RegisterBank registers) {
+        try {
             writer = new FileWriter(file);
-        }catch (Exception err){
+        } catch (Exception err) {
             System.err.println(err.getMessage());
         }
         this.mmu = mmu;
@@ -42,7 +35,7 @@ public class CPU {
     public void run() {
         Scanner scan = new Scanner(System.in);
         int opcode = readPC();
-       // printState(opcode);
+        // printState(opcode);
         while (tryExecute(opcode)) {
             opcode = readPC();
             //printState(opcode);
@@ -51,18 +44,26 @@ public class CPU {
 
     }
 
+    public void addCycles() {
+        this.cycles += 4;
+    }
+
+    public void addCycles(int multiple) {
+
+        this.cycles += (4 * multiple);
+
+    }
+
     private boolean tryExecute(int opcode) {
-        OptionalInt result = OptionalInt.empty();
+        boolean executed = false;
 
         for (Instruction instruction : this.instructions) {
-            result = instruction.execute(opcode, this);
-            if (result.isPresent()) {
-                this.cycles += result.getAsInt();
+            executed = instruction.execute(opcode, this);
+            if (executed)
                 break;
-            }
         }
 
-        if (result.isEmpty()){
+        if (!executed) {
             System.err.println("Unknown Instruction: " + getHex(opcode));
         }
 
@@ -100,39 +101,40 @@ public class CPU {
     private void printState(int opcode) {
         String string = "";
         string += String.format("A: %s F: %s (AF: %s)\n",
-                getHex(readRegister(REGISTERS.A)),
-                getHex(readRegister(REGISTERS.F)),
-                getHex(readWordRegister(RegisterPairs.AF)));
+                                getHex(readRegister(REGISTERS.A)),
+                                getHex(readRegister(REGISTERS.F)),
+                                getHex(readWordRegister(RegisterPairs.AF)));
 
         string += String.format("B: %s C: %s (BC: %s)\n",
-                getHex(readRegister(REGISTERS.B)),
-                getHex(readRegister(REGISTERS.C)),
-                getHex(readWordRegister(RegisterPairs.BC)));
+                                getHex(readRegister(REGISTERS.B)),
+                                getHex(readRegister(REGISTERS.C)),
+                                getHex(readWordRegister(RegisterPairs.BC)));
 
         string += String.format("D: %s E: %s (DE: %s)\n",
-                getHex(readRegister(REGISTERS.D)),
-                getHex(readRegister(REGISTERS.E)),
-                getHex(readWordRegister(RegisterPairs.DE)));
+                                getHex(readRegister(REGISTERS.D)),
+                                getHex(readRegister(REGISTERS.E)),
+                                getHex(readWordRegister(RegisterPairs.DE)));
 
         string += String.format("H: %s L: %s (HL: %s)\n",
-                getHex(readRegister(REGISTERS.H)),
-                getHex(readRegister(REGISTERS.L)),
-                getHex(readWordRegister(RegisterPairs.HL)));
+                                getHex(readRegister(REGISTERS.H)),
+                                getHex(readRegister(REGISTERS.L)),
+                                getHex(readWordRegister(RegisterPairs.HL)));
 
-        string += String.format("PC: %s SP: %s \n", getHex(getPC()), getHex(getSP()));
+        string += String.format("PC: %s SP: %s \n", getHex(getPC()),
+                                getHex(getSP()));
 
         string += String.format("Opcode: %s \n", getHex(opcode));
 
         string += String.format("F: [%s%s%s%s]\n\n",
-                isFlag(FLAGS.Z) ? "Z" : "-",
-                isFlag(FLAGS.H) ? "H" : "-",
-                isFlag(FLAGS.N) ? "N" : "-",
-                isFlag(FLAGS.C) ? "C" : "-"
+                                isFlag(FLAGS.Z) ? "Z" : "-",
+                                isFlag(FLAGS.H) ? "H" : "-",
+                                isFlag(FLAGS.N) ? "N" : "-",
+                                isFlag(FLAGS.C) ? "C" : "-"
         );
         try {
             writer.write(string);
             writer.flush();
-        }catch (Exception err){
+        } catch (Exception err) {
             System.err.println("Couldn't write " + err.getMessage());
         }
 

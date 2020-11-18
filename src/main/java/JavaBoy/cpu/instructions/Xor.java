@@ -5,12 +5,10 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import java.util.OptionalInt;
-
 public class Xor implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xaf:
                 return xor(REGISTERS.A, cpu);
@@ -31,47 +29,42 @@ public class Xor implements Instruction {
             case 0xee:
                 return xor(cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
-    private OptionalInt xor(REGISTERS reg, CPU cpu) {
+    private boolean xor(REGISTERS reg, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readRegister(reg);
-
         cpu.writeRegister(REGISTERS.A, applyXOR(val1, val2, cpu));
-        return OptionalInt.of(4);
+        cpu.addCycles();
+        return true;
     }
 
-    private OptionalInt xorHL(CPU cpu) {
+    private boolean xorHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
-
         cpu.writeRegister(REGISTERS.A, applyXOR(val1, val2, cpu));
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
 
-    private OptionalInt xor(CPU cpu) {
+    private boolean xor(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readPC();
         cpu.writeRegister(REGISTERS.A, applyXOR(val1, val2, cpu));
-
-        return OptionalInt.of(8);
+        cpu.addCycles(2);
+        return true;
     }
 
     private int applyXOR(int val1, int val2, CPU cpu) {
         int result = (val1 & 0xff) ^ (val2 & 0xff);
         cpu.setFlag(FLAGS.Z, result == 0);
-
         cpu.setFlag(FLAGS.C, false);
         cpu.setFlag(FLAGS.H, false);
         cpu.setFlag(FLAGS.N, false);
-
-
         return result;
-
     }
 }
 

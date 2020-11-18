@@ -3,15 +3,13 @@ package JavaBoy.cpu.instructions;
 import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.instructions.jumpconditions.JumpConditions;
 
-import java.util.OptionalInt;
-
 import static JavaBoy.utils.BitUtils.getLsb;
 import static JavaBoy.utils.BitUtils.getMsb;
 
 public class Call implements Instruction {
 
     @Override
-    public OptionalInt execute(int opcode, CPU cpu) {
+    public boolean execute(int opcode, CPU cpu) {
         switch (opcode) {
             case 0xcd:
                 return call(cpu);
@@ -24,22 +22,24 @@ public class Call implements Instruction {
             case 0xdc:
                 return call(JumpConditions.C, cpu);
             default:
-                return OptionalInt.empty();
+                return false;
         }
     }
 
 
-    private OptionalInt call(CPU cpu) {
+    private boolean call(CPU cpu) {
         applyCall(cpu);
-        return OptionalInt.of(24);
+        cpu.addCycles(6);
+        return true;
     }
 
-    private OptionalInt call(JumpConditions condition, CPU cpu) {
+    private boolean call(JumpConditions condition, CPU cpu) {
         if (condition.test(cpu)) {
             return call(cpu);
         } else {
             cpu.setPC(cpu.getPC() + 2);
-            return OptionalInt.of(12);
+            cpu.addCycles(3);
+            return true;
         }
     }
 
