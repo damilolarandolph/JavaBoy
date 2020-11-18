@@ -8,14 +8,14 @@ import java.util.HashMap;
 import static JavaBoy.utils.BitUtils.getLsb;
 import static JavaBoy.utils.BitUtils.getMsb;
 
-public abstract class RegisterBank {
+public  class RegisterBank {
 
     private final HashMap<REGISTERS, Register> registers = new HashMap<>();
     private final FlagBank flags;
     private  final Register SP;
     private final Register PC;
 
-    RegisterBank(FlagBank flags, Register SP, Register PC){
+    public RegisterBank(FlagBank flags, Register SP, Register PC){
         this.flags = flags;
         this.SP = SP;
         this.PC = PC;
