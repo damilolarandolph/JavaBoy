@@ -278,10 +278,8 @@ public class Load implements Instruction {
     }
 
     private OptionalInt loadAImm(CPU cpu) {
-        int address = cpu.readPC();
-        if (address < 0xff00 || address > 0xffff) {
-            System.exit(5);
-        }
+        int offset = cpu.readPC();
+        int address = (0xff00 + offset) & 0xffff;
         int val = cpu.readAddress(address);
 
         cpu.writeRegister(REGISTERS.A, val);
@@ -289,10 +287,8 @@ public class Load implements Instruction {
     }
 
     private OptionalInt loadImmA(CPU cpu) {
-        int address = cpu.readPC();
-        if (address < 0xff00 || address > 0xffff) {
-            System.exit(5);
-        }
+        int offset = cpu.readPC();
+        int address = (0xff00 + offset) & 0xffff;
         cpu.writeAddress(address, cpu.readRegister(REGISTERS.A));
         return OptionalInt.of(12);
     }
