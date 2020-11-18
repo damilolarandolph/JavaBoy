@@ -8,7 +8,7 @@ public class MemoryMap {
     private final MemorySlot[] slots;
 
 
-    MemoryMap(MemorySlot[] slots){
+    public MemoryMap(MemorySlot[] slots){
         this.slots = slots;
     }
 
