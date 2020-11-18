@@ -11,7 +11,7 @@ public class Register16 implements Register {
 
     @Override
     public void write(int value) {
-        this.value = value;
+        this.value = (value & 0xffff);
     }
 
     @Override

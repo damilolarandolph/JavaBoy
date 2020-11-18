@@ -32,7 +32,7 @@ public class FlagBank implements Register {
 
     @Override
     public void write(int value) {
-        this.flags = value;
+        this.flags = (value & 0xff);
     }
 
     @Override
