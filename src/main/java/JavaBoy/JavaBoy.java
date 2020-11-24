@@ -20,7 +20,7 @@ import java.io.File;
 public class JavaBoy {
     public static void main(String[] args) {
         File file = new File(JavaBoy.class.getResource(
-                "/gb-test-roms/cpu_instrs/individual/02-interrupts.gb").getFile());
+                "/gb-test-roms/cpu_instrs/individual/02_interrupts.gb").getFile());
         Cartridge cart = new Cartridge(file);
 
         Instruction[] instructions = new Instruction[]{
