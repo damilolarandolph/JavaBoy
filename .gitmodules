@@ -1,0 +1,3 @@
+[submodule "src/main/resources/gb-test-roms"]
+	path = src/main/resources/gb-test-roms
+	url = https://github.com/damilolarandolph/gb-test-roms.git
