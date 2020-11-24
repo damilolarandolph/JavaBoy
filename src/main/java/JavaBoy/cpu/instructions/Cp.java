@@ -64,12 +64,12 @@ public class Cp implements Instruction {
 
 
     private void applyCp(int val1, int val2, CPU cpu) {
-        boolean isEqual = (val1 & 0xff) == (val1 & 0xff);
+        boolean isEqual = (val1 & 0xff) == (val2 & 0xff);
 
         cpu.setFlag(FLAGS.Z, isEqual);
-        cpu.setFlag(FLAGS.H, (val1 & 0xf) < (val1 & 0xf));
+        cpu.setFlag(FLAGS.H, (val1 & 0xf) < (val2 & 0xf));
         cpu.setFlag(FLAGS.C, val1 < val2);
-        cpu.setFlag(FLAGS.N, false);
+        cpu.setFlag(FLAGS.N, true);
 
     }
 }
