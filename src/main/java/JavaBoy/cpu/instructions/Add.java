@@ -104,7 +104,7 @@ public class Add implements Instruction {
 
     private boolean addC(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readPC();
+        int val2 = cpu.readPC() + cpu.getFlag(FLAGS.C);
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
         cpu.addCycles(2);
         return true;
@@ -113,6 +113,7 @@ public class Add implements Instruction {
     private boolean addCHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
+        val2 = val2 + cpu.getFlag(FLAGS.C);
         cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
         cpu.addCycles(2);
         return true;
