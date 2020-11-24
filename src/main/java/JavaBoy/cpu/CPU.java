@@ -2,30 +2,36 @@ package JavaBoy.cpu;
 
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.instructions.Instruction;
+import JavaBoy.cpu.interrupts.InterruptManager;
 import JavaBoy.cpu.registers.RegisterBank;
 import JavaBoy.cpu.registers.RegisterPairs;
 import JavaBoy.memory.MemoryMap;
+import JavaBoy.timer.Timer;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Scanner;
 
 public class CPU {
     private final MemoryMap mmu;
     private final Instruction[] instructions;
     private final RegisterBank registers;
+    private final InterruptManager interruptManager;
+    private final Timer timer;
     File file = new File("/home/damilola/gameboy.txt");
     FileWriter writer;
-    private int cycles = 0;
+    private boolean halted = false;
 
     public CPU(MemoryMap mmu, Instruction[] instructions,
-               RegisterBank registers) {
+               RegisterBank registers, InterruptManager interruptManager,
+               Timer timer) {
         try {
             writer = new FileWriter(file);
         } catch (Exception err) {
             System.err.println(err.getMessage());
         }
+        this.timer = timer;
         this.mmu = mmu;
+        this.interruptManager = interruptManager;
         this.instructions = instructions;
         this.registers = registers;
         this.setPC(0x100);
@@ -33,34 +39,62 @@ public class CPU {
 
 
     public void run() {
-        Scanner scan = new Scanner(System.in);
-        int opcode = readPC();
-        // printState(opcode);
-        while (tryExecute(opcode)) {
-            opcode = readPC();
-            //printState(opcode);
+        int opcode;
+        boolean canRun = true;
+        while (canRun) {
+            boolean didInterrupt = interruptManager.handleInterrupts(this);
+            if (halted) {
+                if (didInterrupt) {
+                    halted = false;
+                } else if (
+                        interruptManager.hasServiceableInterrupts() &&
+                                !interruptManager.isMasterEnabled()) {
+                    int currentPc = getPC();
+                    halted = false;
+                    tryExecute(readPC());
+                    setPC(currentPc);
+                }
+                addCycles();
+            } else {
 
+                opcode = readPC();
+                canRun = tryExecute(opcode);
+            }
         }
+        //printState(opcode);
+
 
     }
 
+
     public void addCycles() {
-        this.cycles += 4;
+        addCycles(1);
     }
 
     public void addCycles(int multiple) {
 
-        this.cycles += (4 * multiple);
+        for (int count = multiple * 4; count >= 0; --count) {
+            timer.tick();
+        }
 
     }
 
     private boolean tryExecute(int opcode) {
+        printState(opcode);
+        if (getPC() == 0xc002) {
+            System.out.println("hey");
+        }
         boolean executed = false;
-
-        for (Instruction instruction : this.instructions) {
-            executed = instruction.execute(opcode, this);
-            if (executed)
-                break;
+        if (opcode == 0x76) {
+            halted = true;
+            executed = true;
+            addCycles();
+        } else {
+            for (Instruction instruction : this.instructions) {
+                executed = instruction.execute(opcode, this);
+                if (executed)
+                    break;
+            }
         }
 
         if (!executed) {
@@ -78,6 +112,8 @@ public class CPU {
         int addr = this.registers.getPC().read();
         this.registers.getPC().increment();
         return this.mmu.readByte(addr);
+
+
     }
 
     public int readWordPC() {
@@ -125,6 +161,9 @@ public class CPU {
 
         string += String.format("Opcode: %s \n", getHex(opcode));
 
+
+        string += String.format("Opcode: %s \n", getHex(timer.getTIMA()));
+
         string += String.format("F: [%s%s%s%s]\n\n",
                                 isFlag(FLAGS.Z) ? "Z" : "-",
                                 isFlag(FLAGS.H) ? "H" : "-",
@@ -142,7 +181,7 @@ public class CPU {
     }
 
     private String getHex(int i) {
-        return Integer.toHexString(i);
+        return "0x" + Integer.toHexString(i).toUpperCase();
     }
 
     public int getSP() {
@@ -192,11 +231,11 @@ public class CPU {
     }
 
     public void enableInterrupts() {
-
+        this.interruptManager.enableInterrupts();
     }
 
     public void disableInterrupts() {
-
+        this.interruptManager.disableInterrupts();
     }
 
     public int getPC() {
