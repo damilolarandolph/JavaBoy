@@ -59,7 +59,6 @@ public class Return implements Instruction {
             applyRet(cpu);
             cpu.addCycles(5);
         } else {
-            cpu.setPC(cpu.getPC() + 1);
             cpu.addCycles(2);
         }
         return true;
