@@ -2,7 +2,7 @@ package JavaBoy.cpu.instructions.jumpconditions;
 
 import JavaBoy.cpu.CPU;
 
- interface JumpCondition {
+interface JumpCondition {
 
     boolean test(CPU cpu);
 }

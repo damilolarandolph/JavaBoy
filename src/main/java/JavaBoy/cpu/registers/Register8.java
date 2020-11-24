@@ -11,16 +11,16 @@ public class Register8 implements Register {
 
     @Override
     public void write(int value) {
-        this.value = (value & 0xff) ;
+        this.value = (value & 0xff);
     }
 
     @Override
     public void increment() {
-       this.value = (value + 1) & 0xff;
+        this.value = (value + 1) & 0xff;
     }
 
     @Override
     public void decrement() {
-       this.value = (value - 1) & 0xff;
+        this.value = (value - 1) & 0xff;
     }
 }

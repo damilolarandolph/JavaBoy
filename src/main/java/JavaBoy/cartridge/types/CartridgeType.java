@@ -2,13 +2,13 @@ package JavaBoy.cartridge.types;
 
 import JavaBoy.memory.MemorySlot;
 
-public abstract class  CartridgeType implements MemorySlot {
+public abstract class CartridgeType implements MemorySlot {
 
 
-  protected byte[] data;
+    protected byte[] data;
 
-  CartridgeType(byte[] data){
-    this.data = data;
-  }
+    CartridgeType(byte[] data) {
+        this.data = data;
+    }
 
 }

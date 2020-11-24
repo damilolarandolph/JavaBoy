@@ -13,25 +13,26 @@ public class Cartridge implements MemorySlot {
     CartridgeType cartData;
 
 
+    public Cartridge(File file) {
 
-    public Cartridge(File file){
-
-     byte[] rom = getFileArray(file);
-     try {
-         cartData = CartridgeTypes.ROM_ONLY.getCartClass().getConstructor(byte[].class).newInstance(rom);
-     }catch (Exception err){
-        System.out.println("Error loading cart " + err.getMessage());
-     }
+        byte[] rom = getFileArray(file);
+        try {
+            cartData = CartridgeTypes.ROM_ONLY.getCartClass().getConstructor(
+                    byte[].class).newInstance(rom);
+        } catch (Exception err) {
+            System.out.println("Error loading cart " + err.getMessage());
+        }
 
     }
 
-    private byte[] getFileArray(File file){
+    private byte[] getFileArray(File file) {
         try {
 
-            BufferedInputStream stream = new BufferedInputStream(new FileInputStream(file));
+            BufferedInputStream stream = new BufferedInputStream(
+                    new FileInputStream(file));
             return stream.readAllBytes();
-        }catch (Exception err){
-           return  null;
+        } catch (Exception err) {
+            return null;
         }
     }
 
@@ -48,7 +49,7 @@ public class Cartridge implements MemorySlot {
 
     @Override
     public boolean hasAddressInSlot(int address) {
-        return cartData.hasAddressInSlot(address) ;
+        return cartData.hasAddressInSlot(address);
     }
 
 }

@@ -1,8 +1,11 @@
 package JavaBoy.cpu.registers;
 
 public interface Register {
-     int read();
+    int read();
+
     void write(int value);
+
     void increment();
+
     void decrement();
 }
