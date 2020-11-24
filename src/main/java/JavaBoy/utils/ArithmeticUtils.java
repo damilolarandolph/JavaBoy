@@ -7,7 +7,7 @@ public class ArithmeticUtils {
     }
 
     public static boolean isCarry16(int val1, int val2) {
-        return (val1 + val2) > 0xffff;
+        return ((val1 & 0xffff) + (val2 & 0xffff)) > 0xffff;
     }
 
     public static boolean isHalfCarry8(int val1, int val2) {
@@ -15,7 +15,7 @@ public class ArithmeticUtils {
     }
 
     public static boolean isCarry8(int val1, int val2) {
-        return (val1 + val2) > 0xff;
+        return ((val1 & 0xff) + (val2 & 0xff)) > 0xff;
     }
 
 }
