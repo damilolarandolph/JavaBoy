@@ -38,5 +38,5 @@ compileJava {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'JavaBoy.App'
+    mainClassName = 'JavaBoy.JavaBoy'
 }

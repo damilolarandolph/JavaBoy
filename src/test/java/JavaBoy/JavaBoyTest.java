@@ -6,9 +6,9 @@ package JavaBoy;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class AppTest {
+public class JavaBoyTest {
     @Test public void testAppHasAGreeting() {
-        App classUnderTest = new App();
+        JavaBoy classUnderTest = new JavaBoy();
         assertNotNull("app should have a greeting", classUnderTest.getGreeting());
     }
 }
