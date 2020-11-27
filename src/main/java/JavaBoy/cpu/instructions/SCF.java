@@ -9,6 +9,8 @@ public class SCF implements Instruction {
     public boolean execute(int opcode, CPU cpu) {
         if (opcode == 0x37) {
             cpu.setFlag(FLAGS.C, true);
+            cpu.setFlag(FLAGS.H, false);
+            cpu.setFlag(FLAGS.N, false);
             cpu.addCycles();
             return true;
         } else {
