@@ -380,12 +380,12 @@ public class Load implements Instruction {
     private boolean ldhl(CPU cpu) {
         int value = (byte) cpu.readPC();
         int currentSP = cpu.getSP();
-        cpu.writeWordRegister(RegisterPairs.HL, currentSP + value);
-
-        cpu.setFlag(FLAGS.C, isCarry16(currentSP, value));
-        cpu.setFlag(FLAGS.H, isHalfCarry16(currentSP, value));
-        cpu.setFlag(FLAGS.N, false);
+        int result = value + currentSP;
+        cpu.writeWordRegister(RegisterPairs.HL, result);
         cpu.setFlag(FLAGS.Z, false);
+        cpu.setFlag(FLAGS.N, false);
+        cpu.setFlag(FLAGS.H,(result & 0x0f) < (currentSP & 0x0f));
+        cpu.setFlag(FLAGS.C, (result & 0xff) < (currentSP & 0xff));
         cpu.addCycles(3);
         return true;
     }
