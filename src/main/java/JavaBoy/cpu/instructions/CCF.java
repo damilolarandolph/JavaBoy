@@ -9,6 +9,8 @@ public class CCF implements Instruction {
     public boolean execute(int opcode, CPU cpu) {
         if (opcode == 0x3f) {
             cpu.setFlag(FLAGS.C, !cpu.isFlag(FLAGS.C));
+            cpu.setFlag(FLAGS.H, false);
+            cpu.setFlag(FLAGS.N, false);
             cpu.addCycles();
             return true;
         } else {
