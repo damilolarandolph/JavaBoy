@@ -23,6 +23,8 @@ public class RotateCB implements Instruction {
             case 0x04:
                 return rlc(REGISTERS.H, cpu);
             case 0x05:
+                return rlc(REGISTERS.L, cpu);
+            case 0x06:
                 return rlc(cpu);
             case 0x17:
                 return rl(REGISTERS.A, cpu);
@@ -36,6 +38,8 @@ public class RotateCB implements Instruction {
                 return rl(REGISTERS.E, cpu);
             case 0x14:
                 return rl(REGISTERS.H, cpu);
+            case 0x15:
+                return rl(REGISTERS.L, cpu);
             case 0x16:
                 return rl(cpu);
             case 0x0f:
