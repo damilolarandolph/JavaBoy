@@ -157,7 +157,8 @@ public class Reset implements Instruction {
     }
 
     private int applyRes(int resetBit, int value) {
-        int restBitMask = 0xfe << resetBit;
+        int restBitMask = 0x01 << resetBit;
+        restBitMask = ~(restBitMask);
         return value & restBitMask;
     }
 
