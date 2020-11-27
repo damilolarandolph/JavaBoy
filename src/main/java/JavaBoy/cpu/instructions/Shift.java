@@ -4,6 +4,7 @@ import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
+import JavaBoy.utils.BitUtils;
 
 public class Shift implements Instruction {
     @Override
@@ -126,14 +127,13 @@ public class Shift implements Instruction {
     }
 
     private int applySLA(int value, CPU cpu) {
-        int msb = value >>> 7;
-        int result = value << 1;
-        cpu.setFlag(FLAGS.C, msb == 1);
-        cpu.setFlag(FLAGS.H, false);
+        cpu.setFlag(FLAGS.C, (value & 0x80) != 0);
+        value <<= 1;
+        value &= 0xff;
+        cpu.setFlag(FLAGS.Z, value == 0);
         cpu.setFlag(FLAGS.N, false);
-        cpu.setFlag(FLAGS.Z, result == 0);
-        return result;
-
+        cpu.setFlag(FLAGS.H, false);
+        return value;
     }
 
     private boolean sla(REGISTERS reg, CPU cpu) {
