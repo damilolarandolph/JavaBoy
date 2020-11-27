@@ -146,9 +146,8 @@ public class Bit implements Instruction {
 
 
     private void applyBitTest(int testBit, int value, CPU cpu) {
-        int bit = getNthBit(testBit, value);
-
-        cpu.setFlag(FLAGS.Z, ~(bit) == 1);
+        int bit = getNthBit(testBit, value) ;
+        cpu.setFlag(FLAGS.Z, bit == 0);
         cpu.setFlag(FLAGS.H, true);
         cpu.setFlag(FLAGS.N, false);
     }
