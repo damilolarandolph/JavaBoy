@@ -9,39 +9,35 @@ import static JavaBoy.utils.BitUtils.getLsb;
 public class Daa implements Instruction {
     @Override
     public boolean execute(int opcode, CPU cpu) {
-        if (opcode == 0x27)
-            return applyDAA(cpu);
-        else
+        if (opcode == 0x27) {
+
+            applyDAA(cpu);
+            cpu.addCycles();
+            return true;
+        } else {
             return false;
+        }
     }
 
-    private boolean applyDAA(CPU cpu) {
-
-
-        int value = cpu.readRegister(REGISTERS.A);
-
-        if (cpu.isFlag(FLAGS.N)) {
-            if (cpu.isFlag(FLAGS.C) || value > 0x99) {
-                value += 0x60;
-                cpu.setFlag(FLAGS.C, true);
-            }
-
-            if (cpu.isFlag(FLAGS.H) || getLsb(value) > 0x09) {
-                value += 0x6;
-            }
-
-        } else {
-            if (cpu.isFlag(FLAGS.C))
-                value -= 0x60;
-            if (cpu.isFlag(FLAGS.H))
-                value -= 0x6;
+    private void applyDAA(CPU cpu) {
+        int adjustment = 0;
+        int aReg = cpu.readRegister(REGISTERS.A);
+        if (cpu.isFlag(FLAGS.C) || (aReg > 0x99 && !cpu.isFlag(FLAGS.N))){
+            adjustment = 0x60;
+            cpu.setFlag(FLAGS.C, true);
         }
 
-        cpu.setFlag(FLAGS.Z, value == 0);
+        if (cpu.isFlag(FLAGS.H) || (aReg & 0x0f) > 0x09 && !cpu.isFlag(FLAGS.N)){
+            adjustment += 0x06;
+        }
+
+        aReg += cpu.isFlag(FLAGS.N) ? -(adjustment) : adjustment;
+        aReg &= 0xff;
+
+        cpu.setFlag(FLAGS.Z, aReg == 0);
         cpu.setFlag(FLAGS.H, false);
-        cpu.writeRegister(REGISTERS.A, value);
-        cpu.addCycles();
-        return false;
+        cpu.writeRegister(REGISTERS.A, aReg);
+
     }
 
 }
