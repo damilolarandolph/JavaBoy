@@ -80,25 +80,35 @@ public class Sub implements Instruction {
 
     private boolean sbc(REGISTERS reg2, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readRegister(reg2) + cpu.getFlag(FLAGS.C);
-        cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
+        int val2 = cpu.readRegister(reg2) ;
+        cpu.writeRegister(REGISTERS.A, subCBytes(val1, val2, cpu));
         cpu.addCycles();
         return true;
     }
 
     private boolean sbc(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readPC() + cpu.getFlag(FLAGS.C);
-        cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
+        int val2 = cpu.readPC();
+        cpu.writeRegister(REGISTERS.A, subCBytes(val1, val2, cpu));
         cpu.addCycles(2);
         return true;
     }
 
+    private int subCBytes(int val1, int val2, CPU cpu) {
+        int carry = cpu.getFlag(FLAGS.C);
+        int result = (val1 - val2 - carry);
+        cpu.setFlag(FLAGS.Z, (result & 0xff) == 0);
+        cpu.setFlag(FLAGS.N, true);
+        cpu.setFlag(FLAGS.H, ((val1 & 0x0f) - carry) < (val2 & 0x0f));
+        cpu.setFlag(FLAGS.C, result < 0);
+
+        return result;
+    }
+
     private boolean sbcHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readAddress(
-                cpu.readWordRegister(RegisterPairs.HL) + cpu.getFlag(FLAGS.C));
-        cpu.writeRegister(REGISTERS.A, subBytes(val1, val2, cpu));
+        int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
+        cpu.writeRegister(REGISTERS.A, subCBytes(val1, val2, cpu));
         cpu.addCycles(2);
         return true;
     }
