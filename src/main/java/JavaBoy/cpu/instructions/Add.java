@@ -95,17 +95,27 @@ public class Add implements Instruction {
 
     private boolean addC(REGISTERS second, CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readRegister(second) + cpu.getFlag(FLAGS.C);
-        cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
+        int val2 = cpu.readRegister(second) ;
+        cpu.writeRegister(REGISTERS.A, addCBytes(val1, val2, cpu));
         cpu.addCycles();
         return true;
 
     }
 
+    private int addCBytes(int val1, int val2, CPU cpu){
+       int result = val1 + val2 + cpu.getFlag(FLAGS.C);
+       int carryFlag = cpu.getFlag(FLAGS.C);
+       cpu.setFlag(FLAGS.Z, (result & 0xff) == 0);
+       cpu.setFlag(FLAGS.N, false);
+       cpu.setFlag(FLAGS.H, ((val1 & 0x0f) + (val2 & 0x0f)  + carryFlag) > 0x0f );
+       cpu.setFlag(FLAGS.C, result > 0xff);
+       return result;
+    }
+
     private boolean addC(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
-        int val2 = cpu.readPC() + cpu.getFlag(FLAGS.C);
-        cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
+        int val2 = cpu.readPC();
+        cpu.writeRegister(REGISTERS.A, addCBytes(val1, val2, cpu));
         cpu.addCycles(2);
         return true;
     }
@@ -113,8 +123,7 @@ public class Add implements Instruction {
     private boolean addCHL(CPU cpu) {
         int val1 = cpu.readRegister(REGISTERS.A);
         int val2 = cpu.readAddress(cpu.readWordRegister(RegisterPairs.HL));
-        val2 = val2 + cpu.getFlag(FLAGS.C);
-        cpu.writeRegister(REGISTERS.A, addBytes(val1, val2, cpu));
+        cpu.writeRegister(REGISTERS.A, addCBytes(val1, val2, cpu));
         cpu.addCycles(2);
         return true;
     }
@@ -152,10 +161,13 @@ public class Add implements Instruction {
 
     private boolean addSP(CPU cpu) {
         int val1 = cpu.getSP();
-        int val2 = cpu.readPC();
-
-        cpu.setSP(applyAdd16(val1, val2, cpu));
+        int val2 = (byte) cpu.readPC();
+        int result = (val1 + val2) ;
+        cpu.setSP(result);
         cpu.setFlag(FLAGS.Z, false);
+        cpu.setFlag(FLAGS.N, false);
+        cpu.setFlag(FLAGS.H, ((result & 0x0f) < (val1 & 0x0f)));
+        cpu.setFlag(FLAGS.C, (result & 0xff) < (val1 & 0xff));
         cpu.addCycles(4);
         return true;
     }
