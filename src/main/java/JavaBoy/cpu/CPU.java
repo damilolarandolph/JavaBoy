@@ -5,6 +5,7 @@ import JavaBoy.cpu.instructions.Instruction;
 import JavaBoy.cpu.interrupts.InterruptManager;
 import JavaBoy.cpu.registers.RegisterBank;
 import JavaBoy.cpu.registers.RegisterPairs;
+import JavaBoy.memory.Dma;
 import JavaBoy.memory.MemoryMap;
 import JavaBoy.timer.Timer;
 
@@ -17,13 +18,14 @@ public class CPU {
     private final RegisterBank registers;
     private final InterruptManager interruptManager;
     private final Timer timer;
+    private final Dma dma;
     File file = new File("/home/damilola/gameboy.txt");
     FileWriter writer;
     private boolean halted = false;
 
     public CPU(MemoryMap mmu, Instruction[] instructions,
                RegisterBank registers, InterruptManager interruptManager,
-               Timer timer) {
+               Timer timer, Dma dma) {
         try {
             writer = new FileWriter(file);
         } catch (Exception err) {
@@ -31,6 +33,7 @@ public class CPU {
         }
         this.timer = timer;
         this.mmu = mmu;
+        this.dma = dma;
         this.interruptManager = interruptManager;
         this.instructions = instructions;
         this.registers = registers;
@@ -75,12 +78,13 @@ public class CPU {
 
         for (int count = multiple * 4; count >= 0; --count) {
             timer.tick();
+            dma.tick();
         }
 
     }
 
     private boolean tryExecute(int opcode) {
-        printState(opcode);
+        //printState(opcode);
         if (getPC() == 0xc002) {
             System.out.println("hey");
         }
@@ -115,6 +119,7 @@ public class CPU {
 
 
     }
+
 
     public int readWordPC() {
         int lsb = this.readPC();
@@ -162,7 +167,7 @@ public class CPU {
         string += String.format("Opcode: %s \n", getHex(opcode));
 
 
-        string += String.format("Opcode: %s \n", getHex(timer.getTIMA()));
+        string += String.format("TIMA: %s \n", getHex(timer.getTIMA()));
 
         string += String.format("F: [%s%s%s%s]\n\n",
                                 isFlag(FLAGS.Z) ? "Z" : "-",

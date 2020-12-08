@@ -11,16 +11,20 @@ import JavaBoy.cpu.interrupts.InterruptManager;
 import JavaBoy.cpu.registers.Register16;
 import JavaBoy.cpu.registers.RegisterBank;
 import JavaBoy.debug.DebugMemory;
+import JavaBoy.memory.Dma;
 import JavaBoy.memory.MemoryMap;
 import JavaBoy.memory.MemorySlot;
 import JavaBoy.timer.Timer;
+import JavaBoy.video.LCDC;
+import JavaBoy.video.LCDStat;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class JavaBoy {
     public static void main(String[] args) {
         File file = new File(JavaBoy.class.getResource(
-                "/gb-test-roms/cpu_instrs/individual/02_interrupts.gb").getFile());
+                "/gb-test-roms/cpu_instrs/individual/10_bit_ops.gb").getFile());
         Cartridge cart = new Cartridge(file);
 
         Instruction[] instructions = new Instruction[]{
@@ -57,12 +61,22 @@ public class JavaBoy {
         };
         InterruptManager manager = new InterruptManager();
         Timer timer = new Timer(manager);
+        var memSlots = new ArrayList<MemorySlot>();
+
         MemoryMap map = new MemoryMap(
-                new MemorySlot[]{cart, timer, manager, new DebugMemory()});
+                memSlots
+        );
+        Dma dma = new Dma(map);
+        memSlots.add(dma);
+        memSlots.add(cart);
+        memSlots.add(timer);
+        memSlots.add(manager);
+        memSlots.add(new DebugMemory());
+
         RegisterBank registers = new RegisterBank(new FlagBank(),
                                                   new Register16(),
                                                   new Register16());
-        CPU cpu = new CPU(map, instructions, registers, manager, timer);
+        CPU cpu = new CPU(map, instructions, registers, manager, timer, dma);
         cpu.run();
     }
 
