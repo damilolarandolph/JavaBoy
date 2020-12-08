@@ -115,9 +115,20 @@ public class CPU {
     public int readPC() {
         int addr = this.registers.getPC().read();
         this.registers.getPC().increment();
+        return getByte(addr);
+
+    }
+
+    private int getByte(int addr) {
+        if(dma.canAccess(addr))
         return this.mmu.readByte(addr);
+        else
+            return 0;
+    }
 
-
+    private void writeByte(int addr, int value) {
+        if(dma.canAccess(addr))
+        this.mmu.setByte(addr, value);
     }
 
 
@@ -132,11 +143,11 @@ public class CPU {
     }
 
     public void writeAddress(int address, int value) {
-        this.mmu.setByte(address, value);
+        writeByte(address, value);
     }
 
     public int readAddress(int address) {
-        return this.mmu.readByte(address);
+        return getByte(address);
     }
 
     private void printState(int opcode) {
@@ -200,7 +211,7 @@ public class CPU {
     public void pushSP(int value) {
         this.registers.getSP().decrement();
         int addr = this.getSP();
-        this.mmu.setByte(addr, value);
+        writeByte(addr, value);
     }
 
     public int popSP() {
