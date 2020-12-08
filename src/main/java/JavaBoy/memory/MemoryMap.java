@@ -1,15 +1,17 @@
 package JavaBoy.memory;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class MemoryMap {
 
-    private final MemorySlot[] slots;
+    private final ArrayList<MemorySlot> slots;
 
 
-    public MemoryMap(MemorySlot[] slots) {
+    public MemoryMap(ArrayList<MemorySlot> slots) {
         this.slots = slots;
     }
+
 
     public int readByte(int address) {
 
