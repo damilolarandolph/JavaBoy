@@ -11,25 +11,25 @@ public class LCDC implements MemorySlot {
         return BitUtils.getNthBit(7, data) == 1;
     }
 
-    public int getWindowSelect() {
+    public Vram.BGMaps getWindowMap() {
         int select = BitUtils.getNthBit(6, data);
 
-        return select == 0 ? 0x9800 : 0x9c00;
+        return select == 0 ? Vram.BGMaps.MAP1 : Vram.BGMaps.MAP2;
     }
 
-    public boolean isWindowDisplay() {
+    public boolean isWindowEnabled() {
         return BitUtils.getNthBit(5, data) == 1;
     }
 
-    public int getBGWindowSelect() {
+    public AddressingModes getBGWindowAddressing() {
         int select = BitUtils.getNthBit(4, data);
 
-        return select == 0 ? 0x8800 : 0x8000;
+        return select == 0 ? AddressingModes.M8800 : AddressingModes.M8000;
     }
 
-    public int getBGTileSelect() {
+    public Vram.BGMaps getBGMap() {
         int select = BitUtils.getNthBit(3, data);
-        return select == 0 ? 0x9800 : 0x9c00;
+        return select == 0 ? Vram.BGMaps.MAP1 : Vram.BGMaps.MAP2;
     }
 
     public boolean isOBJSize() {
