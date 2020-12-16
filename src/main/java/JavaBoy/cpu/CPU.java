@@ -40,7 +40,7 @@ public class CPU {
         this.interruptManager = interruptManager;
         this.instructions = instructions;
         this.registers = registers;
-        this.setPC(0x100);
+        this.setPC(0x0);
     }
 
 
