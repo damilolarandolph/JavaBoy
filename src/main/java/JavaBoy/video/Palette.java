@@ -8,7 +8,6 @@ public class Palette implements MemorySlot {
     int objPal1 = 0;
     int objPal2 = 0;
 
-
     private GreyShades getShade(int colourIndex) {
         colourIndex &= 0x03;
         for (GreyShades shade : GreyShades.values()) {
@@ -20,7 +19,18 @@ public class Palette implements MemorySlot {
         return null;
     }
 
-    public GreyShades getBGP(int colourNum) {
+    public GreyShades getPaletteShade(int colour, Palettes palette) {
+        switch (palette) {
+            case OBP0:
+                return getObjPal1(colour);
+            case OBP1:
+                return getObjPal2(colour);
+            default:
+                return getBGP(colour);
+        }
+    }
+
+    private GreyShades getBGP(int colourNum) {
 
         switch (colourNum) {
             case 3:
@@ -37,7 +47,7 @@ public class Palette implements MemorySlot {
 
     }
 
-    public GreyShades getObjPal1(int colourNum) {
+    private GreyShades getObjPal1(int colourNum) {
 
         switch (colourNum) {
             case 3:
@@ -50,7 +60,7 @@ public class Palette implements MemorySlot {
         return GreyShades.TRANSPARENT;
     }
 
-    public GreyShades getObjPal2(int colourNum) {
+    private GreyShades getObjPal2(int colourNum) {
 
         switch (colourNum) {
             case 3:
@@ -93,9 +103,6 @@ public class Palette implements MemorySlot {
             default:
                 return false;
         }
-    }
-    public enum Palettes{
-        BGB, OBP0, OBP1
     }
 
     public enum GreyShades {
