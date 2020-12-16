@@ -1,26 +1,24 @@
 package JavaBoy.video;
 
 import JavaBoy.memory.MemorySlot;
-import static JavaBoy.utils.BitUtils.*;
+
+import static JavaBoy.utils.BitUtils.getNthBit;
 
 public class Vram implements MemorySlot {
 
-    int[] data = new int[0x9800 - 0x8000];
-    int[] bgMap1 = new int[0x9bff - 0x9801];
-    int[] bgMap2 = new int[0x9fff - 0x9c01];
+    int[] data = new int[(0x97ff - 0x8000) + 1];
+    int[] bgMap1 = new int[(0x9bff - 0x9800) + 1];
+    int[] bgMap2 = new int[(0x9fff - 0x9c00) + 1];
 
 
     /**
      * @param tileNum        The tile number in the tile data table
-     * @param x              The pixel's column
-     * @param y              The pixel's row
      * @param addressingMode The addressing being used to access the tile
      *                       data table
-     * @return 6 bit value representing a pixel
+     * @return A {@link Tile} instance
      */
-    public int getTilePixel(int tileNum, int x, int y,
-                            LCDC.AddressingModes addressingMode) {
-        int result = 0;
+    public Tile getTile(int tileNum,
+                        LCDC.AddressingModes addressingMode) {
         int block;
         if (addressingMode == LCDC.AddressingModes.M8000) {
             block = 0x8000;
@@ -33,27 +31,20 @@ public class Vram implements MemorySlot {
             }
         }
         int tileStart = tileNum * 16;
-        int lineStart = tileStart + (y * 2);
-        int byte1  = data[(block + lineStart) - 0x8000];
-        int byte2 = data[(block + (lineStart + 1)) - 0x8000];
-
-        // Making the right most column 0 and the left most 7
-        x = 7 - x;
-        return  (getNthBit(x, byte2) << 1) & (getNthBit(x, byte1));
-
+        return new Tile(tileStart, block);
     }
 
     /**
      * @param x              The BG pixel's column
      * @param y              The BG pixel's row
-     * @param isMap1         Sets which BG map to use (1 or 2)
+     * @param map            Dictates which background map to use
      * @param addressingMode The addressing mode being used to access the tile
      *                       data table
-     * @return A 6 bit value representing a pixel
+     * @return A {@link Tile} instance
      */
-    public int getPixelBG(int x,
+    public Tile getTileBG(int x,
                           int y,
-                          boolean isMap1,
+                          BGMaps map,
                           LCDC.AddressingModes addressingMode) {
 
         // If the x or y coordinates exceed the bounds of the map,
@@ -65,21 +56,18 @@ public class Vram implements MemorySlot {
         int mapX = (255 - (255 - x)) / 8;
         int mapY = (255 - (255 - y)) / 8;
 
-        int tile;
-        if (isMap1) {
-            tile = bgMap1[(mapY * 32) + mapX];
-        } else {
-            tile = bgMap2[(mapY * 32) + mapX];
+        int tile = 0;
+        switch (map) {
+            case MAP1:
+                tile = bgMap1[(mapY * 32) + mapX];
+                break;
+            case MAP2:
+                tile = bgMap2[(mapY * 32) + mapX];
+                break;
         }
 
-        // Getting the x and y coordinates of the pixel on the
-        // tile
-        int tileX = x % 8;
-        int tileY = y % 8;
-
-        return getTilePixel(tile, tileX, tileY, addressingMode);
+        return getTile(tile, addressingMode);
     }
-
 
     @Override
     public int getByte(int address) {
@@ -90,7 +78,6 @@ public class Vram implements MemorySlot {
         else
             return bgMap2[address - 0x9c00];
     }
-
 
     @Override
     public void setByte(int address, int value) {
@@ -105,6 +92,39 @@ public class Vram implements MemorySlot {
 
     @Override
     public boolean hasAddressInSlot(int address) {
-        return (address >= 0x8000) && (address <= 0x9fff);
+        return address >= 0x8000 && address <= 0x9fff;
+    }
+
+    public enum BGMaps {
+        MAP1, MAP2
+    }
+
+    public class Tile {
+        private final int tileStart;
+        private final int block;
+
+
+        public Tile(int tileStart, int block) {
+            this.tileStart = tileStart;
+            this.block = block;
+        }
+
+        /**
+         * @param line The line of the Tile to be fetched valid
+         *             values are from 0 to 7
+         * @return An array of colour numbers;
+         */
+        public int[] getLine(int line) {
+            int[] pixels = new int[8];
+            int lineStart = tileStart + (line * 2);
+            int byte1 = data[(block + lineStart) - 0x8000];
+            int byte2 = data[(block + (lineStart + 1)) - 0x8000];
+            for (int a = 7; a >= 0; --a) {
+                int palette = (getNthBit(a, byte2) << 1) | getNthBit(a, byte1);
+                pixels[7 - a] = palette;
+            }
+            return pixels;
+
+        }
     }
 }
