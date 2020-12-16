@@ -10,6 +10,8 @@ public class ROM extends CartridgeType {
 
     @Override
     public int getByte(int address) {
+        if (address < 0x100)
+            return bootRom[address];
         return Byte.toUnsignedInt(data[address]);
     }
 
