@@ -11,12 +11,15 @@ import JavaBoy.cpu.interrupts.InterruptManager;
 import JavaBoy.cpu.registers.Register16;
 import JavaBoy.cpu.registers.RegisterBank;
 import JavaBoy.debug.DebugMemory;
+import JavaBoy.gui.GBGui;
 import JavaBoy.memory.Dma;
 import JavaBoy.memory.MemoryMap;
 import JavaBoy.memory.MemorySlot;
 import JavaBoy.timer.Timer;
-import JavaBoy.video.LCDC;
-import JavaBoy.video.LCDStat;
+import JavaBoy.video.*;
+import JavaBoy.video.pixelpipeline.DmgFifo;
+import JavaBoy.video.pixelpipeline.FIFOFetcher;
+import JavaBoy.video.pixelpipeline.PixelFIFO;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,17 +69,34 @@ public class JavaBoy {
         MemoryMap map = new MemoryMap(
                 memSlots
         );
+        LCDC lcdc = new LCDC();
+        LCDStat lcdStat = new LCDStat();
+        GpuRegisters gpuRegisters = new GpuRegisters();
+        Oam oam = new Oam();
+        Palette palette = new Palette();
+        Vram vram = new Vram();
+        PixelFIFO oamFifo = new DmgFifo(palette);
+        PixelFIFO bgFifo = new DmgFifo(palette);
+        FIFOFetcher fetcher = new FIFOFetcher(oamFifo, bgFifo, vram, lcdc,
+                                              gpuRegisters);
+        GBGui gui = new GBGui();
+        Gpu gpu = new Gpu(gui, lcdc, lcdStat, gpuRegisters, oam, palette, vram,
+                          fetcher, oamFifo, bgFifo, manager);
         Dma dma = new Dma(map);
         memSlots.add(dma);
+        memSlots.add(gpu);
         memSlots.add(cart);
         memSlots.add(timer);
         memSlots.add(manager);
         memSlots.add(new DebugMemory());
 
+
+
         RegisterBank registers = new RegisterBank(new FlagBank(),
                                                   new Register16(),
                                                   new Register16());
-        CPU cpu = new CPU(map, instructions, registers, manager, timer, dma);
+        CPU cpu = new CPU(map, instructions, registers, manager, timer, dma, gpu);
+        gui.show();
         cpu.run();
     }
 
