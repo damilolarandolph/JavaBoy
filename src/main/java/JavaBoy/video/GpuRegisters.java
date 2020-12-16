@@ -6,10 +6,38 @@ public class GpuRegisters implements MemorySlot {
 
     private int scy = 0;
     private int scx = 0;
-    private final int ly = 0;
+    private int ly = 0;
     private int lyc = 0;
     private int wy = 0;
     private int wx = 0;
+
+    public void setLy(int ly) {
+        this.ly = ly;
+    }
+
+    public int getLy() {
+        return ly;
+    }
+
+    public int getLyc() {
+        return lyc;
+    }
+
+    public int getScx() {
+        return scx;
+    }
+
+    public int getScy() {
+        return scy;
+    }
+
+    public int getWx() {
+        return wx;
+    }
+
+    public int getWy() {
+        return wy;
+    }
 
     @Override
     public int getByte(int address) {
@@ -33,19 +61,13 @@ public class GpuRegisters implements MemorySlot {
     public void setByte(int address, int value) {
         switch (address) {
             case 0xff42:
-                if (value > 0xff) {
-                    scy = value - 0xff;
-                } else {
-                    scy = value;
-                }
+                scy = value;
                 break;
             case 0xff43:
-                if (value > 0xff) {
-                    scx = value - 0xff;
-                } else {
-                    scx = value;
-                }
+                scx = value;
                 break;
+            case 0xff44:
+                ly = value;
             case 0xff45:
                 lyc = value;
                 break;
