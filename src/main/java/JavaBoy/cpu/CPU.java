@@ -8,6 +8,7 @@ import JavaBoy.cpu.registers.RegisterPairs;
 import JavaBoy.memory.Dma;
 import JavaBoy.memory.MemoryMap;
 import JavaBoy.timer.Timer;
+import JavaBoy.video.Gpu;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -17,6 +18,7 @@ public class CPU {
     private final Instruction[] instructions;
     private final RegisterBank registers;
     private final InterruptManager interruptManager;
+    private final Gpu gpu;
     private final Timer timer;
     private final Dma dma;
     File file = new File("/home/damilola/gameboy.txt");
@@ -25,13 +27,14 @@ public class CPU {
 
     public CPU(MemoryMap mmu, Instruction[] instructions,
                RegisterBank registers, InterruptManager interruptManager,
-               Timer timer, Dma dma) {
+               Timer timer, Dma dma, Gpu gpu) {
         try {
             writer = new FileWriter(file);
         } catch (Exception err) {
             System.err.println(err.getMessage());
         }
         this.timer = timer;
+        this.gpu = gpu;
         this.mmu = mmu;
         this.dma = dma;
         this.interruptManager = interruptManager;
@@ -79,6 +82,7 @@ public class CPU {
         for (int count = multiple * 4; count >= 0; --count) {
             timer.tick();
             dma.tick();
+            gpu.tick();
         }
 
     }
