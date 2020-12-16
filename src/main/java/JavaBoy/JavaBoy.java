@@ -97,6 +97,7 @@ public class JavaBoy {
                                                   new Register16());
         CPU cpu = new CPU(map, instructions, registers, manager, timer, dma, gpu);
         gui.show();
+        new Thread(gui).start();
         cpu.run();
     }
 
