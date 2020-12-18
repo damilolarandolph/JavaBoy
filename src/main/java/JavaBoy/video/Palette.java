@@ -10,13 +10,16 @@ public class Palette implements MemorySlot {
 
     private GreyShades getShade(int colourIndex) {
         colourIndex &= 0x03;
-        for (GreyShades shade : GreyShades.values()) {
-            if (colourIndex == shade.ordinal()) {
-                return shade;
-            }
-        }
+        switch (colourIndex){
+            case 1:
+                return GreyShades.LIGHT_GREY;
+            case 2:
+                return GreyShades.DARK_GREY;
+            case 3:
+                return GreyShades.BLACK;
 
-        return null;
+        }
+        return GreyShades.WHITE;
     }
 
     public GreyShades getPaletteShade(int colour, Palettes palette) {
