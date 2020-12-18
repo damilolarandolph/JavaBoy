@@ -6,19 +6,20 @@ import static JavaBoy.utils.BitUtils.getNthBit;
 
 public class Vram implements MemorySlot {
 
+    private final int[] pixels = new int[8];
     int[] data = new int[(0x97ff - 0x8000) + 1];
     int[] bgMap1 = new int[(0x9bff - 0x9800) + 1];
     int[] bgMap2 = new int[(0x9fff - 0x9c00) + 1];
 
-
     /**
      * @param tileNum        The tile number in the tile data table
+     * @param line           The tile line to retrieve
      * @param addressingMode The addressing being used to access the tile
      *                       data table
-     * @return A {@link Tile} instance
+     * @return A volatile int []
      */
-    public Tile getTile(int tileNum,
-                        LCDC.AddressingModes addressingMode) {
+    public int[] getTile(int tileNum, int line,
+                         LCDC.AddressingModes addressingMode) {
         int block;
         if (addressingMode == LCDC.AddressingModes.M8000) {
             block = 0x8000;
@@ -31,7 +32,14 @@ public class Vram implements MemorySlot {
             }
         }
         int tileStart = tileNum * 16;
-        return new Tile(tileStart, block);
+        int lineStart = tileStart + (line * 2);
+        int byte1 = data[(block + lineStart) - 0x8000];
+        int byte2 = data[(block + (lineStart + 1)) - 0x8000];
+        for (int a = 7; a >= 0; --a) {
+            int palette = (getNthBit(a, byte2) << 1) | getNthBit(a, byte1);
+            pixels[7 - a] = palette;
+        }
+        return pixels;
     }
 
     /**
@@ -40,12 +48,12 @@ public class Vram implements MemorySlot {
      * @param map            Dictates which background map to use
      * @param addressingMode The addressing mode being used to access the tile
      *                       data table
-     * @return A {@link Tile} instance
+     * @return A volatile int[]
      */
-    public Tile getTileBG(int x,
-                          int y,
-                          BGMaps map,
-                          LCDC.AddressingModes addressingMode) {
+    public int[] getTileLineBG(int x,
+                               int y,
+                               BGMaps map,
+                               LCDC.AddressingModes addressingMode) {
 
         // If the x or y coordinates exceed the bounds of the map,
         // wrap to the opposite side on the respective coordinate.
@@ -66,7 +74,8 @@ public class Vram implements MemorySlot {
                 break;
         }
 
-        return getTile(tile, addressingMode);
+
+        return getTile(tile, y % 8, addressingMode);
     }
 
     @Override
@@ -99,32 +108,5 @@ public class Vram implements MemorySlot {
         MAP1, MAP2
     }
 
-    public class Tile {
-        private final int tileStart;
-        private final int block;
 
-
-        public Tile(int tileStart, int block) {
-            this.tileStart = tileStart;
-            this.block = block;
-        }
-
-        /**
-         * @param line The line of the Tile to be fetched valid
-         *             values are from 0 to 7
-         * @return An array of colour numbers;
-         */
-        public int[] getLine(int line) {
-            int[] pixels = new int[8];
-            int lineStart = tileStart + (line * 2);
-            int byte1 = data[(block + lineStart) - 0x8000];
-            int byte2 = data[(block + (lineStart + 1)) - 0x8000];
-            for (int a = 7; a >= 0; --a) {
-                int palette = (getNthBit(a, byte2) << 1) | getNthBit(a, byte1);
-                pixels[7 - a] = palette;
-            }
-            return pixels;
-
-        }
-    }
 }
