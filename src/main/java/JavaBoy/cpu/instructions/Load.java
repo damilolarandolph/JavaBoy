@@ -5,8 +5,6 @@ import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
 
-import static JavaBoy.utils.ArithmeticUtils.isCarry16;
-import static JavaBoy.utils.ArithmeticUtils.isHalfCarry16;
 import static JavaBoy.utils.BitUtils.getLsb;
 import static JavaBoy.utils.BitUtils.getMsb;
 
