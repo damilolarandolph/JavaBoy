@@ -13,9 +13,9 @@ public class Timer implements MemorySlot {
     int tma = 0;
     int tac = 0;
     boolean didOverflow = false;
-    int ticksAfterOverflow = 0;
-    int divTicks = 0;
-    int timaTicks = 0;
+    int cyclesAfterOverflow = 0;
+    int divCycles = 0;
+    int timaCycles = 0;
 
     public Timer(InterruptManager interruptManager) {
         this.interruptManager = interruptManager;
@@ -24,7 +24,6 @@ public class Timer implements MemorySlot {
     public void tick() {
         incrementDIV();
         incrementTIMA();
-
     }
 
     public int getTIMA() {
@@ -37,9 +36,9 @@ public class Timer implements MemorySlot {
 
 
     private void incrementDIV() {
-        divTicks += 1;
-        if (divTicks >= 256) {
-            divTicks -= 256;
+        divCycles += 1;
+        if (divCycles >= 256 / 4) {
+            divCycles -= 256 / 4;
             if (div == 0xff) {
                 div = 0x00;
             } else {
@@ -51,21 +50,21 @@ public class Timer implements MemorySlot {
     private void incrementTIMA() {
 
 
-        if (didOverflow && ticksAfterOverflow < 4) {
-            ticksAfterOverflow += 1;
+        if (didOverflow && cyclesAfterOverflow < 1) {
+            cyclesAfterOverflow += 1;
             tima = 0x0;
             return;
-        } else if (didOverflow && ticksAfterOverflow == 4) {
+        } else if (didOverflow && cyclesAfterOverflow == 1) {
             tima = tma;
             interruptManager.requestInterrupt(Interrupts.TIMER);
             didOverflow = false;
-            ticksAfterOverflow = 0;
+            cyclesAfterOverflow = 0;
         }
         if (isTimerEnabled()) {
-            timaTicks += 1;
+            timaCycles += 1;
             int addition = 0;
-            if (timaTicks >= getClockSelect()) {
-                addition = timaTicks / getClockSelect();
+            if (timaCycles >= getClockSelect()) {
+                addition = timaCycles / getClockSelect();
             }
             for (; addition > 0; --addition) {
                 if (tima == 0xff) {
@@ -73,7 +72,7 @@ public class Timer implements MemorySlot {
                     break;
                 }
                 tima += 1;
-                timaTicks -= getClockSelect();
+                timaCycles -= getClockSelect();
             }
         }
     }
@@ -83,13 +82,13 @@ public class Timer implements MemorySlot {
 
         switch (clockSelect) {
             case 0x00:
-                return 1024;
+                return 1024 / 4;
             case 0x01:
-                return 16;
+                return 16 / 4;
             case 0x02:
-                return 64;
+                return 64 / 4;
             default:
-                return 256;
+                return 256 / 4;
         }
     }
 
@@ -118,8 +117,8 @@ public class Timer implements MemorySlot {
                 if (isTimerEnabled() && div == 1)
                     tima += 1;
                 div = 0x0;
-                divTicks = 0;
-                timaTicks = 0;
+                divCycles = 0;
+                timaCycles = 0;
 
                 break;
             case 0xff05:
@@ -130,7 +129,7 @@ public class Timer implements MemorySlot {
                 break;
             case 0xff07:
                 if (isTimerEnabled()) {
-                    if (getClockSelect() == 16) {
+                    if (getClockSelect() == 16 / 4) {
                         int newClock = (getNthBit(1, tac) << 1) | getNthBit(0,
                                                                             tac);
                         if (newClock == 0) {
