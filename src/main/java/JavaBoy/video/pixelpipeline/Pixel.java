@@ -3,20 +3,20 @@ package JavaBoy.video.pixelpipeline;
 import JavaBoy.video.Palettes;
 
 public class Pixel {
-    final private int colour;
-    final private Palettes palette;
-    final private boolean isAboveBG;
+    private int colour;
+    private Palettes palette;
+    private boolean isAboveBG;
 
-    public Pixel(int colour, Palettes palette) {
-        this.colour = colour;
-        this.palette = palette;
-        this.isAboveBG = false;
+    public void setAboveBG(boolean aboveBG) {
+        isAboveBG = aboveBG;
     }
 
-    public Pixel(int colour, Palettes palette, boolean BGPri) {
+    public void setColour(int colour) {
         this.colour = colour;
+    }
+
+    public void setPalette(Palettes palette) {
         this.palette = palette;
-        this.isAboveBG = BGPri;
     }
 
     public boolean getAboveBG() {
