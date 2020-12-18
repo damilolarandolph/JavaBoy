@@ -5,7 +5,8 @@ import JavaBoy.memory.MemorySlot;
 import java.util.ArrayList;
 
 public class Oam implements MemorySlot {
-    int[] data = new int[0xfe9f - 0xfe01];
+    int[] data = new int[(0xfe9f - 0xfe00) + 1];
+    ArrayList<SpriteAttribute> foundSprites = new ArrayList<>(10);
 
     @Override
     public int getByte(int address) {
@@ -23,7 +24,6 @@ public class Oam implements MemorySlot {
     }
 
     public ArrayList<SpriteAttribute> getSprites(int line) {
-        ArrayList<SpriteAttribute> foundSprites = new ArrayList<>();
 
         for (int a = 0; a < 40; ++a){
            int yPos = data[a * 4];
