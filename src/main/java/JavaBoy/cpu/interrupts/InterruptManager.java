@@ -21,23 +21,29 @@ public class InterruptManager implements MemorySlot {
         }
 
         if (ime) {
-            for (Interrupts interrupt : Interrupts.values()) {
-                if (getNthBit(interrupt.getBitIndex(), interruptRequests) != 1)
-                    continue;
-                if (getNthBit(interrupt.getBitIndex(), interruptEnable) != 1)
-                    continue;
-                ime = false;
-
-                cpu.pushSP(getMsb(cpu.getPC()));
-                cpu.pushSP(getLsb(cpu.getPC()));
-                cpu.setPC(interrupt.getInterruptVector());
-                unrequestInterrupt(interrupt);
-                cpu.addCycles(5);
-                return true;
-            }
+            return tryHandle(cpu, Interrupts.V_BLANK) ||
+                    tryHandle(cpu, Interrupts.LCD_STAT) ||
+                    tryHandle(cpu, Interrupts.TIMER) ||
+                    tryHandle(cpu, Interrupts.SERIAL) ||
+                    tryHandle(cpu, Interrupts.JOYPAD);
         }
 
         return false;
+    }
+
+    public boolean tryHandle(CPU cpu, Interrupts interrupt) {
+        if (getNthBit(interrupt.getBitIndex(), interruptRequests) != 1)
+            return false;
+        if (getNthBit(interrupt.getBitIndex(), interruptEnable) != 1)
+            return false;
+        ime = false;
+
+        cpu.pushSP(getMsb(cpu.getPC()));
+        cpu.pushSP(getLsb(cpu.getPC()));
+        cpu.setPC(interrupt.getInterruptVector());
+        unrequestInterrupt(interrupt);
+        cpu.addCycles(5);
+        return true;
     }
 
     public boolean hasServiceableInterrupts() {
