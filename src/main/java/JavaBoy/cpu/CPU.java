@@ -13,9 +13,11 @@ import JavaBoy.video.Gpu;
 import java.io.File;
 import java.io.FileWriter;
 
-public class CPU {
+public class CPU  {
     private final MemoryMap mmu;
     private final Instruction[] instructions;
+    private int cycles = 0;
+    private long time;
     private final RegisterBank registers;
     private final InterruptManager interruptManager;
     private final Gpu gpu;
@@ -46,6 +48,7 @@ public class CPU {
 
     public void run() {
         int opcode;
+        time = System.currentTimeMillis();
         boolean canRun = true;
         while (canRun) {
             boolean didInterrupt = interruptManager.handleInterrupts(this);
@@ -66,6 +69,16 @@ public class CPU {
                 opcode = readPC();
                 canRun = tryExecute(opcode);
             }
+
+            if (cycles >= 17476){
+                cycles = 0;
+
+                gpu.refresh();
+                while (System.currentTimeMillis() - time < 16.67 ){
+
+                }
+                time = System.currentTimeMillis();
+            }
         }
         //printState(opcode);
 
@@ -78,12 +91,12 @@ public class CPU {
     }
 
     public void addCycles(int multiple) {
-
-        for (int count = multiple * 4; count >= 0; --count) {
+        for (int count = multiple; count > 0; --count) {
             timer.tick();
             dma.tick();
             gpu.tick();
-        }
+       }
+cycles+= multiple;
 
     }
 
