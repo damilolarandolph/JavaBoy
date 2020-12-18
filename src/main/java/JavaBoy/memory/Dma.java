@@ -19,16 +19,14 @@ public class Dma implements MemorySlot {
             if (cycles == 160) {
                 isTransferring = false;
             } else {
-                ++ticks;
-                if (ticks == 4) {
-                    ++cycles;
-                    ticks = 0;
+
                     if ((nextSource & 0xff) <= 0x9f) {
                         mmu.setByte(nextDestination, mmu.readByte(nextSource));
                         ++nextSource;
                         ++nextDestination;
                     }
-                }
+
+                ++cycles;
             }
         }
     }
