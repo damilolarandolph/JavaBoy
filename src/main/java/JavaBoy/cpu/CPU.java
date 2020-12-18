@@ -98,8 +98,8 @@ public class CPU {
             executed = true;
             addCycles();
         } else {
-            for (Instruction instruction : this.instructions) {
-                executed = instruction.execute(opcode, this);
+            for (int idx = 0; idx < instructions.length; ++idx){
+                executed = instructions[idx].execute(opcode, this);
                 if (executed)
                     break;
             }
