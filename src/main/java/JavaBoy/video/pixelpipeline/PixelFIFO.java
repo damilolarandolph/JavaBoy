@@ -1,14 +1,21 @@
 package JavaBoy.video.pixelpipeline;
 
+import JavaBoy.video.Palette;
+import JavaBoy.video.Palettes;
+
 public interface PixelFIFO {
 
     void push(Pixel[] pixels);
-    Pixel getPixel();
+
+    Palette.GreyShades getPixel();
     void clear();
     boolean canPop();
     void disablePopping();
     void enablePopping();
     boolean canPush();
-    void overlay(Pixel[] pixels);
+    boolean peekIsAboveBG();
+    int peekColour();
+    Palettes peekPalette();
+    void pushOverlay(Pixel[] pixels);
 
 }
