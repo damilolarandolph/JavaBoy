@@ -4,7 +4,6 @@ import JavaBoy.cpu.CPU;
 import JavaBoy.cpu.REGISTERS;
 import JavaBoy.cpu.flags.FLAGS;
 import JavaBoy.cpu.registers.RegisterPairs;
-import JavaBoy.utils.BitUtils;
 
 public class Shift implements Instruction {
     @Override
