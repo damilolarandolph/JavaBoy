@@ -22,7 +22,6 @@ import JavaBoy.video.pixelpipeline.FIFOFetcher;
 import JavaBoy.video.pixelpipeline.PixelFIFO;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class JavaBoy {
     public static void main(String[] args) {
@@ -30,45 +29,45 @@ public class JavaBoy {
                 "/gb-test-roms/cpu_instrs/individual/10_bit_ops.gb").getFile());
         Cartridge cart = new Cartridge(file);
 
-        Instruction[] instructions = new Instruction[]{
-                new Add(),
-                new And(),
-                new CB(new Instruction[]{
-                        new Bit(),
-                        new Swap(),
-                        new Reset(),
-                        new Set(),
-                        new RotateCB(),
-                        new Shift()
-                }),
-                new Call(),
-                new CCF(),
-                new Cp(),
-                new CPL(),
-                new Daa(),
-                new Dec(),
-                new DI(),
-                new EI(),
-                new Inc(),
-                new Jump(),
-                new Load(),
-                new Nop(),
-                new Or(),
-                new Pop(),
-                new Push(),
-                new Return(),
-                new Rotate(),
-                new SCF(),
-                new Sub(),
-                new Xor()
-        };
+
+        var load = new Load();
+        var add = new Add();
+        var and = new And();
+        var call = new Call();
+        var ccf = new CCF();
+        var cp = new Cp();
+        var cpl = new CPL();
+        var daa = new Daa();
+        var ei = new EI();
+        var dec = new Dec();
+        var di = new DI();
+        var inc = new Inc();
+        var jump = new Jump();
+        var nop = new Nop();
+        var or = new Or();
+        var pop = new Pop();
+        var push = new Push();
+        var reset = new Reset();
+        var ret = new Return();
+        var rotate = new Rotate();
+        var rotateCB = new RotateCB();
+        var scf = new SCF();
+        var set = new Set();
+        var shift = new Shift();
+        var sub = new Sub();
+        var swap = new Swap();
+        var xor = new Xor();
+
+        var bit = new Bit();
+
+        var cb = new CB(new Instruction[]{
+                bit, rotateCB, reset, set, shift, swap,
+        });
+
         InterruptManager manager = new InterruptManager();
         Timer timer = new Timer(manager);
-        var memSlots = new ArrayList<MemorySlot>();
 
-        MemoryMap map = new MemoryMap(
-                memSlots
-        );
+        MemoryMap map = new MemoryMap();
         LCDC lcdc = new LCDC();
         LCDStat lcdStat = new LCDStat();
         GpuRegisters gpuRegisters = new GpuRegisters();
@@ -83,21 +82,54 @@ public class JavaBoy {
         Gpu gpu = new Gpu(gui, lcdc, lcdStat, gpuRegisters, oam, palette, vram,
                           fetcher, oamFifo, bgFifo, manager);
         Dma dma = new Dma(map);
-        memSlots.add(dma);
-        memSlots.add(gpu);
-        memSlots.add(cart);
-        memSlots.add(timer);
-        memSlots.add(manager);
-        memSlots.add(new DebugMemory());
-
+        map.setSlots(new MemorySlot[]{
+                cart,
+                oam,
+                dma,
+                lcdc,
+                gpuRegisters,
+                lcdStat,
+                palette,
+                vram,
+                timer,
+                manager,
+                new DebugMemory(),
+        });
 
 
         RegisterBank registers = new RegisterBank(new FlagBank(),
                                                   new Register16(),
                                                   new Register16());
-        CPU cpu = new CPU(map, instructions, registers, manager, timer, dma, gpu);
+        CPU cpu = new CPU(map, new Instruction[]{
+                jump,
+                add,
+                sub,
+                and,
+                call,
+                cb,
+                ccf,
+                cp,
+                cpl,
+                daa,
+                dec,
+                di,
+                ei,
+                inc,
+                nop,
+                or,
+                pop,
+                push,
+                ret,
+                rotate,
+                scf,
+                xor,
+                load,
+        }, registers, manager, timer,
+                          dma,
+                          gpu);
+
+
         gui.show();
-        new Thread(gui).start();
         cpu.run();
     }
 
