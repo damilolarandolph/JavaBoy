@@ -3,36 +3,46 @@ package JavaBoy.video.pixelpipeline;
 import JavaBoy.video.Palette;
 import JavaBoy.video.Palettes;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-
 public class DmgFifo implements PixelFIFO {
     final private Palette palette;
-    LinkedList<Pixel> pixels = new LinkedList<>();
+    final private ArrayQueue<Pixel> pixels;
     boolean poppingEnabled = true;
+    private  int size = 0;
 
     public DmgFifo(Palette pal) {
         this.palette = pal;
+        this.pixels = new ArrayQueue<>(16);
+        for (int idx = 0; idx < 16; ++idx) {
+            pixels.add(new Pixel());
+        }
     }
 
     @Override
     public void push(Pixel[] pixels) {
-        this.pixels.addAll(Arrays.asList(pixels));
+        for (int idx = 0; idx < 8; ++idx) {
+            ++size;
+            this.pixels.getAt(idx).setAboveBG(pixels[idx].getAboveBG());
+            this.pixels.getAt(idx).setPalette(pixels[idx].getPalette());
+            this.pixels.getAt(idx).setColour(pixels[idx].getColour());
+        }
     }
 
     @Override
-    public Pixel getPixel() {
-        return this.pixels.poll();
+    public Palette.GreyShades getPixel() {
+        var pixel = pixels.poll();
+        --size;
+        return calculatePixel(pixel.getColour(), pixel.getPalette());
     }
 
     @Override
     public void clear() {
-        this.pixels.clear();
+        size = 0;
+        pixels.clear();
     }
 
     @Override
     public boolean canPop() {
-        return this.pixels.size() != 0 && this.poppingEnabled;
+        return size != 0 && this.poppingEnabled;
     }
 
     @Override
@@ -47,25 +57,51 @@ public class DmgFifo implements PixelFIFO {
 
     @Override
     public boolean canPush() {
-        return this.pixels.size() <= 8;
+        return size <= 8;
     }
 
     @Override
-    public void overlay(Pixel[] pixels) {
-        while ( pixels.length > this.pixels.size() ) {
-            this.pixels.add(new Pixel(0, Palettes.OBP0));
+    public boolean peekIsAboveBG() {
+        return this.pixels.peek().getAboveBG();
+    }
+
+    @Override
+    public int peekColour() {
+        return this.pixels.peek().getColour();
+    }
+
+    @Override
+    public Palettes peekPalette() {
+        return this.pixels.peek().getPalette();
+    }
+
+    private Palette.GreyShades calculatePixel(int pixel, Palettes palette) {
+        return this.palette.getPaletteShade(pixel, palette);
+    }
+
+    @Override
+    public void pushOverlay(Pixel[] overlay) {
+        for (int idx = this.size; idx < 8; ++idx) {
+             ++size;
+            this.pixels.getAt(idx).setAboveBG(false);
+            this.pixels.getAt(idx).setPalette(Palettes.OBP0);
+            this.pixels.getAt(idx).setColour(0);
         }
-        for (int pixelStart = 0; pixelStart < 8; ++pixelStart) {
-            Pixel existing = this.pixels.get(pixelStart);
-            Pixel incoming = pixels[pixelStart];
-            Palette.GreyShades existingShade = palette.getPaletteShade(
-                    existing.getColour(), existing.getPalette());
+
+        for (int idx = 0; idx < 8; ++idx) {
+            Palette.GreyShades existingShade = calculatePixel(
+                    pixels.getAt(idx).getColour(),
+                    pixels.getAt(idx).getPalette());
             Palette.GreyShades incomingShade = palette.getPaletteShade(
-                    incoming.getColour(), incoming.getPalette());
+                    overlay[idx].getColour(),
+                    overlay[idx].getPalette());
 
             if (incomingShade != Palette.GreyShades.WHITE &&
                     existingShade == Palette.GreyShades.WHITE)
-                this.pixels.set(pixelStart, incoming);
+                this.pixels.getAt(idx).setColour(overlay[idx].getColour());
+            this.pixels.getAt(idx).setPalette(overlay[idx].getPalette());
+            this.pixels.getAt(idx).setAboveBG(overlay[idx].getAboveBG());
         }
     }
+
 }
