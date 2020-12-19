@@ -3,7 +3,6 @@ package JavaBoy.gui;
 import JavaBoy.video.Palette;
 import JavaBoy.video.Renderer;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -100,7 +99,7 @@ newFrame = false;
 
     public void show() {
 
-        frame = new JFrame();
+        frame = new Frame();
         frame.setTitle("JavaBoy !");
         frame.setSize(700, 700);
         screen = new GBScreen();
