@@ -3,55 +3,80 @@ package JavaBoy.gui;
 import JavaBoy.video.Palette;
 import JavaBoy.video.Renderer;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 
 
-public class GBGui implements Renderer, Runnable {
+public class GBGui implements Renderer {
+
 
     final int pixelSize = 2;
     private final int screenX = 160;
     private final int screenY = 144;
+    private final int[] rgbWriteBuffer;
     BufferedImage readBuffer;
-    BufferedImage writeBuffer;
-    private boolean shouldUpdate = false;
     private int x = 0;
     private int y = 0;
     private Frame frame;
+    private long frameTime;
+    private int frames = 0;
+    private boolean newFrame = true;
     private Canvas screen;
 
     public GBGui() {
-        writeBuffer = new BufferedImage(screenX * pixelSize,
-                                        screenY * pixelSize,
-                                        BufferedImage.TYPE_INT_RGB);
+        GraphicsEnvironment env =
+                GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice device = env.getDefaultScreenDevice();
+        GraphicsConfiguration config = device.getDefaultConfiguration();
 
+        readBuffer = config.createCompatibleImage(screenX,
+                                                  screenY,
+                                                  Transparency.OPAQUE);
+        rgbWriteBuffer = new int[screenY * screenX];
+    }
 
+    @Override
+    public  void requestRefresh() {
+
+        if (newFrame){
+frameTime = System.currentTimeMillis();
+newFrame = false;
+        }
+        if ((System.currentTimeMillis() - frameTime)  >= 1000){
+            System.out.println("Screen FPS: " + frames );
+            frames = 0;
+            newFrame = true;
+        }
+
+        screen.repaint();
     }
 
     @Override
     public void renderPixel(Palette.GreyShades shade) {
-        var g = writeBuffer.getGraphics();
+
+        Color colour = SystemColor.MAGENTA;
         switch (shade) {
             case WHITE:
-                g.setColor(Color.WHITE);
+                colour = SystemColor.WHITE;
                 break;
             case LIGHT_GREY:
-                g.setColor(Color.lightGray);
+                colour = SystemColor.lightGray;
                 break;
             case DARK_GREY:
-                g.setColor(Color.darkGray);
+                colour = SystemColor.darkGray;
                 break;
             case BLACK:
-                g.setColor(Color.black);
+                colour = SystemColor.black;
                 break;
             case TRANSPARENT:
-                g.setColor(Color.MAGENTA);
+                colour = SystemColor.MAGENTA;
                 break;
         }
-        g.fillRect(x * pixelSize, y * pixelSize, pixelSize,
-                   pixelSize);
+        rgbWriteBuffer[(y * screenX) + x] = colour.getRGB();
         ++x;
     }
 
@@ -59,69 +84,58 @@ public class GBGui implements Renderer, Runnable {
     public void hBlank() {
         x = 0;
         ++y;
+        if (y == screenY)
+            vBlank();
     }
 
     @Override
-    public synchronized void vBlank() {
+    public  void vBlank() {
         x = 0;
         y = 0;
-        shouldUpdate = true;
-        notifyAll();
+        int[] data = ((DataBufferInt)readBuffer.getRaster().getDataBuffer()).getData();
+       System.arraycopy(rgbWriteBuffer, 0, data, 0, data.length);
+        ++frames;
     }
 
 
     public void show() {
 
-        frame = new Frame();
+        frame = new JFrame();
         frame.setTitle("JavaBoy !");
-        frame.setSize(new Dimension(600, 600));
+        frame.setSize(700, 700);
         screen = new GBScreen();
         screen.setSize(pixelSize * screenX, pixelSize * screenY);
         frame.add(screen);
+
         frame.pack();
         frame.setVisible(true);
+
         screen.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-               System.exit(0);
+                System.exit(0);
             }
         });
-    }
 
-    @Override
-    public void run() {
-        while (true) {
-            while (!shouldUpdate) {
-                synchronized (this) {
-                    try {
-                        wait();
-                    } catch (InterruptedException error) {
-break;
-                    }
-                }
-            }
-            synchronized (this) {
-                readBuffer = writeBuffer;
-                screen.update(screen.getGraphics());
-            }
-        }
-    }
 
+
+    }
 
     public class GBScreen extends Canvas {
 
         @Override
         public void paint(Graphics g) {
-            update(g);
+                g.drawImage(readBuffer, 0, 0, screenX * pixelSize,
+                            screenY * pixelSize, null);
+
+
         }
 
         @Override
-        public  void update(Graphics g){
-               if (readBuffer != null) {
-                   Graphics2D g2 = (Graphics2D) g;
-                   g2.drawImage(readBuffer, 0, 0, null);
-               }
+        public void update(Graphics g) {
+ paint(g);
+
         }
     }
 
