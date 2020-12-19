@@ -180,15 +180,19 @@ public class FIFOFetcher {
     }
 
     private void moveToNextStage() {
-        if (currentStage == FetcherStages.SLEEP) {
-            this.currentStage = FetcherStages.GET_TILE;
-            return;
-        }
-        for (FetcherStages stage : FetcherStages.values()) {
-            if (stage.ordinal() == this.currentStage.ordinal() + 1) {
-                this.currentStage = stage;
-                return;
-            }
+        switch (currentStage){
+            case GET_TILE:
+                this.currentStage = FetcherStages.GET_TILE_LOW;
+                break;
+            case GET_TILE_LOW:
+                this.currentStage = FetcherStages.GET_TILE_HIGH;
+                break;
+            case GET_TILE_HIGH:
+                this.currentStage = FetcherStages.SLEEP;
+                break;
+            case SLEEP:
+                this.currentStage = FetcherStages.GET_TILE;
+                break;
         }
     }
 
