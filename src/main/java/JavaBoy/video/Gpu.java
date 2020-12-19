@@ -4,7 +4,6 @@ import JavaBoy.cpu.interrupts.InterruptManager;
 import JavaBoy.cpu.interrupts.Interrupts;
 import JavaBoy.memory.MemorySlot;
 import JavaBoy.video.pixelpipeline.FIFOFetcher;
-import JavaBoy.video.pixelpipeline.Pixel;
 import JavaBoy.video.pixelpipeline.PixelFIFO;
 
 public class Gpu implements MemorySlot {
@@ -23,7 +22,6 @@ public class Gpu implements MemorySlot {
     private int currentX = 0;
     private int currentY = 0;
     private Phases currentPhase = Phases.OAM_SCAN;
-    private int ticks = 0;
     private int cycles = 0;
 
     public Gpu(Renderer renderer, LCDC lcdc, LCDStat lcdStat,
@@ -42,43 +40,43 @@ public class Gpu implements MemorySlot {
         this.fetcher = fetcher;
         this.oamFifo = oamFifo;
         this.bgFifo = bgFifo;
+
+        lcdStat.setMode(LCDStat.Modes.OAM);
     }
 
-
+    public void refresh(){
+        this.display.requestRefresh();
+    }
     public void tick() {
-        boolean newCycle = false;
+
         if (!lcdc.isLCD())
             return;
-        ++ticks;
-        if (ticks > 4) {
+
             ++cycles;
-            newCycle = true;
-            ticks = 0;
-        }
-        if (!newCycle)
-            return;
 
         if (currentPhase == Phases.OAM_SCAN) {
-            if (cycles == 1)
-                lcdStat.setMode(LCDStat.Modes.OAM);
-            if (cycles == 80) {
+            if (cycles == 20) {
                 this.fetcher.setSprites(oam.getSprites(currentY));
                 this.currentPhase = Phases.PIXEL_TRANSFER;
             }
         } else if (currentPhase == Phases.PIXEL_TRANSFER) {
             if (currentX < 160) {
-                fetcher.notifyFetcher(currentX, currentY);
-                fetcher.tick();
-                if (bgFifo.canPop()) {
-                    display.renderPixel(mixFifo());
-                    ++currentX;
+                for (int a = 4; a > 0; --a) {
+                    fetcher.notifyFetcher(currentX, currentY);
+                    fetcher.tick();
+                    if (bgFifo.canPop()) {
+                        display.renderPixel(mixFifo());
+                        ++currentX;
+                    }
+                    if (currentX > 159)
+                        break;
                 }
             } else {
                 currentPhase = Phases.HBLANK;
                 lcdStat.setMode(LCDStat.Modes.H_BLANK);
             }
         } else if (currentPhase == Phases.HBLANK) {
-            if (456 - cycles == 0) {
+            if (114 - cycles == 0) {
                 this.display.hBlank();
                 currentX = 0;
                 cycles = 0;
@@ -87,13 +85,12 @@ public class Gpu implements MemorySlot {
                 ++currentY;
             }
         }else if (currentPhase == Phases.VBLANK){
-            if ((cycles / 456) == 10) {
-                this.display.vBlank();
+            if ((cycles / 114) > 10) {
                 currentY = 0;
                 cycles = 0;
                 this.currentPhase = Phases.OAM_SCAN;
                 lcdStat.setMode(LCDStat.Modes.OAM);
-            } else if ((cycles % 456) == 0) {
+            } else if ((cycles % 114) == 0) {
                 ++currentY;
             }
         }
@@ -124,17 +121,19 @@ public class Gpu implements MemorySlot {
     }
 
     private Palette.GreyShades mixFifo() {
-        Pixel bgPixel = bgFifo.getPixel();
+        Palette.GreyShades bgShade;
 
-        Palette.GreyShades bgShade = palette.getPaletteShade(
-                lcdc.isPriority() ? bgPixel.getColour() : 0,
-                bgPixel.getPalette());
+            if (lcdc.isPriority()) {
+                bgShade = bgFifo.getPixel();
+            } else {
+                bgShade = palette.getPaletteShade(0, bgFifo.peekPalette());
+                bgFifo.getPixel();
+
+            }
 
         if (lcdc.isOBJEnable() && oamFifo.canPop()) {
-            Pixel oamPixel = oamFifo.getPixel();
-            Palette.GreyShades oamShade = palette.getPaletteShade(
-                    oamPixel.getColour(), oamPixel.getPalette());
-            if (oamPixel.getAboveBG()) {
+            if (oamFifo.peekIsAboveBG()) {
+                Palette.GreyShades oamShade = oamFifo.getPixel();
                 if (oamShade != Palette.GreyShades.TRANSPARENT)
                     return oamShade;
             }
