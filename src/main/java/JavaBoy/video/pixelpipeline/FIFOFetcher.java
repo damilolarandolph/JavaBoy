@@ -14,7 +14,17 @@ public class FIFOFetcher {
     final LCDC lcdc;
     int currentX = -1;
     int currentY = -1;
-    private Pixel[] pixelLine = new Pixel[8];
+    private final Pixel[] pixelLine = {
+            new Pixel(),
+            new Pixel(),
+            new Pixel(),
+            new Pixel(),
+            new Pixel(),
+            new Pixel(),
+            new Pixel(),
+            new Pixel()
+    };
+    private boolean requestedPush = false;
     private ArrayList<SpriteAttribute> spriteAttributes;
     private FetcherStages currentStage = FetcherStages.GET_TILE;
     private FetchTypes currentType;
@@ -60,7 +70,7 @@ public class FIFOFetcher {
                 if (cycles == 2) {
                     this.cycles = 0;
                     if (currentType != FetchTypes.SPRITE) {
-                        Vram.Tile tile = vram.getTileBG(bgOffsetX, bgOffsetY,
+                        int[] line = vram.getTileLineBG(bgOffsetX, bgOffsetY,
                                                         currentType == FetchTypes.WINDOW
                                                                 ?
                                                                 lcdc.getWindowMap()
@@ -68,20 +78,20 @@ public class FIFOFetcher {
                                                                 lcdc.getBGMap(),
                                                         lcdc.getBGWindowAddressing());
 
-                        int[] line = tile.getLine(currentY % 8);
                         for (int pixelIdx = 0; pixelIdx < 8; ++pixelIdx) {
-                            pixelLine[pixelIdx] = new Pixel(line[pixelIdx],
-                                                     Palettes.BGB);
+                            pixelLine[pixelIdx].setColour(line[pixelIdx]);
+                            pixelLine[pixelIdx].setPalette(Palettes.BGB);
                         }
                         bgOffsetX+= 8;
                     }else{
-                       Vram.Tile tile = vram.getTile(nextSprite.getTileNumber(), LCDC.AddressingModes.M8000);
-                       int [] line = tile.getLine(currentY % 8);
+                       int [] line = vram.getTile(nextSprite.getTileNumber(), currentY % 8, LCDC.AddressingModes.M8000);
                         for (int pixelIdx = 0; pixelIdx < 8; ++pixelIdx) {
-                            pixelLine[pixelIdx] = new Pixel(line[pixelIdx],
-                                                     nextSprite.getPalette(), nextSprite.isAboveBG());
+                            pixelLine[pixelIdx].setColour(line[pixelIdx]);
+                            pixelLine[pixelIdx].setPalette(nextSprite.getPalette());
+                            pixelLine[pixelIdx].setAboveBG(nextSprite.isAboveBG());
                         }
                     }
+                    requestedPush = true;
                     pushPixels();
                     moveToNextStage();
                 }
@@ -90,7 +100,7 @@ public class FIFOFetcher {
     }
 
     private void pushPixels(){
-        if (pixelLine[0] == null)
+        if (!requestedPush)
             return;
         if (currentType == FetchTypes.SPRITE && !oamFifo.canPush())
             return;
@@ -100,15 +110,13 @@ public class FIFOFetcher {
             return;
 
         if (currentType == FetchTypes.SPRITE) {
-            oamFifo.overlay(pixelLine);
+            oamFifo.pushOverlay(pixelLine);
             this.requestedSpriteFetch = false;
             this.bgFifo.enablePopping();
         } else {
             bgFifo.push(pixelLine);
         }
-
-        Arrays.fill(pixelLine, null);
-
+       requestedPush = false;
         if (requestedSpriteFetch){
             this.currentType = FetchTypes.SPRITE;
         }
@@ -157,10 +165,11 @@ public class FIFOFetcher {
     }
 
     private SpriteAttribute checkForSpritesOnX(int x) {
-        for (SpriteAttribute sprite : this.spriteAttributes) {
-            if (sprite.getXPosition() - 8 == x) {
-                spriteAttributes.remove(sprite);
-                return sprite;
+
+        for (int idx = 0; idx < spriteAttributes.size(); ++idx){
+            if (spriteAttributes.get(idx).getXPosition() - 8 == x) {
+                spriteAttributes.remove(spriteAttributes.get(idx));
+                return spriteAttributes.get(idx);
             }
         }
         return null;
