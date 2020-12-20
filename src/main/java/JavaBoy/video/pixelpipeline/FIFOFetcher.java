@@ -168,7 +168,6 @@ public class FIFOFetcher {
 
         for (int idx = 0; idx < spriteAttributes.size(); ++idx){
             if (spriteAttributes.get(idx).getXPosition() - 8 == x) {
-                spriteAttributes.remove(spriteAttributes.get(idx));
                 return spriteAttributes.get(idx);
             }
         }
