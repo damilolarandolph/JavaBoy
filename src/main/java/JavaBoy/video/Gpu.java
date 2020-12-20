@@ -96,9 +96,7 @@ public class Gpu implements MemorySlot {
         }
 
         if (currentY == 144) {
-            if (lcdStat.isvBlankInterrupt()) {
-                interruptManager.requestInterrupt(Interrupts.V_BLANK);
-            }
+            interruptManager.requestInterrupt(Interrupts.V_BLANK);
             this.currentPhase = Phases.VBLANK;
             lcdStat.setMode(LCDStat.Modes.V_BLANK);
         }
@@ -116,6 +114,7 @@ public class Gpu implements MemorySlot {
         if ((currentPhase == Phases.OAM_SCAN && lcdStat.isOAMInterrupt())
                 || (currentPhase == Phases.HBLANK && lcdStat.ishBlankInterrupt())
                 || (lcdStat.isCoincidenceInterrupt() && lcdStat.isCoincidenceFlag())
+                || (lcdStat.isvBlankInterrupt() && currentPhase == Phases.VBLANK)
         )
             interruptManager.requestInterrupt(Interrupts.LCD_STAT);
     }
