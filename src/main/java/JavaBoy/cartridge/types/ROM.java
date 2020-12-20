@@ -2,7 +2,6 @@ package JavaBoy.cartridge.types;
 
 public class ROM extends CartridgeType {
 
-
     public ROM(byte[] data) {
         super(data);
     }
@@ -10,7 +9,7 @@ public class ROM extends CartridgeType {
 
     @Override
     public int getByte(int address) {
-        if (address < 0x100)
+        if (address < 0x100 && bootRomMapped)
             return bootRom[address];
         return Byte.toUnsignedInt(data[address]);
     }

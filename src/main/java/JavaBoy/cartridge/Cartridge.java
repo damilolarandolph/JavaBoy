@@ -11,8 +11,7 @@ import java.io.FileInputStream;
 public class Cartridge implements MemorySlot {
 
     CartridgeType cartData;
-
-
+    int cartRegister = 0;
     public Cartridge(File file) {
 
         byte[] rom = getFileArray(file);
@@ -39,17 +38,26 @@ public class Cartridge implements MemorySlot {
 
     @Override
     public int getByte(int address) {
+        if (address == 0xff50){
+           return cartRegister;
+        }
         return cartData.getByte(address);
     }
 
     @Override
     public void setByte(int address, int value) {
-        cartData.setByte(address, value);
+        if (address == 0xff50){
+            cartRegister =value;
+            cartData.setBootRomMapped(value == 0);
+        }else {
+            cartData.setByte(address, value);
+        }
     }
+
 
     @Override
     public boolean hasAddressInSlot(int address) {
-        return cartData.hasAddressInSlot(address);
+        return address == 0xff50 ||   cartData.hasAddressInSlot(address);
     }
 
 }

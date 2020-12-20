@@ -3,6 +3,8 @@ package JavaBoy.cartridge.types;
 import JavaBoy.memory.MemorySlot;
 
 public abstract class CartridgeType implements MemorySlot {
+
+    protected boolean bootRomMapped = true;
     protected int[] bootRom = new int[]{
             0x31, 0xfe, 0xff, 0xaf, 0x21, 0xff, 0x9f, 0x32, 0xcb, 0x7c, 0x20,
             0xfb, 0x21, 0x26, 0xff, 0xe,
@@ -43,4 +45,11 @@ public abstract class CartridgeType implements MemorySlot {
         this.data = data;
     }
 
+    public boolean isBootRomMapped() {
+        return bootRomMapped;
+    }
+
+    public void setBootRomMapped(boolean bootRomMapped) {
+        this.bootRomMapped = bootRomMapped;
+    }
 }
