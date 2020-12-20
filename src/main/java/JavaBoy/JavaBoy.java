@@ -12,6 +12,7 @@ import JavaBoy.cpu.registers.Register16;
 import JavaBoy.cpu.registers.RegisterBank;
 import JavaBoy.debug.DebugMemory;
 import JavaBoy.gui.GBGui;
+import JavaBoy.input.Joypad;
 import JavaBoy.memory.Dma;
 import JavaBoy.memory.MemoryMap;
 import JavaBoy.memory.MemorySlot;
@@ -25,8 +26,16 @@ import java.io.File;
 
 public class JavaBoy {
     public static void main(String[] args) {
-        File file = new File(JavaBoy.class.getResource(
-                "/gb-test-roms/cpu_instrs/individual/10_bit_ops.gb").getFile());
+        //File file = new File(JavaBoy.class.getResource(
+         //       "/gb-test-roms/cpu_instrs/individual/02_interrupts.gb").getFile());
+        //File file = new File("/home/damilola/Downloads/Dr. Mario (JU) (V1.1).gb");
+
+        if (args.length == 0){
+            System.err.println("Expected at least one argument !");
+            System.exit(1);
+        }
+
+        File file = new File(args[0]);
         Cartridge cart = new Cartridge(file);
 
 
@@ -78,7 +87,8 @@ public class JavaBoy {
         PixelFIFO bgFifo = new DmgFifo(palette);
         FIFOFetcher fetcher = new FIFOFetcher(oamFifo, bgFifo, vram, lcdc,
                                               gpuRegisters);
-        GBGui gui = new GBGui();
+        Joypad joypad = new Joypad(manager);
+        GBGui gui = new GBGui(joypad);
         Gpu gpu = new Gpu(gui, lcdc, lcdStat, gpuRegisters, oam, palette, vram,
                           fetcher, oamFifo, bgFifo, manager);
         Dma dma = new Dma(map);
@@ -89,6 +99,7 @@ public class JavaBoy {
                 lcdc,
                 gpuRegisters,
                 lcdStat,
+                joypad,
                 palette,
                 vram,
                 timer,
