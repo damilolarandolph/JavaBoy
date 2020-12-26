@@ -86,7 +86,7 @@ public class JavaBoy {
         PixelFIFO oamFifo = new DmgFifo(palette);
         PixelFIFO bgFifo = new DmgFifo(palette);
         FIFOFetcher fetcher = new FIFOFetcher(oamFifo, bgFifo, vram, lcdc,
-                                              gpuRegisters);
+                                              gpuRegisters, oam.getSpritesBuffer());
         Joypad joypad = new Joypad(manager);
         GBGui gui = new GBGui(joypad);
         Gpu gpu = new Gpu(gui, lcdc, lcdStat, gpuRegisters, oam, palette, vram,

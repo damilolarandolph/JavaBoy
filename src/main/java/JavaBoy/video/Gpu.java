@@ -19,6 +19,7 @@ public class Gpu implements MemorySlot {
     private final FIFOFetcher fetcher;
     private final PixelFIFO oamFifo;
     private final PixelFIFO bgFifo;
+
     private int currentX = 0;
     private int currentY = 0;
     private Phases currentPhase = Phases.OAM_SCAN;
@@ -44,20 +45,31 @@ public class Gpu implements MemorySlot {
         lcdStat.setMode(LCDStat.Modes.OAM);
     }
 
-    public void refresh(){
+    public void refresh() {
         this.display.requestRefresh();
     }
+
     public void tick() {
 
-        if (!lcdc.isLCD())
+        if (!lcdc.isLCD()){
+            this.cycles = 0;
+            this.currentPhase = Phases.OAM_SCAN;
+            this.lcdStat.setMode(LCDStat.Modes.H_BLANK);
+            fetcher.reset(0);
+            this.currentY = 0;
+            this.currentX = 0;
             return;
+        }
 
-            ++cycles;
+
+        ++cycles;
 
         if (currentPhase == Phases.OAM_SCAN) {
             if (cycles == 20) {
-                this.fetcher.setSprites(oam.getSprites(currentY));
+                fetcher.reset(currentY);
+                oam.getSprites(currentY, lcdc.isOBJSize());
                 this.currentPhase = Phases.PIXEL_TRANSFER;
+                this.lcdStat.setMode(LCDStat.Modes.Transfer);
             }
         } else if (currentPhase == Phases.PIXEL_TRANSFER) {
             if (currentX < 160) {
@@ -84,7 +96,7 @@ public class Gpu implements MemorySlot {
                 lcdStat.setMode(LCDStat.Modes.OAM);
                 ++currentY;
             }
-        }else if (currentPhase == Phases.VBLANK){
+        } else if (currentPhase == Phases.VBLANK) {
             if ((cycles / 114) > 10) {
                 currentY = 0;
                 cycles = 0;
@@ -94,17 +106,19 @@ public class Gpu implements MemorySlot {
                 ++currentY;
             }
         }
-
-        if (currentY == 144) {
-            interruptManager.requestInterrupt(Interrupts.V_BLANK);
-            this.currentPhase = Phases.VBLANK;
-            lcdStat.setMode(LCDStat.Modes.V_BLANK);
-        }
         gpuRegisters.setLy(currentY);
         lcdStat.setCoincidenceFlag(
                 gpuRegisters.getLy() == gpuRegisters.getLyc());
 
+        if (currentY == 144) {
+
+            interruptManager.requestInterrupt(Interrupts.V_BLANK);
+            this.currentPhase = Phases.VBLANK;
+            lcdStat.setMode(LCDStat.Modes.V_BLANK);
+        }
+
         checkStatInterrupts();
+
 
 
     }
@@ -122,21 +136,26 @@ public class Gpu implements MemorySlot {
     private Palette.GreyShades mixFifo() {
         Palette.GreyShades bgShade;
 
-            if (lcdc.isPriority()) {
-                bgShade = bgFifo.getPixel();
-            } else {
-                bgShade = palette.getPaletteShade(0, bgFifo.peekPalette());
-                bgFifo.getPixel();
+        if (lcdc.isPriority()) {
+            bgShade = bgFifo.getPixel();
+        } else {
+            bgShade = palette.getPaletteShade(0, bgFifo.peekPalette());
+            bgFifo.getPixel();
 
-            }
-
+        }
+        boolean didOamPop = false;
         if (lcdc.isOBJEnable() && oamFifo.canPop()) {
-            if (oamFifo.peekIsAboveBG()) {
+            if (oamFifo.peekIsAboveBG() || bgShade == Palette.GreyShades.TRANSPARENT || bgShade == Palette.GreyShades.WHITE) {
                 Palette.GreyShades oamShade = oamFifo.getPixel();
+                didOamPop = true;
                 if (oamShade != Palette.GreyShades.TRANSPARENT)
                     return oamShade;
             }
         }
+
+        if (oamFifo.canPop() && !didOamPop)
+            oamFifo.getPixel();
+
         return bgShade;
 
     }

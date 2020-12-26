@@ -48,16 +48,16 @@ public class Oam implements MemorySlot {
                 break;
 
             int yPos = data[a * 4];
-            if (is16 && yPos <= 8)
+            if (!is16 && yPos <= 8)
                 continue;
             if ((yPos == 0) || (yPos >= 160))
                 continue;
-            if ((line < (yPos - 16)) ||  line > yPos)
+            if ((line < (yPos - 16)) ||  line >= yPos)
                 continue;
-            if (!is16 && line > (yPos - 8))
+            if (!is16 && line >= (yPos - 8))
                 continue;
+            initSprite(lineSpritesBuffer[spriteFound], a, is16);
             ++spriteFound;
-            initSprite(lineSpritesBuffer[spriteFound - 1], a, is16);
         }
         return lineSpritesBuffer;
     }

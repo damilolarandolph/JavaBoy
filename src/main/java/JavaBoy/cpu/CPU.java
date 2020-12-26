@@ -73,7 +73,7 @@ public class CPU  {
             if (cycles >= 17476){
                 cycles = 0;
 
-                gpu.refresh();
+                this.gpu.refresh();
                 while (System.currentTimeMillis() - time < 16.67 ){
 
                 }

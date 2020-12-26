@@ -20,11 +20,12 @@ public class DmgFifo implements PixelFIFO {
     @Override
     public void push(Pixel[] pixels) {
         for (int idx = 0; idx < 8; ++idx) {
-            ++size;
-            this.pixels.getAt(idx).setAboveBG(pixels[idx].getAboveBG());
-            this.pixels.getAt(idx).setPalette(pixels[idx].getPalette());
-            this.pixels.getAt(idx).setColour(pixels[idx].getColour());
+            this.pixels.getAt(size + idx).setAboveBG(pixels[idx].getAboveBG());
+            this.pixels.getAt( size + idx).setPalette(pixels[idx].getPalette());
+            this.pixels.getAt(size + idx).setColour(pixels[idx].getColour());
         }
+
+        size += 8;
     }
 
     @Override
@@ -96,11 +97,12 @@ public class DmgFifo implements PixelFIFO {
                     overlay[idx].getColour(),
                     overlay[idx].getPalette());
 
-            if (incomingShade != Palette.GreyShades.WHITE &&
-                    existingShade == Palette.GreyShades.WHITE)
+            if ((incomingShade != Palette.GreyShades.WHITE &&
+                    existingShade == Palette.GreyShades.WHITE) || existingShade == Palette.GreyShades.TRANSPARENT) {
                 this.pixels.getAt(idx).setColour(overlay[idx].getColour());
-            this.pixels.getAt(idx).setPalette(overlay[idx].getPalette());
-            this.pixels.getAt(idx).setAboveBG(overlay[idx].getAboveBG());
+                this.pixels.getAt(idx).setPalette(overlay[idx].getPalette());
+                this.pixels.getAt(idx).setAboveBG(overlay[idx].getAboveBG());
+            }
         }
     }
 

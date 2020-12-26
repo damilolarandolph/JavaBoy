@@ -16,7 +16,7 @@ import java.awt.image.DataBufferInt;
 public class GBGui implements Renderer {
 
 
-    final int pixelSize = 4;
+    final int pixelSize = 2;
     private final int screenX = 160;
     private final int screenY = 144;
     private final int[] rgbWriteBuffer;
@@ -28,6 +28,10 @@ public class GBGui implements Renderer {
     private int frames = 0;
     private boolean newFrame = true;
     private Canvas screen;
+    private final Color WHITE = new Color(224, 248, 208);
+    private final Color LIGHT_GREY = new Color(136, 192,112);
+    private final Color DARK_GREY = new Color(52,104,86);
+    private final Color BLACK = new Color(8, 24, 32);
 
     public GBGui(Joypad joypad) {
         GraphicsEnvironment env =
@@ -64,16 +68,16 @@ public class GBGui implements Renderer {
         Color colour = SystemColor.MAGENTA;
         switch (shade) {
             case WHITE:
-                colour = SystemColor.WHITE;
+                colour = WHITE;
                 break;
             case LIGHT_GREY:
-                colour = SystemColor.lightGray;
+                colour = LIGHT_GREY;
                 break;
             case DARK_GREY:
-                colour = SystemColor.darkGray;
+                colour = DARK_GREY;
                 break;
             case BLACK:
-                colour = SystemColor.black;
+                colour = BLACK;
                 break;
             case TRANSPARENT:
                 colour = SystemColor.MAGENTA;

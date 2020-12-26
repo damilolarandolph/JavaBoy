@@ -2,9 +2,6 @@ package JavaBoy.video.pixelpipeline;
 
 import JavaBoy.video.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class FIFOFetcher {
 
     final PixelFIFO oamFifo;
@@ -25,13 +22,14 @@ public class FIFOFetcher {
             new Pixel()
     };
     private boolean requestedPush = false;
-    private ArrayList<SpriteAttribute> spriteAttributes;
+    private final Oam.SpriteAttribute[] oamSpritesBuffer;
     private FetcherStages currentStage = FetcherStages.GET_TILE;
     private FetchTypes currentType;
     private int bgOffsetX = 0;
     private int bgOffsetY = 0;
+    private FetchTypes wasFetching;
     private boolean requestedSpriteFetch = false;
-    private SpriteAttribute nextSprite;
+    private Oam.SpriteAttribute nextSprite;
     private int cycles = 0;
 
 
@@ -39,10 +37,12 @@ public class FIFOFetcher {
                        PixelFIFO bgFifo,
                        Vram vram,
                        LCDC lcdc,
-                       GpuRegisters gpuRegisters
+                       GpuRegisters gpuRegisters,
+                       Oam.SpriteAttribute[] oamSpritesBuffer
     ) {
         this.oamFifo = oamFifo;
         this.bgFifo = bgFifo;
+        this.oamSpritesBuffer = oamSpritesBuffer;
         this.vram = vram;
         this.lcdc = lcdc;
         this.gpuRegisters = gpuRegisters;
@@ -54,13 +54,7 @@ public class FIFOFetcher {
         switch (currentStage) {
             case GET_TILE:
             case GET_TILE_LOW:
-                if (cycles == 2) {
-                    this.cycles = 0;
-                    moveToNextStage();
-                }
-                break;
             case SLEEP:
-                pushPixels();
                 if (cycles == 2) {
                     this.cycles = 0;
                     moveToNextStage();
@@ -82,19 +76,41 @@ public class FIFOFetcher {
                             pixelLine[pixelIdx].setColour(line[pixelIdx]);
                             pixelLine[pixelIdx].setPalette(Palettes.BGB);
                         }
-                        bgOffsetX+= 8;
                     }else{
-                       int [] line = vram.getTile(nextSprite.getTileNumber(), currentY % 8, LCDC.AddressingModes.M8000);
-                        for (int pixelIdx = 0; pixelIdx < 8; ++pixelIdx) {
-                            pixelLine[pixelIdx].setColour(line[pixelIdx]);
-                            pixelLine[pixelIdx].setPalette(nextSprite.getPalette());
-                            pixelLine[pixelIdx].setAboveBG(nextSprite.isAboveBG());
-                        }
+                        int lineIndex =currentY - (nextSprite.getYPosition() - 16) ;
+                        if (nextSprite.isYFlipped())
+                            lineIndex = 7 - lineIndex;
+                       int [] line = vram.getTile(nextSprite.getTileForLine(currentY), lineIndex, LCDC.AddressingModes.M8000);
+                       if (!nextSprite.isXFlipped()) {
+                           for (int pixelIdx = 0; pixelIdx < 8; ++pixelIdx) {
+                               pixelLine[pixelIdx].setColour(line[pixelIdx]);
+                               pixelLine[pixelIdx].setPalette(
+                                       nextSprite.getPalette());
+                               pixelLine[pixelIdx].setAboveBG(
+                                       nextSprite.isAboveBG());
+                           }
+                       }else {
+                           for (int pixelIdx = 0; pixelIdx < 8; ++pixelIdx) {
+                               pixelLine[7 - pixelIdx].setColour(line[pixelIdx]);
+                               pixelLine[7 - pixelIdx].setPalette(
+                                       nextSprite.getPalette());
+                               pixelLine[7 - pixelIdx].setAboveBG(
+                                       nextSprite.isAboveBG());
+                           }
+                       }
                     }
                     requestedPush = true;
                     pushPixels();
                     moveToNextStage();
                 }
+                break;
+            case PUSH:
+                if (!requestedPush) {
+                    moveToNextStage();
+                }else {
+                    pushPixels();
+                }
+                this.cycles = 0;
                 break;
         }
     }
@@ -104,38 +120,27 @@ public class FIFOFetcher {
             return;
         if (currentType == FetchTypes.SPRITE && !oamFifo.canPush())
             return;
-        if (currentType == FetchTypes.BACKGROUND && !bgFifo.canPush())
-            return;
-        if (currentType == FetchTypes.WINDOW && !bgFifo.canPush())
+        if (currentType != FetchTypes.SPRITE && !bgFifo.canPush())
             return;
 
-        if (currentType == FetchTypes.SPRITE) {
-            oamFifo.pushOverlay(pixelLine);
-            this.requestedSpriteFetch = false;
-            this.bgFifo.enablePopping();
-        } else {
+        if (currentType != FetchTypes.SPRITE){
+            bgOffsetX+= 8;
             bgFifo.push(pixelLine);
+        }else {
+            oamFifo.pushOverlay(pixelLine);
+            requestedSpriteFetch = false;
+            this.currentType = wasFetching;
+            this.bgFifo.enablePopping();
         }
        requestedPush = false;
         if (requestedSpriteFetch){
+            this.wasFetching = this.currentType;
             this.currentType = FetchTypes.SPRITE;
         }
     }
 
     public void notifyFetcher(int x, int y) {
-        // just started rendering or moved to next scanline
-        if (y != currentY) {
-            bgFifo.clear();
-            oamFifo.clear();
-            this.bgOffsetX = gpuRegisters.getScx() + x;
-            this.bgOffsetY = gpuRegisters.getScy() + y;
-            this.currentX = x;
-            this.currentY = y;
-            this.currentStage = FetcherStages.GET_TILE;
-            this.currentType = FetchTypes.BACKGROUND;
-            this.requestedSpriteFetch = false;
-            this.cycles = 0;
-        }
+
         if (requestedSpriteFetch)
             return;
 
@@ -156,28 +161,46 @@ public class FIFOFetcher {
                 this.currentType = FetchTypes.WINDOW;
             }
         }
-        SpriteAttribute foundSprite = checkForSpritesOnX(x);
-        if (foundSprite != null) {
+        Oam.SpriteAttribute foundSprite = checkForSpritesOnX(x);
+        if (foundSprite != null && lcdc.isOBJEnable()) {
             this.nextSprite = foundSprite;
             this.requestedSpriteFetch = true;
             this.bgFifo.disablePopping();
+            if (!bgFifo.canPush()){
+                this.requestedPush = false;
+                this.wasFetching = currentType;
+                this.currentType = FetchTypes.SPRITE;
+                this.currentStage = FetcherStages.GET_TILE;
+                this.cycles = 0;
+            }
         }
     }
+    public void reset(int line){
+        bgFifo.clear();
+        oamFifo.clear();
+        this.bgOffsetX = gpuRegisters.getScx() ;
+        this.bgOffsetY = gpuRegisters.getScy() + line;
+        this.currentX = 0;
+        this.currentY = line;
+        this.currentStage = FetcherStages.GET_TILE;
+        this.currentType = FetchTypes.BACKGROUND;
+        this.requestedSpriteFetch = false;
+        this.requestedPush = false;
+        this.cycles = 0;
+    }
+    private Oam.SpriteAttribute checkForSpritesOnX(int x) {
 
-    private SpriteAttribute checkForSpritesOnX(int x) {
-
-        for (int idx = 0; idx < spriteAttributes.size(); ++idx){
-            if (spriteAttributes.get(idx).getXPosition() - 8 == x) {
-                return spriteAttributes.get(idx);
+        for (int idx = 0; idx < oamSpritesBuffer.length; ++idx){
+            if (oamSpritesBuffer[idx].isDirty())
+                continue;
+            if (oamSpritesBuffer[idx].getXPosition() - 8 == x) {
+                return oamSpritesBuffer[idx];
             }
         }
         return null;
     }
 
 
-    public void setSprites(ArrayList<SpriteAttribute> sprites) {
-        this.spriteAttributes = sprites;
-    }
 
     public void setCurrentX(int x) {
         this.currentX = x;
@@ -199,13 +222,16 @@ public class FIFOFetcher {
                 this.currentStage = FetcherStages.SLEEP;
                 break;
             case SLEEP:
+                this.currentStage = FetcherStages.PUSH;
+                break;
+            case PUSH:
                 this.currentStage = FetcherStages.GET_TILE;
                 break;
         }
     }
 
     private enum FetcherStages {
-        GET_TILE, GET_TILE_LOW, GET_TILE_HIGH, SLEEP
+        GET_TILE, GET_TILE_LOW, GET_TILE_HIGH,PUSH, SLEEP
     }
 
     private enum FetchTypes {
